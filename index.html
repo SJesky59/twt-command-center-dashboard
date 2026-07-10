@@ -79,11 +79,12 @@
   .stage-n { font-size:19px; font-weight:500; }
   .stage-l { font-size:10px; color:var(--text-secondary); }
   .empty { font-size:12px; color:var(--text-muted); padding:8px 4px; }
-  #diag { display:flex; align-items:center; gap:8px; position:fixed; bottom:0; left:0; right:0; background:rgba(252,252,251,0.96); padding:6px 1.25rem; z-index:9;
+  #diag { display:none; align-items:center; gap:8px; position:fixed; bottom:0; left:0; right:0; background:rgba(252,252,251,0.96); padding:6px 1.25rem; z-index:9;
           font-size:11px; color:var(--text-muted); border-top:0.5px solid var(--border); }
   #diag .dot2 { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
   #diag.ok .dot2 { background:#0ca30c; }
   #diag.err .dot2 { background:#d03b3b; }
+  #diag.err { display:flex; }
   @media (max-width: 520px) { html { zoom: 1.25; } }
 </style>
 </head>
