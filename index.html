@@ -70,6 +70,7 @@
   .badge-late { font-size:10px; font-weight:500; color:var(--text-danger); background:var(--bg-danger); padding:2px 6px; border-radius:4px; white-space:nowrap; }
   .badge-q { font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px; white-space:nowrap; }
   .task-t { font-size:13px; color:var(--text-primary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .task-d { font-size:11px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
   .close-row { display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border); }
   .close-row:last-child { border-bottom:none; }
   .close-a { font-size:13px; color:var(--text-primary); }
@@ -245,18 +246,23 @@
     var open_t = tasks.filter(function (t) { return !t["Complete"]; });
     open_t.sort(function (a, b) {
       var da = pDate(a["Due Date"]) || new Date(9999, 0), db = pDate(b["Due Date"]) || new Date(9999, 0);
-      return da - db;
+      return (da - db) || String(a["Deal"] || "").localeCompare(String(b["Deal"] || ""));
     });
     var focusEl = $("focus");
     if (!open_t.length) {
       focusEl.innerHTML = '<div class="empty">No open tasks \ud83c\udf89</div>';
     } else {
-      focusEl.innerHTML = open_t.slice(0, 5).map(function (t) {
+      focusEl.innerHTML = open_t.slice(0, 7).map(function (t) {
         var dd = pDate(t["Due Date"]);
         var late = dd && daysTo(dd) < 0;
         var badge = late ? '<span class="badge-late">LATE</span>' :
           (t["Status"] === "NOW" ? '<span class="badge-now">NOW</span>' : '<span class="badge-q">QUEUE</span>');
-        return '<div class="task-row">' + badge + '<span class="task-t">' + esc(t["Task"]) + '</span></div>';
+        var dp = String(t["Deal"] || "").split("|");
+        var addr = dp[0].trim().toLowerCase().replace(/(^|\s)([a-z])/g, function (m, p, c) { return p + c.toUpperCase(); });
+        var client = (dp[1] || "").trim();
+        var label = addr ? addr + (client ? " \u00b7 " + client : "") : "";
+        return '<div class="task-row">' + badge + '<div style="flex:1; min-width:0;"><div class="task-t" style="flex:none;">' + esc(t["Task"]) + '</div>' +
+          (label ? '<div class="task-d">' + esc(label) + '</div>' : '') + '</div></div>';
       }).join("");
     }
 
