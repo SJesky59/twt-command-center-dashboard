@@ -39,6 +39,7 @@
     color: var(--text-primary);
     font-size: 14px; line-height: 1.45;
     -webkit-font-smoothing: antialiased;
+    padding-bottom: 72px;
   }
   .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.25rem; }
   button {
@@ -47,174 +48,243 @@
     border: none; border-radius: var(--radius); padding: 7px 13px;
   }
   button:hover { filter: brightness(0.97); }
+  .nav { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem; }
+  .nav .on  { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:6px 12px; border-radius:var(--radius); }
+  .nav .off { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px; }
+  .kpi { background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem; }
+  .kpi .lbl { font-size:13px; color:var(--text-secondary); }
+  .kpi .num { font-size:23px; font-weight:500; }
+  .sec-h { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .sec-h .t { font-size:14px; font-weight:500; }
+  .att-card { display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:11px 13px; }
+  .att-l { display:flex; align-items:center; gap:9px; min-width:0; }
+  .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .att-a { font-size:13px; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .att-s { font-size:11px; color:var(--text-muted); }
+  .pill { font-size:11px; padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px; }
+  .pill.warn { background:var(--bg-warning); color:var(--text-warning); }
+  .pill.dang { background:var(--bg-danger); color:var(--text-danger); }
+  .task-row { display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border); }
+  .task-row:last-child { border-bottom:none; }
+  .badge-now { font-size:10px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:2px 6px; border-radius:4px; white-space:nowrap; }
+  .badge-late { font-size:10px; font-weight:500; color:var(--text-danger); background:var(--bg-danger); padding:2px 6px; border-radius:4px; white-space:nowrap; }
+  .badge-q { font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px; white-space:nowrap; }
+  .task-t { font-size:13px; color:var(--text-primary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .close-row { display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border); }
+  .close-row:last-child { border-bottom:none; }
+  .close-a { font-size:13px; color:var(--text-primary); }
+  .close-d { font-size:12px; color:var(--text-secondary); }
+  .stage-t { background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center; }
+  .stage-n { font-size:19px; font-weight:500; }
+  .stage-l { font-size:10px; color:var(--text-secondary); }
+  .empty { font-size:12px; color:var(--text-muted); padding:8px 4px; }
   #diag { display:flex; align-items:center; gap:8px; position:fixed; bottom:0; left:0; right:0; background:rgba(252,252,251,0.96); padding:6px 1.25rem; z-index:9;
           font-size:11px; color:var(--text-muted); border-top:0.5px solid var(--border); }
-  body { padding-bottom: 72px; }
-  #diag .dot { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
-  #diag.ok .dot { background:#0ca30c; }
+  #diag .dot2 { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
+  #diag.ok .dot2 { background:#0ca30c; }
+  #diag.err .dot2 { background:#d03b3b; }
   @media (max-width: 520px) { html { zoom: 1.25; } }
 </style>
 </head>
 <body>
 <div class="wrap">
 <div style="padding: 1rem 0;">
-  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem;">
-    <span style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:6px 12px; border-radius:var(--radius);"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
-    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
-    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
-    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
-    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
-    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
+  <div class="nav">
+    <span class="on"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
+    <span class="off"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
+    <span class="off"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
+    <span class="off"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
+    <span class="off"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
+    <span class="off"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
   </div>
 
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
     <div>
-      <div style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
-      <div style="font-size:12px; color:var(--text-muted);">Wednesday, July 8 · 14 active deals · 3 need you today</div>
+      <div id="greet" style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
+      <div id="subline" style="font-size:12px; color:var(--text-muted);">Loading your pipeline&hellip;</div>
     </div>
     <button style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button>
   </div>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
-    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
-      <div style="font-size:13px; color:var(--text-secondary);">Active</div>
-      <div style="font-size:23px; font-weight:500;">14</div>
-    </div>
-    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
-      <div style="font-size:13px; color:var(--text-secondary);">Under contract</div>
-      <div style="font-size:23px; font-weight:500;">6</div>
-    </div>
-    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
-      <div style="font-size:13px; color:var(--text-secondary);">Closing / mo</div>
-      <div style="font-size:23px; font-weight:500;">4</div>
-    </div>
-    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
-      <div style="font-size:13px; color:var(--text-secondary);">GCI pipeline</div>
-      <div style="font-size:23px; font-weight:500;">$78k</div>
-    </div>
+    <div class="kpi"><div class="lbl">Active</div><div class="num" id="kpi-active">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">Under contract</div><div class="num" id="kpi-uc">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">Closing / mo</div><div class="num" id="kpi-closing">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">GCI pipeline</div><div class="num" id="kpi-gci">&ndash;</div></div>
   </div>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:1.5rem;">
     <div>
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+      <div class="sec-h">
         <i class="ti ti-alert-triangle" style="font-size:16px; color:var(--text-warning);" aria-hidden="true"></i>
-        <span style="font-size:14px; font-weight:500;">Needs attention today</span>
+        <span class="t">Needs attention today</span>
       </div>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:11px 13px;">
-          <div style="display:flex; align-items:center; gap:9px; min-width:0;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#E24B4A; flex-shrink:0;"></span>
-            <div style="min-width:0;">
-              <div style="font-size:13px; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">142 Ansley Walk Ter</div>
-              <div style="font-size:11px; color:var(--text-muted);">Buyer · Ramirez</div>
-            </div>
-          </div>
-          <span style="font-size:11px; background:var(--bg-danger); color:var(--text-danger); padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px;">Insp. tmrw</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:11px 13px;">
-          <div style="display:flex; align-items:center; gap:9px; min-width:0;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#EF9F27; flex-shrink:0;"></span>
-            <div style="min-width:0;">
-              <div style="font-size:13px; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">88 Chastain Park Ct</div>
-              <div style="font-size:11px; color:var(--text-muted);">Listing · Whitfield</div>
-            </div>
-          </div>
-          <span style="font-size:11px; background:var(--bg-warning); color:var(--text-warning); padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px;">Appr. 3d</span>
-        </div>
+      <div id="attention" style="display:flex; flex-direction:column; gap:8px;">
+        <div class="empty">Loading&hellip;</div>
       </div>
     </div>
 
     <div>
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+      <div class="sec-h">
         <i class="ti ti-checkbox" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
-        <span style="font-size:14px; font-weight:500;">Your focus</span>
+        <span class="t">Your focus</span>
         <span style="font-size:11px; color:var(--text-muted);">NOW / QUEUE</span>
       </div>
-      <div style="display:flex; flex-direction:column; gap:2px;">
-        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border);">
-          <span style="font-size:10px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:2px 6px; border-radius:4px;">NOW</span>
-          <span style="font-size:13px; color:var(--text-primary); flex:1;">Send Ramirez inspection reminder</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border);">
-          <span style="font-size:10px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:2px 6px; border-radius:4px;">NOW</span>
-          <span style="font-size:13px; color:var(--text-primary); flex:1;">Order photos · Chastain Park</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border);">
-          <span style="font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px;">QUEUE</span>
-          <span style="font-size:13px; color:var(--text-secondary); flex:1;">Draft Roswell Farms closing recap</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px;">
-          <span style="font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px;">QUEUE</span>
-          <span style="font-size:13px; color:var(--text-secondary); flex:1;">Confirm Vinings Mill utilities</span>
-        </div>
+      <div id="focus" style="display:flex; flex-direction:column; gap:2px;">
+        <div class="empty">Loading&hellip;</div>
       </div>
     </div>
   </div>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;">
     <div>
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+      <div class="sec-h">
         <i class="ti ti-calendar-event" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
-        <span style="font-size:14px; font-weight:500;">Closing this week</span>
+        <span class="t">Upcoming closings</span>
       </div>
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border);">
-        <span style="font-size:13px; color:var(--text-primary);">305 Roswell Farms Ln</span>
-        <span style="font-size:12px; color:var(--text-secondary);">Fri · $9,750</span>
-      </div>
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 4px;">
-        <span style="font-size:13px; color:var(--text-primary);">17 Vinings Mill Walk</span>
-        <span style="font-size:12px; color:var(--text-secondary);">Thu · $12,400</span>
+      <div id="closings">
+        <div class="empty">Loading&hellip;</div>
       </div>
     </div>
 
     <div>
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+      <div class="sec-h">
         <i class="ti ti-layout-kanban" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
-        <span style="font-size:14px; font-weight:500;">Pipeline by stage</span>
+        <span class="t">Pipeline by stage</span>
       </div>
       <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
-        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
-          <div style="font-size:19px; font-weight:500;">2</div>
-          <div style="font-size:10px; color:var(--text-secondary);">Coming</div>
-        </div>
-        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
-          <div style="font-size:19px; font-weight:500;">6</div>
-          <div style="font-size:10px; color:var(--text-secondary);">Active</div>
-        </div>
-        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
-          <div style="font-size:19px; font-weight:500;">6</div>
-          <div style="font-size:10px; color:var(--text-secondary);">UC</div>
-        </div>
-        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
-          <div style="font-size:19px; font-weight:500;">4</div>
-          <div style="font-size:10px; color:var(--text-secondary);">Closing</div>
-        </div>
+        <div class="stage-t"><div class="stage-n" id="st-coming">&ndash;</div><div class="stage-l">Coming</div></div>
+        <div class="stage-t"><div class="stage-n" id="st-active">&ndash;</div><div class="stage-l">Active</div></div>
+        <div class="stage-t"><div class="stage-n" id="st-uc">&ndash;</div><div class="stage-l">UC</div></div>
+        <div class="stage-t"><div class="stage-n" id="st-closing">&ndash;</div><div class="stage-l">Closing</div></div>
       </div>
     </div>
   </div>
-</div></div>
-<div id="diag"><span class="dot"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
+</div>
+</div>
+<div id="diag"><span class="dot2"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
 <script>
 (function () {
-  var parts = ["JS: executing"];
+  "use strict";
+  var PROXY = "https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
+  var KEY = new URLSearchParams(location.search).get("k") || "";
+  var REFRESH_MS = 60000;
+
+  var envParts = ["JS: executing"];
   try {
     localStorage.setItem("twt-embed-test", "1");
-    parts.push(localStorage.getItem("twt-embed-test") === "1" ? "localStorage: OK" : "localStorage: blocked");
-  } catch (e) { parts.push("localStorage: blocked"); }
-  parts.push("frame: " + (window.self !== window.top ? "embedded" : "standalone"));
+    envParts.push(localStorage.getItem("twt-embed-test") === "1" ? "localStorage: OK" : "localStorage: blocked");
+  } catch (e) { envParts.push("localStorage: blocked"); }
+  envParts.push("frame: " + (window.self !== window.top ? "embedded" : "standalone"));
   var mobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
   var ratio = window.innerWidth / Math.max(screen.width, 1);
   if (mobile && ratio > 1.15) {
-    try { document.documentElement.style.zoom = ratio; parts.push("mobile zoom " + ratio.toFixed(2) + "x"); } catch (e) {}
+    try { document.documentElement.style.zoom = ratio; envParts.push("mobile zoom " + ratio.toFixed(2) + "x"); } catch (e) {}
   }
-  var cz = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
-  if (cz !== 1) parts.push("zoom " + cz + "x");
-  parts.push("vw " + window.innerWidth + " / scr " + screen.width);
-  parts.push("rendered " + new Date().toLocaleTimeString());
-  var d = document.getElementById("diag");
-  d.classList.add("ok");
-  document.getElementById("diag-text").textContent = "Diagnostics: " + parts.join(" · ");
-  console.log("[TWT-DASH] " + parts.join(" | "));
+  console.log("[TWT-DASH] " + envParts.join(" | "));
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function money(s) { var n = parseFloat(String(s || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? 0 : n; }
+  function pDate(s) { if (!s) return null; var d = new Date(String(s).slice(0, 10) + "T00:00:00"); return isNaN(d) ? null : d; }
+  function today0() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  function fmtDay(d) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+  function daysTo(d) { return Math.round((d - today0()) / 86400000); }
+
+  function setDiag(cls, dataMsg) {
+    var el = $("diag");
+    el.className = cls;
+    $("diag-text").textContent = "Diagnostics: " + envParts.join(" \u00b7 ") + " \u00b7 " + dataMsg;
+  }
+
+  function render(d) {
+    var deals = (d.deals || []).map(function (r) { return r.values; });
+    var tasks = (d.tasks || []).map(function (r) { return r.values; });
+    var open = deals.filter(function (v) { return v["Stage"] !== "Closed"; });
+
+    var byStage = {};
+    open.forEach(function (v) { var s = v["Stage"] || "?"; byStage[s] = (byStage[s] || 0) + 1; });
+    var now = new Date();
+    var closingThisMonth = open.filter(function (v) {
+      var cd = pDate(v["Closing Date"]);
+      return cd && cd.getMonth() === now.getMonth() && cd.getFullYear() === now.getFullYear();
+    }).length;
+    var gci = open.reduce(function (a, v) { return a + money(v["GCI"]); }, 0);
+
+    $("kpi-active").textContent = byStage["Active"] || 0;
+    $("kpi-uc").textContent = byStage["Under Contract"] || 0;
+    $("kpi-closing").textContent = closingThisMonth;
+    $("kpi-gci").textContent = gci >= 100000 ? "$" + Math.round(gci / 1000) + "k" : "$" + gci.toLocaleString("en-US");
+    $("st-coming").textContent = byStage["Coming Soon"] || 0;
+    $("st-active").textContent = byStage["Active"] || 0;
+    $("st-uc").textContent = byStage["Under Contract"] || 0;
+    $("st-closing").textContent = byStage["Closing"] || 0;
+
+    var hot = open.filter(function (v) { return v["Health"] && v["Health"] !== "\ud83d\udfe2"; });
+    hot.sort(function (a, b) { return (a["Health"] === "\ud83d\udd34" ? 0 : 1) - (b["Health"] === "\ud83d\udd34" ? 0 : 1); });
+    var h = new Date().getHours();
+    $("greet").textContent = (h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening") + ", Steven";
+    $("subline").textContent = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) +
+      " \u00b7 " + open.length + " active deals \u00b7 " + (hot.length ? hot.length + " need you today" : "all clear today");
+
+    var attEl = $("attention");
+    if (!hot.length) {
+      attEl.innerHTML = '<div class="att-card"><div class="att-l"><span class="dot" style="background:#0ca30c;"></span><div><div class="att-a">All deals healthy</div><div class="att-s">No deadlines within 3 days</div></div></div></div>';
+    } else {
+      attEl.innerHTML = hot.slice(0, 4).map(function (v) {
+        var red = v["Health"] === "\ud83d\udd34";
+        var nd = pDate(v["Next Deadline"]);
+        var pill = nd ? (daysTo(nd) <= 0 ? "Due today" : "Due " + fmtDay(nd)) : "Check deal";
+        return '<div class="att-card"><div class="att-l"><span class="dot" style="background:' + (red ? "#E24B4A" : "#EF9F27") + ';"></span><div style="min-width:0;">' +
+          '<div class="att-a">' + esc(v["Property Address"]) + '</div>' +
+          '<div class="att-s">' + esc(v["Deal Type"]) + ' \u00b7 ' + esc(v["Client"]) + '</div></div></div>' +
+          '<span class="pill ' + (red ? "dang" : "warn") + '">' + esc(pill) + '</span></div>';
+      }).join("");
+    }
+
+    var open_t = tasks.filter(function (t) { return !t["Complete"]; });
+    open_t.sort(function (a, b) {
+      var da = pDate(a["Due Date"]) || new Date(9999, 0), db = pDate(b["Due Date"]) || new Date(9999, 0);
+      return da - db;
+    });
+    var focusEl = $("focus");
+    if (!open_t.length) {
+      focusEl.innerHTML = '<div class="empty">No open tasks \ud83c\udf89</div>';
+    } else {
+      focusEl.innerHTML = open_t.slice(0, 5).map(function (t) {
+        var dd = pDate(t["Due Date"]);
+        var late = dd && daysTo(dd) < 0;
+        var badge = late ? '<span class="badge-late">LATE</span>' :
+          (t["Status"] === "NOW" ? '<span class="badge-now">NOW</span>' : '<span class="badge-q">QUEUE</span>');
+        return '<div class="task-row">' + badge + '<span class="task-t">' + esc(t["Task"]) + '</span></div>';
+      }).join("");
+    }
+
+    var closers = open.filter(function (v) { return pDate(v["Closing Date"]); });
+    closers.sort(function (a, b) { return pDate(a["Closing Date"]) - pDate(b["Closing Date"]); });
+    var upcoming = closers.filter(function (v) { return daysTo(pDate(v["Closing Date"])) >= 0; }).slice(0, 4);
+    var clEl = $("closings");
+    clEl.innerHTML = upcoming.length ? upcoming.map(function (v) {
+      return '<div class="close-row"><span class="close-a">' + esc(v["Property Address"]) + '</span>' +
+        '<span class="close-d">' + esc(fmtDay(pDate(v["Closing Date"]))) + ' \u00b7 ' + esc(v["GCI"] || "") + '</span></div>';
+    }).join("") : '<div class="empty">No closings scheduled</div>';
+  }
+
+  function load() {
+    if (!KEY) { setDiag("err", "data: no key \u2014 open via Command Center doc"); return; }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY), { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) { setDiag("err", "data: " + d.error); return; }
+        render(d);
+        setDiag("ok", "data: live \u00b7 " + d.deals.length + " deals \u00b7 " + d.tasks.length + " tasks \u00b7 updated " + new Date().toLocaleTimeString());
+      })
+      .catch(function (e) { setDiag("err", "data: fetch failed \u2014 " + e); });
+  }
+
+  setDiag(KEY ? "" : "err", KEY ? "data: loading\u2026" : "data: no key \u2014 open via Command Center doc");
+  load();
+  if (KEY) setInterval(load, REFRESH_MS);
 })();
 </script>
 </body>
