@@ -52,6 +52,7 @@
   body { padding-bottom: 34px; }
   #diag .dot { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
   #diag.ok .dot { background:#0ca30c; }
+  @media (max-width: 520px) { html { zoom: 1.25; } }
 </style>
 </head>
 <body>
@@ -206,6 +207,8 @@
   if (mobile && ratio > 1.15) {
     try { document.documentElement.style.zoom = ratio; parts.push("mobile zoom " + ratio.toFixed(2) + "x"); } catch (e) {}
   }
+  var cz = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  if (cz !== 1) parts.push("zoom " + cz + "x");
   parts.push("vw " + window.innerWidth + " / scr " + screen.width);
   parts.push("rendered " + new Date().toLocaleTimeString());
   var d = document.getElementById("diag");
