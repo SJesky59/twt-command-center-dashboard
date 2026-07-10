@@ -71,6 +71,22 @@
   .badge-q { font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px; white-space:nowrap; }
   .task-t { font-size:13px; color:var(--text-primary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
   .task-d { font-size:11px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .task-row { cursor:pointer; }
+  .task-row .chev { font-size:10px; color:var(--text-muted); flex-shrink:0; transition:transform .15s; }
+  .task-row.open .chev { transform:rotate(90deg); }
+  .task-row.open .task-t { white-space:normal; overflow:visible; text-overflow:clip; }
+  .task-row.open .task-d { white-space:normal; overflow:visible; text-overflow:clip; }
+  .task-x { display:none; margin-top:8px; padding:10px 12px; background:var(--surface-1); border-radius:var(--radius); }
+  .task-row.open .task-x { display:block; }
+  .task-x .kv { display:flex; gap:6px; font-size:12px; padding:2px 0; }
+  .task-x .k { color:var(--text-muted); min-width:62px; flex-shrink:0; }
+  .task-x .v { color:var(--text-primary); }
+  .btn-done { margin-top:9px; font-size:12px; font-weight:500; color:#fff; background:#1c5cab; border:none; border-radius:var(--radius); padding:7px 14px; cursor:pointer; }
+  .btn-done:disabled { opacity:.55; cursor:default; }
+  #toast { display:none; position:fixed; bottom:14px; left:50%; transform:translateX(-50%); background:#0b0b0b; color:#fff; font-size:12px;
+           padding:9px 14px; border-radius:8px; z-index:20; align-items:center; gap:12px; box-shadow:0 4px 14px rgba(0,0,0,.25); }
+  #toast.show { display:flex; }
+  #toast button { font-size:12px; font-weight:600; color:#8ec2ff; background:none; border:none; padding:0; cursor:pointer; }
   .close-row { display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border); }
   .close-row:last-child { border-bottom:none; }
   .close-a { font-size:13px; color:var(--text-primary); }
@@ -164,6 +180,7 @@
   </div>
 </div>
 </div>
+<div id="toast"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
 <div id="diag"><span class="dot2"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
 <script>
 (function () {
@@ -201,7 +218,7 @@
 
   function render(d) {
     var deals = (d.deals || []).map(function (r) { return r.values; });
-    var tasks = (d.tasks || []).map(function (r) { return r.values; });
+    var tasks = (d.tasks || []).map(function (r) { var v = r.values; v.__id = r.id; return v; });
     var open = deals.filter(function (v) { return v["Stage"] !== "Closed"; });
 
     var byStage = {};
@@ -262,8 +279,18 @@
         var addr = dp[0].trim().toLowerCase().replace(/(^|\s)([a-z])/g, function (m, p, c) { return p + c.toUpperCase(); });
         var client = (dp[1] || "").trim();
         var label = addr ? addr + (client ? " \u00b7 " + client : "") : "";
-        return '<div class="task-row">' + badge + '<div style="flex:1; min-width:0;"><div class="task-t" style="flex:none;">' + esc(t["Task"]) + '</div>' +
-          (label ? '<div class="task-d">' + esc(label) + '</div>' : '') + '</div></div>';
+        var open_x = t.__id && t.__id === expandedId;
+        var det = '<div class="task-x">' +
+          (dd ? '<div class="kv"><span class="k">Due</span><span class="v">' + esc(fmtDay(dd)) + (late ? ' (late)' : '') + '</span></div>' : '') +
+          (label ? '<div class="kv"><span class="k">Deal</span><span class="v">' + esc(label) + '</span></div>' : '') +
+          (t["Phase"] ? '<div class="kv"><span class="k">Phase</span><span class="v">' + esc(t["Phase"]) + '</span></div>' : '') +
+          (t["Agent"] ? '<div class="kv"><span class="k">Agent</span><span class="v">' + esc(t["Agent"]) + '</span></div>' : '') +
+          (t["Priority"] ? '<div class="kv"><span class="k">Priority</span><span class="v">' + esc(t["Priority"]) + '</span></div>' : '') +
+          (t["Notes"] ? '<div class="kv"><span class="k">Notes</span><span class="v">' + esc(t["Notes"]) + '</span></div>' : '') +
+          '<button class="btn-done" type="button" data-act="done">\u2713 Mark done</button></div>';
+        return '<div class="task-row' + (open_x ? ' open' : '') + '" data-id="' + esc(t.__id || "") + '">' + badge +
+          '<div style="flex:1; min-width:0;"><div class="task-t" style="flex:none;">' + esc(t["Task"]) + '</div>' +
+          (label ? '<div class="task-d">' + esc(label) + '</div>' : '') + det + '</div><span class="chev">\u25b6</span></div>';
       }).join("");
     }
 
@@ -276,6 +303,63 @@
         '<span class="close-d">' + esc(fmtDay(pDate(v["Closing Date"]))) + ' \u00b7 ' + esc(v["GCI"] || "") + '</span></div>';
     }).join("") : '<div class="empty">No closings scheduled</div>';
   }
+
+  var expandedId = null;
+  var undoRow = null;
+  var toastTimer = null;
+
+  function showToast(msg, withUndo) {
+    var el = $("toast");
+    $("toast-text").textContent = msg;
+    $("toast-undo").style.display = withUndo ? "" : "none";
+    el.className = "show";
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.className = ""; undoRow = null; }, 9000);
+  }
+
+  function writeComplete(rowId, val, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = "Saving\u2026"; }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=setcomplete&row=" + encodeURIComponent(rowId) + "&val=" + val, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res.ok) {
+          if (val === "1") {
+            undoRow = rowId;
+            showToast("Task marked done", true);
+            var row = document.querySelector('.task-row[data-id="' + rowId + '"]');
+            if (row) row.style.display = "none";
+            expandedId = null;
+          } else {
+            showToast("Restored \u2014 back on the list", false);
+          }
+          setTimeout(load, 2500);
+        } else {
+          showToast("Couldn\u2019t save: " + (res.error || "unknown error"), false);
+          if (btn) { btn.disabled = false; btn.textContent = "\u2713 Mark done"; }
+        }
+      })
+      .catch(function (e) {
+        showToast("Couldn\u2019t save \u2014 " + e, false);
+        if (btn) { btn.disabled = false; btn.textContent = "\u2713 Mark done"; }
+      });
+  }
+
+  $("toast-undo").addEventListener("click", function () {
+    if (undoRow) { writeComplete(undoRow, "0", null); undoRow = null; $("toast").className = ""; }
+  });
+
+  $("focus").addEventListener("click", function (ev) {
+    var btn = ev.target.closest ? ev.target.closest(".btn-done") : null;
+    var row = ev.target.closest ? ev.target.closest(".task-row") : null;
+    if (!row || !row.getAttribute("data-id")) return;
+    if (btn) { writeComplete(row.getAttribute("data-id"), "1", btn); return; }
+    var id = row.getAttribute("data-id");
+    expandedId = (expandedId === id) ? null : id;
+    var rows = document.querySelectorAll("#focus .task-row");
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].className = "task-row" + (rows[i].getAttribute("data-id") === expandedId ? " open" : "");
+    }
+  });
 
   function load() {
     if (!KEY) { setDiag("err", "data: no key \u2014 open via Command Center doc"); return; }
