@@ -201,6 +201,12 @@
     parts.push(localStorage.getItem("twt-embed-test") === "1" ? "localStorage: OK" : "localStorage: blocked");
   } catch (e) { parts.push("localStorage: blocked"); }
   parts.push("frame: " + (window.self !== window.top ? "embedded" : "standalone"));
+  var mobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+  var ratio = window.innerWidth / Math.max(screen.width, 1);
+  if (mobile && ratio > 1.15) {
+    try { document.documentElement.style.zoom = ratio; parts.push("mobile zoom " + ratio.toFixed(2) + "x"); } catch (e) {}
+  }
+  parts.push("vw " + window.innerWidth + " / scr " + screen.width);
   parts.push("rendered " + new Date().toLocaleTimeString());
   var d = document.getElementById("diag");
   d.classList.add("ok");
