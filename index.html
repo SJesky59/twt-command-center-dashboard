@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TWT | Command Center</title>
+<style>
+  @font-face {
+    font-family: "tabler-icons";
+    src: url(data:font/woff2;base64,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) format("woff2");
+    font-weight: normal; font-style: normal; font-display: block;
+  }
+  .ti { font-family: "tabler-icons" !important; font-style: normal; font-weight: normal; line-height: 1; display: inline-block;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .ti-home:before{content:"\eac1"} .ti-building-community:before{content:"\ebf6"} .ti-users:before{content:"\ebf2"}
+  .ti-tools:before{content:"\ebca"} .ti-mail:before{content:"\eae5"} .ti-speakerphone:before{content:"\ed61"}
+  .ti-plus:before{content:"\eb0b"} .ti-alert-triangle:before{content:"\ea06"} .ti-checkbox:before{content:"\eba6"}
+  .ti-calendar-event:before{content:"\ea52"} .ti-layout-kanban:before{content:"\ec3f"}
+
+  :root {
+    --radius: 8px;
+    --border: #e1e0d9;
+    --surface-1: #f2f1ee;
+    --surface-2: #ffffff;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --text-accent: #1c5cab;
+    --bg-accent: #e6effc;
+    --text-warning: #9d6508;
+    --bg-warning: #fbf1d9;
+    --text-danger: #b8302f;
+    --bg-danger: #fcebea;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #fcfcfb; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 1.25rem; }
+  button {
+    font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+    color: var(--text-accent); background: var(--bg-accent);
+    border: none; border-radius: var(--radius); padding: 7px 13px;
+  }
+  button:hover { filter: brightness(0.97); }
+  #diag { display:flex; align-items:center; gap:8px; max-width:960px; margin:0 auto; padding:10px 1.25rem 16px;
+          font-size:11px; color:var(--text-muted); border-top:0.5px solid var(--border); }
+  #diag .dot { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
+  #diag.ok .dot { background:#0ca30c; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="padding: 1rem 0;">
+  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem;">
+    <span style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:6px 12px; border-radius:var(--radius);"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
+    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
+    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
+    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
+    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
+    <span style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px;"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+    <div>
+      <div style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
+      <div style="font-size:12px; color:var(--text-muted);">Wednesday, July 8 · 14 active deals · 3 need you today</div>
+    </div>
+    <button style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
+    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
+      <div style="font-size:13px; color:var(--text-secondary);">Active</div>
+      <div style="font-size:23px; font-weight:500;">14</div>
+    </div>
+    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
+      <div style="font-size:13px; color:var(--text-secondary);">Under contract</div>
+      <div style="font-size:23px; font-weight:500;">6</div>
+    </div>
+    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
+      <div style="font-size:13px; color:var(--text-secondary);">Closing / mo</div>
+      <div style="font-size:23px; font-weight:500;">4</div>
+    </div>
+    <div style="background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem;">
+      <div style="font-size:13px; color:var(--text-secondary);">GCI pipeline</div>
+      <div style="font-size:23px; font-weight:500;">$78k</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:1.5rem;">
+    <div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <i class="ti ti-alert-triangle" style="font-size:16px; color:var(--text-warning);" aria-hidden="true"></i>
+        <span style="font-size:14px; font-weight:500;">Needs attention today</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:11px 13px;">
+          <div style="display:flex; align-items:center; gap:9px; min-width:0;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#E24B4A; flex-shrink:0;"></span>
+            <div style="min-width:0;">
+              <div style="font-size:13px; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">142 Ansley Walk Ter</div>
+              <div style="font-size:11px; color:var(--text-muted);">Buyer · Ramirez</div>
+            </div>
+          </div>
+          <span style="font-size:11px; background:var(--bg-danger); color:var(--text-danger); padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px;">Insp. tmrw</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:11px 13px;">
+          <div style="display:flex; align-items:center; gap:9px; min-width:0;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#EF9F27; flex-shrink:0;"></span>
+            <div style="min-width:0;">
+              <div style="font-size:13px; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">88 Chastain Park Ct</div>
+              <div style="font-size:11px; color:var(--text-muted);">Listing · Whitfield</div>
+            </div>
+          </div>
+          <span style="font-size:11px; background:var(--bg-warning); color:var(--text-warning); padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px;">Appr. 3d</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <i class="ti ti-checkbox" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+        <span style="font-size:14px; font-weight:500;">Your focus</span>
+        <span style="font-size:11px; color:var(--text-muted);">NOW / QUEUE</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border);">
+          <span style="font-size:10px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:2px 6px; border-radius:4px;">NOW</span>
+          <span style="font-size:13px; color:var(--text-primary); flex:1;">Send Ramirez inspection reminder</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border);">
+          <span style="font-size:10px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:2px 6px; border-radius:4px;">NOW</span>
+          <span style="font-size:13px; color:var(--text-primary); flex:1;">Order photos · Chastain Park</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border);">
+          <span style="font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px;">QUEUE</span>
+          <span style="font-size:13px; color:var(--text-secondary); flex:1;">Draft Roswell Farms closing recap</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:9px; padding:8px 4px;">
+          <span style="font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px;">QUEUE</span>
+          <span style="font-size:13px; color:var(--text-secondary); flex:1;">Confirm Vinings Mill utilities</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;">
+    <div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <i class="ti ti-calendar-event" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
+        <span style="font-size:14px; font-weight:500;">Closing this week</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border);">
+        <span style="font-size:13px; color:var(--text-primary);">305 Roswell Farms Ln</span>
+        <span style="font-size:12px; color:var(--text-secondary);">Fri · $9,750</span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:9px 4px;">
+        <span style="font-size:13px; color:var(--text-primary);">17 Vinings Mill Walk</span>
+        <span style="font-size:12px; color:var(--text-secondary);">Thu · $12,400</span>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+        <i class="ti ti-layout-kanban" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
+        <span style="font-size:14px; font-weight:500;">Pipeline by stage</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
+          <div style="font-size:19px; font-weight:500;">2</div>
+          <div style="font-size:10px; color:var(--text-secondary);">Coming</div>
+        </div>
+        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
+          <div style="font-size:19px; font-weight:500;">6</div>
+          <div style="font-size:10px; color:var(--text-secondary);">Active</div>
+        </div>
+        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
+          <div style="font-size:19px; font-weight:500;">6</div>
+          <div style="font-size:10px; color:var(--text-secondary);">UC</div>
+        </div>
+        <div style="background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center;">
+          <div style="font-size:19px; font-weight:500;">4</div>
+          <div style="font-size:10px; color:var(--text-secondary);">Closing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+<div id="diag"><span class="dot"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
+<script>
+(function () {
+  var parts = ["JS: executing"];
+  try {
+    localStorage.setItem("twt-embed-test", "1");
+    parts.push(localStorage.getItem("twt-embed-test") === "1" ? "localStorage: OK" : "localStorage: blocked");
+  } catch (e) { parts.push("localStorage: blocked"); }
+  parts.push("frame: " + (window.self !== window.top ? "embedded" : "standalone"));
+  parts.push("rendered " + new Date().toLocaleTimeString());
+  var d = document.getElementById("diag");
+  d.classList.add("ok");
+  document.getElementById("diag-text").textContent = "Diagnostics: " + parts.join(" · ");
+  console.log("[TWT-DASH] " + parts.join(" | "));
+})();
+</script>
+</body>
+</html>
