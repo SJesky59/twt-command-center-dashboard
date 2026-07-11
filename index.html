@@ -87,6 +87,24 @@
            padding:9px 14px; border-radius:8px; z-index:20; align-items:center; gap:12px; box-shadow:0 4px 14px rgba(0,0,0,.25); }
   #toast.show { display:flex; }
   #toast button { font-size:12px; font-weight:600; color:#8ec2ff; background:none; border:none; padding:0; cursor:pointer; }
+  #dm-ov { display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px; }
+  #dm-ov.show { display:block; }
+  #dm { max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25); }
+  .dm-h { display:flex; align-items:center; justify-content:space-between; font-size:15px; font-weight:600; margin-bottom:12px; }
+  #dm-x { cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px; }
+  .dm-row { margin-bottom:9px; }
+  .dm-row label { display:block; font-size:11px; color:var(--text-secondary); margin-bottom:3px; }
+  .dm-row input, .dm-row select, .dm-row textarea {
+    width:100%; font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-1);
+    border:0.5px solid var(--border); border-radius:6px; padding:8px 10px; box-sizing:border-box; }
+  .dm-2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .dm-err { font-size:12px; color:var(--text-danger); margin:6px 0; min-height:14px; }
+  .dm-btn { width:100%; font:inherit; font-size:13px; font-weight:600; color:#fff; background:#1c5cab; border:none; border-radius:8px; padding:11px; cursor:pointer; margin-top:4px; }
+  .dm-btn.sec { background:var(--surface-1); color:var(--text-primary); font-weight:500; }
+  .dm-btn:disabled { opacity:.55; }
+  .dm-kv { display:flex; gap:8px; font-size:13px; padding:5px 0; border-bottom:0.5px solid var(--border); }
+  .dm-kv .k { color:var(--text-muted); min-width:110px; flex-shrink:0; font-size:12px; }
+  .dm-gci { font-size:12px; color:var(--text-accent); background:var(--bg-accent); border-radius:6px; padding:8px 10px; margin-top:10px; }
   .close-row { display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border); }
   .close-row:last-child { border-bottom:none; }
   .close-a { font-size:13px; color:var(--text-primary); }
@@ -121,7 +139,7 @@
       <div id="greet" style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
       <div id="subline" style="font-size:12px; color:var(--text-muted);">Loading your pipeline&hellip;</div>
     </div>
-    <button style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button>
+    <button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button>
   </div>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
@@ -180,6 +198,43 @@
   </div>
 </div>
 </div>
+<div id="dm-ov"><div id="dm">
+  <div class="dm-h"><span id="dm-title">Add deal</span><span id="dm-x">&#10005;</span></div>
+  <div id="dm-form">
+    <div class="dm-row"><label>Property Address *</label><input id="dm-address" type="text" placeholder="123 Main St"></div>
+    <div class="dm-2">
+      <div class="dm-row"><label>City</label><input id="dm-city" type="text"></div>
+      <div class="dm-row"><label>Client</label><input id="dm-client" type="text"></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Deal Type</label><select id="dm-type"><option value=""></option><option>Buyer</option><option>Listing</option><option>Lease</option></select></div>
+      <div class="dm-row"><label>Stage</label><select id="dm-stage"><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option></select></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Agent</label><select id="dm-agent"><option value=""></option><option>Luke</option><option>Steve</option></select></div>
+      <div class="dm-row"><label>Price ($)</label><input id="dm-price" type="number" min="0" step="1000" placeholder="450000"></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Commission % (e.g. 3)</label><input id="dm-comm" type="number" min="0" max="15" step="0.25" placeholder="3"></div>
+      <div class="dm-row"><label>List Date</label><input id="dm-listdate" type="date"></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Binding Date</label><input id="dm-bindingdate" type="date"></div>
+      <div class="dm-row"><label>DD End Date</label><input id="dm-ddend" type="date"></div>
+    </div>
+    <div class="dm-row"><label>Closing Date</label><input id="dm-closingdate" type="date"></div>
+    <div class="dm-row"><label>Notes</label><textarea id="dm-notes" rows="2"></textarea></div>
+    <div class="dm-err" id="dm-err1"></div>
+    <button class="dm-btn" id="dm-review" type="button">Review before saving</button>
+  </div>
+  <div id="dm-rev" style="display:none;">
+    <div id="dm-rev-list"></div>
+    <div class="dm-gci" id="dm-gci"></div>
+    <div class="dm-err" id="dm-err2"></div>
+    <button class="dm-btn" id="dm-confirm" type="button">&#10003; Confirm &amp; add deal</button>
+    <button class="dm-btn sec" id="dm-back" type="button">&#8592; Back to edit</button>
+  </div>
+</div></div>
 <div id="toast"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
 <div id="diag"><span class="dot2"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
 <script>
@@ -372,6 +427,77 @@
       })
       .catch(function (e) { setDiag("err", "data: fetch failed \u2014 " + e); });
   }
+
+  var DM_FIELDS = [
+    ["address", "dm-address", "Property Address"], ["city", "dm-city", "City"], ["client", "dm-client", "Client"],
+    ["dealtype", "dm-type", "Deal Type"], ["stage", "dm-stage", "Stage"], ["agent", "dm-agent", "Agent"],
+    ["price", "dm-price", "Price"], ["commission", "dm-comm", "Commission %"], ["listdate", "dm-listdate", "List Date"],
+    ["bindingdate", "dm-bindingdate", "Binding Date"], ["ddenddate", "dm-ddend", "DD End Date"],
+    ["closingdate", "dm-closingdate", "Closing Date"], ["notes", "dm-notes", "Notes"]
+  ];
+  function dmValues() {
+    var out = {};
+    for (var i = 0; i < DM_FIELDS.length; i++) {
+      var v = $(DM_FIELDS[i][1]).value;
+      if (v != null && String(v).trim() !== "") out[DM_FIELDS[i][0]] = String(v).trim();
+    }
+    return out;
+  }
+  function dmOpen() {
+    for (var i = 0; i < DM_FIELDS.length; i++) { $(DM_FIELDS[i][1]).value = ""; }
+    $("dm-stage").value = "Coming Soon";
+    $("dm-err1").textContent = ""; $("dm-err2").textContent = "";
+    $("dm-form").style.display = ""; $("dm-rev").style.display = "none";
+    $("dm-title").textContent = "Add deal";
+    $("dm-ov").className = "show";
+  }
+  function dmClose() { $("dm-ov").className = ""; }
+  $("btn-adddeal").addEventListener("click", dmOpen);
+  $("dm-x").addEventListener("click", dmClose);
+  $("dm-ov").addEventListener("click", function (ev) { if (ev.target === $("dm-ov")) dmClose(); });
+  $("dm-back").addEventListener("click", function () { $("dm-rev").style.display = "none"; $("dm-form").style.display = ""; $("dm-title").textContent = "Add deal"; });
+  $("dm-review").addEventListener("click", function () {
+    var v = dmValues();
+    if (!v.address) { $("dm-err1").textContent = "Property Address is required."; return; }
+    if (v.commission && (parseFloat(v.commission) <= 0 || parseFloat(v.commission) > 15)) { $("dm-err1").textContent = "Commission looks off \u2014 enter it like 3 for 3%."; return; }
+    $("dm-err1").textContent = "";
+    var html = "";
+    for (var i = 0; i < DM_FIELDS.length; i++) {
+      var k = DM_FIELDS[i][0];
+      if (v[k]) {
+        var shown = v[k];
+        if (k === "price") shown = "$" + parseFloat(v[k]).toLocaleString("en-US");
+        if (k === "commission") shown = v[k] + "%";
+        html += '<div class="dm-kv"><span class="k">' + esc(DM_FIELDS[i][2]) + '</span><span>' + esc(shown) + '</span></div>';
+      }
+    }
+    $("dm-rev-list").innerHTML = html;
+    if (v.price && v.commission) {
+      var gci = parseFloat(v.price) * parseFloat(v.commission) / 100;
+      $("dm-gci").style.display = "";
+      $("dm-gci").textContent = "GCI will compute to $" + Math.round(gci).toLocaleString("en-US") + " \u00b7 Health & Next Deadline compute automatically";
+    } else { $("dm-gci").style.display = "none"; }
+    $("dm-form").style.display = "none"; $("dm-rev").style.display = "";
+    $("dm-title").textContent = "Review \u2014 nothing saved yet";
+  });
+  $("dm-confirm").addEventListener("click", function () {
+    var v = dmValues();
+    var btn = $("dm-confirm");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    var qs = "";
+    for (var k in v) { qs += "&" + k + "=" + encodeURIComponent(v[k]); }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=adddeal" + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "\u2713 Confirm & add deal";
+        if (res.ok) {
+          dmClose();
+          showToast("Deal added \u2014 " + res.address, false);
+          setTimeout(load, 2500);
+        } else { $("dm-err2").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "\u2713 Confirm & add deal"; $("dm-err2").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
 
   setDiag(KEY ? "" : "err", KEY ? "data: loading\u2026" : "data: no key \u2014 open via Command Center doc");
   load();
