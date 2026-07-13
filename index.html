@@ -64,25 +64,46 @@
   .pill { font-size:11px; padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px; }
   .pill.warn { background:var(--bg-warning); color:var(--text-warning); }
   .pill.dang { background:var(--bg-danger); color:var(--text-danger); }
-  .task-row { display:flex; align-items:center; gap:9px; padding:8px 4px; border-bottom:0.5px solid var(--border); }
-  .task-row:last-child { border-bottom:none; }
-  .badge-now { font-size:10px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:2px 6px; border-radius:4px; white-space:nowrap; }
-  .badge-late { font-size:10px; font-weight:500; color:var(--text-danger); background:var(--bg-danger); padding:2px 6px; border-radius:4px; white-space:nowrap; }
-  .badge-q { font-size:10px; color:var(--text-secondary); background:var(--surface-1); padding:2px 6px; border-radius:4px; white-space:nowrap; }
-  .task-t { font-size:13px; color:var(--text-primary); flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-  .task-d { font-size:11px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-  .task-row { cursor:pointer; }
-  .task-row .chev { font-size:10px; color:var(--text-muted); flex-shrink:0; transition:transform .15s; }
-  .task-row.open .chev { transform:rotate(90deg); }
-  .task-row.open .task-t { white-space:normal; overflow:visible; text-overflow:clip; }
-  .task-row.open .task-d { white-space:normal; overflow:visible; text-overflow:clip; }
-  .task-x { display:none; margin-top:8px; padding:10px 12px; background:var(--surface-1); border-radius:var(--radius); }
-  .task-row.open .task-x { display:block; }
-  .task-x .kv { display:flex; gap:6px; font-size:12px; padding:2px 0; }
-  .task-x .k { color:var(--text-muted); min-width:62px; flex-shrink:0; }
-  .task-x .v { color:var(--text-primary); }
-  .btn-done { margin-top:9px; font-size:12px; font-weight:500; color:#fff; background:#1c5cab; border:none; border-radius:var(--radius); padding:7px 14px; cursor:pointer; }
-  .btn-done:disabled { opacity:.55; cursor:default; }
+  .bucket { margin-bottom:14px; }
+  .bucket-h { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .bucket-t { font-size:12px; font-weight:700; letter-spacing:.6px; }
+  .bucket-t.late { color:var(--text-danger); }
+  .bucket-t.today { color:var(--text-accent); }
+  .bucket-t.week { color:var(--text-secondary); }
+  .bucket-n { font-size:11px; color:var(--text-muted); background:var(--surface-1); border-radius:9px; padding:1px 8px; }
+  .b-card { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; }
+  .b-card.late { border-left:3px solid #d03b3b; }
+  .b-card.today { border-left:3px solid #1c5cab; }
+  .t-row { display:flex; align-items:flex-start; gap:10px; padding:10px 13px; border-bottom:0.5px solid var(--border); cursor:pointer; }
+  .t-row:last-child { border-bottom:none; }
+  .ckbox { width:20px; height:20px; border-radius:50%; border:1.5px solid #b9b7ae; flex-shrink:0; background:#fff; cursor:pointer; margin-top:1px; }
+  .ckbox.late { border-color:#d98a89; }
+  .ckbox:hover { border-color:#1c5cab; }
+  .t-mid { flex:1; min-width:0; }
+  .t-txt { font-size:13px; color:var(--text-primary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .t-row.open .t-txt { white-space:normal; }
+  .t-sub { display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap; }
+  .deal-chip { font-size:10.5px; font-weight:500; padding:2px 7px; border-radius:5px; white-space:nowrap; max-width:180px; overflow:hidden; text-overflow:ellipsis; }
+  .dc0 { background:#e6effc; color:#1c5cab; } .dc1 { background:#e3f4e9; color:#0e7a3c; }
+  .dc2 { background:#f2e9fc; color:#6d3ab8; } .dc3 { background:#fbf1d9; color:#9d6508; }
+  .dc4 { background:#fcebea; color:#b8302f; } .dc5 { background:#e8f4f6; color:#0c6b7a; }
+  .t-due { font-size:11px; color:var(--text-muted); white-space:nowrap; }
+  .t-due.lt { color:var(--text-danger); font-weight:500; }
+  .t-due.td { color:var(--text-accent); font-weight:500; }
+  .pencil { color:var(--text-muted); font-size:13px; flex-shrink:0; padding:2px 4px; cursor:pointer; }
+  .pencil:hover { color:var(--text-accent); }
+  .x { display:none; margin-top:9px; padding:11px 13px; background:var(--surface-1); border-radius:8px; }
+  .t-row.open .x { display:block; }
+  .x-h { font-size:11px; font-weight:600; color:var(--text-muted); letter-spacing:.4px; margin-bottom:5px; }
+  .x-d { font-size:12.5px; color:var(--text-primary); line-height:1.55; white-space:pre-wrap; }
+  .x-btns { display:flex; gap:8px; margin-top:11px; }
+  .bd { font:inherit; font-size:12px; font-weight:500; color:#fff; background:#1c5cab; border:none; border-radius:8px; padding:7px 14px; cursor:pointer; }
+  .bd:disabled { opacity:.55; cursor:default; }
+  .be { font:inherit; font-size:12px; font-weight:500; color:var(--text-primary); background:#fff; border:0.5px solid var(--border); border-radius:8px; padding:7px 14px; cursor:pointer; }
+  .showmore { display:block; width:100%; font:inherit; font-size:12px; font-weight:500; color:var(--text-accent); background:var(--surface-1); border:none; padding:8px; cursor:pointer; }
+  #em-ov { display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px; }
+  #em-ov.show { display:block; }
+  #em { max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25); }
   #toast { display:none; position:fixed; bottom:14px; left:50%; transform:translateX(-50%); background:#0b0b0b; color:#fff; font-size:12px;
            padding:9px 14px; border-radius:8px; z-index:20; align-items:center; gap:12px; box-shadow:0 4px 14px rgba(0,0,0,.25); }
   #toast.show { display:flex; }
@@ -164,9 +185,9 @@
       <div class="sec-h">
         <i class="ti ti-checkbox" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
         <span class="t">Your focus</span>
-        <span style="font-size:11px; color:var(--text-muted);">NOW / QUEUE</span>
+        <span style="font-size:11px; color:var(--text-muted);">next 14 days</span>
       </div>
-      <div id="focus" style="display:flex; flex-direction:column; gap:2px;">
+      <div id="focus">
         <div class="empty">Loading&hellip;</div>
       </div>
     </div>
@@ -235,6 +256,14 @@
     <button class="dm-btn sec" id="dm-back" type="button">&#8592; Back to edit</button>
   </div>
 </div></div>
+<div id="em-ov"><div id="em">
+  <div class="dm-h"><span>Edit task</span><span id="em-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Task</label><textarea id="em-task" rows="2"></textarea></div>
+  <div class="dm-row"><label>Instructions (how to do it)</label><textarea id="em-details" rows="6"></textarea></div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Saves straight to your TRANSACTION CHECKLISTS doc as plain text.</div>
+  <div class="dm-err" id="em-err"></div>
+  <button class="dm-btn" id="em-save" type="button">Save changes</button>
+</div></div>
 <div id="toast"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
 <div id="diag"><span class="dot2"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
 <script>
@@ -272,6 +301,7 @@
   }
 
   function render(d) {
+    lastData = d;
     var deals = (d.deals || []).map(function (r) { return r.values; });
     var tasks = (d.tasks || []).map(function (r) { var v = r.values; v.__id = r.id; return v; });
     var open = deals.filter(function (v) { return v["Stage"] !== "Closed"; });
@@ -317,35 +347,37 @@
     }
 
     var open_t = tasks.filter(function (t) { return !t["Complete"]; });
+    tasksById = {};
+    open_t.forEach(function (t) { if (t.__id) tasksById[t.__id] = t; });
     open_t.sort(function (a, b) {
       var da = pDate(a["Due Date"]) || new Date(9999, 0), db = pDate(b["Due Date"]) || new Date(9999, 0);
       return (da - db) || String(a["Deal"] || "").localeCompare(String(b["Deal"] || ""));
+    });
+    var buckets = [
+      { key: "late", label: "LATE", cls: "late", rows: [] },
+      { key: "today", label: "TODAY", cls: "today", rows: [] },
+      { key: "week", label: "THIS WEEK", cls: "week", rows: [] },
+      { key: "next", label: "NEXT WEEK", cls: "week", rows: [] }
+    ];
+    open_t.forEach(function (t) {
+      var dd = pDate(t["Due Date"]);
+      var n = dd ? daysTo(dd) : 99;
+      (n < 0 ? buckets[0] : n === 0 ? buckets[1] : n <= 7 ? buckets[2] : buckets[3]).rows.push(t);
     });
     var focusEl = $("focus");
     if (!open_t.length) {
       focusEl.innerHTML = '<div class="empty">No open tasks \ud83c\udf89</div>';
     } else {
-      focusEl.innerHTML = open_t.slice(0, 7).map(function (t) {
-        var dd = pDate(t["Due Date"]);
-        var late = dd && daysTo(dd) < 0;
-        var badge = late ? '<span class="badge-late">LATE</span>' :
-          (t["Status"] === "NOW" ? '<span class="badge-now">NOW</span>' : '<span class="badge-q">QUEUE</span>');
-        var dp = String(t["Deal"] || "").split("|");
-        var addr = dp[0].trim().toLowerCase().replace(/(^|\s)([a-z])/g, function (m, p, c) { return p + c.toUpperCase(); });
-        var client = (dp[1] || "").trim();
-        var label = addr ? addr + (client ? " \u00b7 " + client : "") : "";
-        var open_x = t.__id && t.__id === expandedId;
-        var det = '<div class="task-x">' +
-          (dd ? '<div class="kv"><span class="k">Due</span><span class="v">' + esc(fmtDay(dd)) + (late ? ' (late)' : '') + '</span></div>' : '') +
-          (label ? '<div class="kv"><span class="k">Deal</span><span class="v">' + esc(label) + '</span></div>' : '') +
-          (t["Phase"] ? '<div class="kv"><span class="k">Phase</span><span class="v">' + esc(t["Phase"]) + '</span></div>' : '') +
-          (t["Agent"] ? '<div class="kv"><span class="k">Agent</span><span class="v">' + esc(t["Agent"]) + '</span></div>' : '') +
-          (t["Priority"] ? '<div class="kv"><span class="k">Priority</span><span class="v">' + esc(t["Priority"]) + '</span></div>' : '') +
-          (t["Notes"] ? '<div class="kv"><span class="k">Notes</span><span class="v">' + esc(t["Notes"]) + '</span></div>' : '') +
-          '<button class="btn-done" type="button" data-act="done">\u2713 Mark done</button></div>';
-        return '<div class="task-row' + (open_x ? ' open' : '') + '" data-id="' + esc(t.__id || "") + '">' + badge +
-          '<div style="flex:1; min-width:0;"><div class="task-t" style="flex:none;">' + esc(t["Task"]) + '</div>' +
-          (label ? '<div class="task-d">' + esc(label) + '</div>' : '') + det + '</div><span class="chev">\u25b6</span></div>';
+      focusEl.innerHTML = buckets.filter(function (b) { return b.rows.length; }).map(function (b) {
+        var expanded = !!bucketOpen[b.key];
+        var shown = expanded ? b.rows : b.rows.slice(0, 6);
+        var more = b.rows.length > 6 ?
+          '<button class="showmore" type="button" data-bucket="' + b.key + '">' +
+          (expanded ? "Show less \u25b4" : "Show all " + b.rows.length + " \u25be") + '</button>' : "";
+        return '<div class="bucket"><div class="bucket-h"><span class="bucket-t ' + b.cls + '">' + b.label +
+          '</span><span class="bucket-n">' + b.rows.length + '</span></div>' +
+          '<div class="b-card ' + (b.key === "late" ? "late" : b.key === "today" ? "today" : "") + '">' +
+          shown.map(taskRow).join("") + more + '</div></div>';
       }).join("");
     }
 
@@ -362,6 +394,40 @@
   var expandedId = null;
   var undoRow = null;
   var toastTimer = null;
+  var tasksById = {};
+  var bucketOpen = {};
+  var lastData = null;
+
+  function fmtDay2(d) { return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }); }
+  function dealChip(deal) {
+    var dp = String(deal || "").split("|");
+    var raw = dp[0].trim();
+    if (!raw) return "";
+    var addr = raw.toLowerCase().replace(/(^|\s)([a-z])/g, function (m, p, c) { return p + c.toUpperCase(); });
+    var hsh = 0;
+    for (var i = 0; i < raw.length; i++) { hsh = (hsh * 31 + raw.charCodeAt(i)) >>> 0; }
+    return '<span class="deal-chip dc' + (hsh % 6) + '">' + esc(addr) + '</span>';
+  }
+  function taskRow(t) {
+    var dd = pDate(t["Due Date"]);
+    var late = dd && daysTo(dd) < 0, todayDue = dd && daysTo(dd) === 0;
+    var dueTxt = !dd ? "" : late ? "was due " + fmtDay(dd) : todayDue ? "TODAY" : fmtDay2(dd);
+    var open_x = t.__id && t.__id === expandedId;
+    var det = String(t["Details"] || "").trim();
+    var x = '<div class="x">' +
+      (det ? '<div class="x-h">HOW TO DO IT</div><div class="x-d">' + esc(det) + '</div>'
+           : '<div class="x-d" style="color:var(--text-muted);">No instructions saved for this task.</div>') +
+      (t["Notes"] ? '<div class="x-h" style="margin-top:8px;">TIMING RULE</div><div class="x-d">' + esc(String(t["Notes"]).replace(/^Timing: /, "")) + '</div>' : "") +
+      '<div class="x-btns"><button class="bd" type="button" data-act="done">✓ Mark done</button>' +
+      '<button class="be" type="button" data-act="edit">✎ Edit task</button></div></div>';
+    return '<div class="t-row' + (open_x ? " open" : "") + '" data-id="' + esc(t.__id || "") + '">' +
+      '<span class="ckbox' + (late ? " late" : "") + '" data-act="ck" title="Mark done"></span>' +
+      '<div class="t-mid"><div class="t-txt">' + esc(t["Task"]) + '</div>' +
+      '<div class="t-sub">' + dealChip(t["Deal"]) +
+      '<span class="t-due' + (late ? " lt" : todayDue ? " td" : "") + '">' + esc(dueTxt) + '</span></div>' + x + '</div>' +
+      '<span class="pencil" data-act="edit" title="Edit task">✎</span></div>';
+  }
+  function rerenderFocus() { if (lastData) render(lastData); }
 
   function showToast(msg, withUndo) {
     var el = $("toast");
@@ -381,7 +447,7 @@
           if (val === "1") {
             undoRow = rowId;
             showToast("Task marked done", true);
-            var row = document.querySelector('.task-row[data-id="' + rowId + '"]');
+            var row = document.querySelector('.t-row[data-id="' + rowId + '"]');
             if (row) row.style.display = "none";
             expandedId = null;
           } else {
@@ -404,16 +470,60 @@
   });
 
   $("focus").addEventListener("click", function (ev) {
-    var btn = ev.target.closest ? ev.target.closest(".btn-done") : null;
-    var row = ev.target.closest ? ev.target.closest(".task-row") : null;
-    if (!row || !row.getAttribute("data-id")) return;
-    if (btn) { writeComplete(row.getAttribute("data-id"), "1", btn); return; }
-    var id = row.getAttribute("data-id");
-    expandedId = (expandedId === id) ? null : id;
-    var rows = document.querySelectorAll("#focus .task-row");
-    for (var i = 0; i < rows.length; i++) {
-      rows[i].className = "task-row" + (rows[i].getAttribute("data-id") === expandedId ? " open" : "");
+    var sm = ev.target.closest ? ev.target.closest(".showmore") : null;
+    if (sm) {
+      var bk = sm.getAttribute("data-bucket");
+      bucketOpen[bk] = !bucketOpen[bk];
+      rerenderFocus();
+      return;
     }
+    var row = ev.target.closest ? ev.target.closest(".t-row") : null;
+    if (!row || !row.getAttribute("data-id")) return;
+    var id = row.getAttribute("data-id");
+    var doneBtn = ev.target.closest ? ev.target.closest('[data-act="done"]') : null;
+    var ck = ev.target.closest ? ev.target.closest('[data-act="ck"]') : null;
+    var editBtn = ev.target.closest ? ev.target.closest('[data-act="edit"]') : null;
+    if (doneBtn || ck) { writeComplete(id, "1", doneBtn); return; }
+    if (editBtn) { emOpen(id); return; }
+    expandedId = (expandedId === id) ? null : id;
+    var rows = document.querySelectorAll("#focus .t-row");
+    for (var i = 0; i < rows.length; i++) {
+      var cls = rows[i].className.replace(" open", "");
+      rows[i].className = cls + (rows[i].getAttribute("data-id") === expandedId ? " open" : "");
+    }
+  });
+
+  var emRow = null;
+  function emOpen(id) {
+    var t = tasksById[id];
+    if (!t) return;
+    emRow = id;
+    $("em-task").value = t["Task"] || "";
+    $("em-details").value = t["Details"] || "";
+    $("em-err").textContent = "";
+    $("em-save").disabled = false; $("em-save").textContent = "Save changes";
+    $("em-ov").className = "show";
+  }
+  $("em-x").addEventListener("click", function () { $("em-ov").className = ""; });
+  $("em-ov").addEventListener("click", function (ev) { if (ev.target === $("em-ov")) $("em-ov").className = ""; });
+  $("em-save").addEventListener("click", function () {
+    var task = $("em-task").value.trim(), det = $("em-details").value;
+    if (!task) { $("em-err").textContent = "Task text can’t be empty."; return; }
+    if (!emRow) { $("em-err").textContent = "No task selected."; return; }
+    var btn = $("em-save");
+    btn.disabled = true; btn.textContent = "Saving…";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=edittask&row=" + encodeURIComponent(emRow) +
+      "&task=" + encodeURIComponent(task) + "&details=" + encodeURIComponent(det), { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Save changes";
+        if (res.ok) {
+          $("em-ov").className = "";
+          showToast("Task updated — saved to checklist", false);
+          setTimeout(load, 2500);
+        } else { $("em-err").textContent = "Couldn’t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Save changes"; $("em-err").textContent = "Couldn’t save — " + e; });
   });
 
   function load() {
@@ -492,7 +602,8 @@
         btn.disabled = false; btn.textContent = "\u2713 Confirm & add deal";
         if (res.ok) {
           dmClose();
-          showToast("Deal added \u2014 " + res.address, false);
+          var extra = (res.checklist && res.checklist.tasksCreated) ? " \u00b7 checklist created (" + res.checklist.tasksCreated + " tasks)" : "";
+          showToast("Deal added \u2014 " + res.address + extra, false);
           setTimeout(load, 2500);
         } else { $("dm-err2").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
       })
