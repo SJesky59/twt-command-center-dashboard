@@ -160,7 +160,7 @@
       <div id="greet" style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
       <div id="subline" style="font-size:12px; color:var(--text-muted);">Loading your pipeline&hellip;</div>
     </div>
-    <button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button>
+    <div style="display:flex; gap:8px;"><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
   </div>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
@@ -255,6 +255,37 @@
     <button class="dm-btn" id="dm-confirm" type="button">&#10003; Confirm &amp; add deal</button>
     <button class="dm-btn sec" id="dm-back" type="button">&#8592; Back to edit</button>
   </div>
+</div></div>
+<div id="ed-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
+  <div class="dm-h"><span>Edit deal</span><span id="ed-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Which deal</label><select id="ed-deal"></select></div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Stage</label><select id="ed-stage"><option value=""></option><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option></select></div>
+    <div class="dm-row"><label>Agent</label><select id="ed-agent"><option value=""></option><option>Luke</option><option>Steve</option></select></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Price ($)</label><input id="ed-price" type="number" min="0" step="1000"></div>
+    <div class="dm-row"><label>Commission %</label><input id="ed-comm" type="number" min="0" max="15" step="0.25"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Binding Date</label><input id="ed-binding" type="date"></div>
+    <div class="dm-row"><label>DD End Date</label><input id="ed-ddend" type="date"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Closing Date</label><input id="ed-closing" type="date"></div>
+    <div class="dm-row"><label>List / Active Date</label><input id="ed-list" type="date"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Appointment Date</label><input id="ed-appt" type="date"></div>
+    <div class="dm-row"><label>Listing Appt Date</label><input id="ed-listappt" type="date"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Open House Date</label><input id="ed-oh" type="date"></div>
+    <div class="dm-row"><label>Lease Execution</label><input id="ed-lease" type="date"></div>
+  </div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Only fields you fill in get changed. Dates update the checklist too, so task due dates recalculate.</div>
+  <div class="dm-err" id="ed-err"></div>
+  <button class="dm-btn" id="ed-save" type="button">Save changes</button>
 </div></div>
 <div id="em-ov"><div id="em">
   <div class="dm-h"><span>Edit task</span><span id="em-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
@@ -491,6 +522,40 @@
       var cls = rows[i].className.replace(" open", "");
       rows[i].className = cls + (rows[i].getAttribute("data-id") === expandedId ? " open" : "");
     }
+  });
+
+  var edFields = [["stage","ed-stage"],["agent","ed-agent"],["price","ed-price"],["commission","ed-comm"],["bindingdate","ed-binding"],["ddenddate","ed-ddend"],["closingdate","ed-closing"],["listdate","ed-list"],["apptdate","ed-appt"],["listingapptdate","ed-listappt"],["openhousedate","ed-oh"],["leaseexecdate","ed-lease"]];
+  $("btn-editdeal").addEventListener("click", function () {
+    var deals = ((lastData || {}).deals || []).filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var sel = $("ed-deal");
+    sel.innerHTML = deals.map(function (r) { return '<option value="' + esc(r.id) + '">' + esc(r.values["Property Address"]) + '</option>'; }).join("");
+    for (var i = 0; i < edFields.length; i++) { $(edFields[i][1]).value = ""; }
+    $("ed-err").textContent = "";
+    $("ed-save").disabled = false; $("ed-save").textContent = "Save changes";
+    $("ed-ov").style.display = "block";
+  });
+  $("ed-x").addEventListener("click", function () { $("ed-ov").style.display = "none"; });
+  $("ed-ov").addEventListener("click", function (ev) { if (ev.target === $("ed-ov")) $("ed-ov").style.display = "none"; });
+  $("ed-save").addEventListener("click", function () {
+    var qs = "";
+    for (var i = 0; i < edFields.length; i++) {
+      var v = String($(edFields[i][1]).value || "").trim();
+      if (v) qs += "&" + edFields[i][0] + "=" + encodeURIComponent(v);
+    }
+    if (!qs) { $("ed-err").textContent = "Nothing filled in \u2014 nothing to save."; return; }
+    var btn = $("ed-save");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=editdeal&row=" + encodeURIComponent($("ed-deal").value) + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Save changes";
+        if (res.ok) {
+          $("ed-ov").style.display = "none";
+          showToast("Deal updated \u2014 " + res.address + (res.checklist === "updated" ? " \u00b7 due dates recalculating" : ""), false);
+          setTimeout(load, 2500);
+        } else { $("ed-err").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Save changes"; $("ed-err").textContent = "Couldn\u2019t save \u2014 " + e; });
   });
 
   var emRow = null;
