@@ -126,6 +126,21 @@
   .dm-kv { display:flex; gap:8px; font-size:13px; padding:5px 0; border-bottom:0.5px solid var(--border); }
   .dm-kv .k { color:var(--text-muted); min-width:110px; flex-shrink:0; font-size:12px; }
   .dm-gci { font-size:12px; color:var(--text-accent); background:var(--bg-accent); border-radius:6px; padding:8px 10px; margin-top:10px; }
+  .deal-row { display:flex; align-items:center; gap:10px; padding:11px 13px; border-bottom:0.5px solid var(--border); cursor:pointer; }
+  .deal-row:last-child { border-bottom:none; }
+  .deal-row:hover { background:var(--surface-1); }
+  .dr-mid { flex:1; min-width:0; }
+  .dr-a { font-size:13px; font-weight:600; color:var(--text-primary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .dr-s { font-size:11px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:1px; }
+  .dr-right { text-align:right; flex-shrink:0; }
+  .dr-gci { font-size:12px; font-weight:600; }
+  .dr-next { font-size:10.5px; color:var(--text-muted); }
+  .stage-pill { font-size:10px; font-weight:600; padding:2px 8px; border-radius:9px; white-space:nowrap; flex-shrink:0; }
+  .sp-coming { background:var(--surface-1); color:var(--text-secondary); }
+  .sp-active { background:var(--bg-accent); color:var(--text-accent); }
+  .sp-uc { background:var(--bg-warning); color:var(--text-warning); }
+  .sp-closing { background:#e3f4e9; color:#0e7a3c; }
+  .sp-closed { background:var(--surface-1); color:var(--text-muted); }
   .close-row { display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border); }
   .close-row:last-child { border-bottom:none; }
   .close-a { font-size:13px; color:var(--text-primary); }
@@ -147,8 +162,8 @@
 <div class="wrap">
 <div style="padding: 1rem 0;">
   <div class="nav">
-    <span class="on"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
-    <span class="off"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
+    <span class="on" id="nav-home" style="cursor:pointer;"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
+    <span class="off" id="nav-deals" style="cursor:pointer;"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
     <span class="off"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
     <span class="off"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
     <span class="off"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
@@ -163,6 +178,7 @@
     <div style="display:flex; gap:8px;"><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
   </div>
 
+  <div id="page-home">
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
     <div class="kpi"><div class="lbl">Active</div><div class="num" id="kpi-active">&ndash;</div></div>
     <div class="kpi"><div class="lbl">Under contract</div><div class="num" id="kpi-uc">&ndash;</div></div>
@@ -216,6 +232,15 @@
         <div class="stage-t"><div class="stage-n" id="st-closing">&ndash;</div><div class="stage-l">Closing</div></div>
       </div>
     </div>
+  </div>
+  </div>
+  <div id="page-deals" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-building-community" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">All deals</span>
+      <span id="deals-sub" style="font-size:11px; color:var(--text-muted); margin-left:auto;">tap a deal to edit</span>
+    </div>
+    <div id="deals-list"><div class="empty">Loading&hellip;</div></div>
   </div>
 </div>
 </div>
@@ -420,6 +445,8 @@
       return '<div class="close-row"><span class="close-a">' + esc(v["Property Address"]) + '</span>' +
         '<span class="close-d">' + esc(fmtDay(pDate(v["Closing Date"]))) + ' \u00b7 ' + esc(v["GCI"] || "") + '</span></div>';
     }).join("") : '<div class="empty">No closings scheduled</div>';
+
+    renderDeals(d);
   }
 
   var expandedId = null;
@@ -522,6 +549,52 @@
       var cls = rows[i].className.replace(" open", "");
       rows[i].className = cls + (rows[i].getAttribute("data-id") === expandedId ? " open" : "");
     }
+  });
+
+  function showPage(p) {
+    $("page-home").style.display = p === "home" ? "" : "none";
+    $("page-deals").style.display = p === "deals" ? "" : "none";
+    $("nav-home").className = p === "home" ? "on" : "off";
+    $("nav-deals").className = p === "deals" ? "on" : "off";
+  }
+  $("nav-home").addEventListener("click", function () { showPage("home"); });
+  $("nav-deals").addEventListener("click", function () { showPage("deals"); });
+
+  function stagePill(s) {
+    var cls = s === "Coming Soon" ? "sp-coming" : s === "Active" ? "sp-active" : s === "Under Contract" ? "sp-uc" : s === "Closing" ? "sp-closing" : "sp-closed";
+    return '<span class="stage-pill ' + cls + '">' + esc(s || "?") + '</span>';
+  }
+  function renderDeals(d) {
+    var rows = (d.deals || []).slice();
+    var open = rows.filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var closed = rows.filter(function (r) { return r.values["Stage"] === "Closed"; });
+    open.sort(function (x, y) {
+      var a2 = pDate(x.values["Next Deadline"]) || new Date(9999, 0), b2 = pDate(y.values["Next Deadline"]) || new Date(9999, 0);
+      return a2 - b2;
+    });
+    var html = open.map(function (r) {
+      var v = r.values;
+      var red = v["Health"] === "\ud83d\udd34", yel = v["Health"] === "\ud83d\udfe1";
+      var nd = pDate(v["Next Deadline"]);
+      var cd = pDate(v["Closing Date"]);
+      return '<div class="deal-row" data-id="' + esc(r.id) + '">' +
+        '<span class="dot" style="background:' + (red ? "#E24B4A" : yel ? "#EF9F27" : "#0ca30c") + ';"></span>' +
+        '<div class="dr-mid"><div class="dr-a">' + esc(v["Property Address"]) + '</div>' +
+        '<div class="dr-s">' + esc(v["Deal Type"] || "?") + (v["Client"] ? " \u00b7 " + esc(v["Client"]) : "") + (v["Agent"] ? " \u00b7 " + esc(v["Agent"]) : "") + '</div></div>' +
+        stagePill(v["Stage"]) +
+        '<div class="dr-right"><div class="dr-gci">' + esc(v["GCI"] || "") + '</div>' +
+        '<div class="dr-next">' + (nd ? "next: " + esc(fmtDay(nd)) : cd ? "closes " + esc(fmtDay(cd)) : "no dates") + '</div></div>' +
+        '<span class="pencil">\u270e</span></div>';
+    }).join("");
+    $("deals-list").innerHTML = '<div class="b-card">' + (html || '<div class="empty">No open deals</div>') + '</div>' +
+      (closed.length ? '<div style="font-size:11px; color:var(--text-muted); padding:8px 4px;">' + closed.length + ' closed deal' + (closed.length > 1 ? 's' : '') + ' not shown</div>' : "");
+    $("deals-sub").textContent = open.length + " open \u00b7 tap a deal to edit";
+  }
+  $("deals-list").addEventListener("click", function (ev) {
+    var row = ev.target.closest ? ev.target.closest(".deal-row") : null;
+    if (!row) return;
+    $("btn-editdeal").click();
+    $("ed-deal").value = row.getAttribute("data-id");
   });
 
   var edFields = [["stage","ed-stage"],["agent","ed-agent"],["price","ed-price"],["commission","ed-comm"],["bindingdate","ed-binding"],["ddenddate","ed-ddend"],["closingdate","ed-closing"],["listdate","ed-list"],["apptdate","ed-appt"],["listingapptdate","ed-listappt"],["openhousedate","ed-oh"],["leaseexecdate","ed-lease"]];
