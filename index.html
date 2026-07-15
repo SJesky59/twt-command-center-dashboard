@@ -164,8 +164,8 @@
   <div class="nav">
     <span class="on" id="nav-home" style="cursor:pointer;"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
     <span class="off" id="nav-deals" style="cursor:pointer;"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
-    <span class="off"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
-    <span class="off"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
+    <span class="off" id="nav-people" style="cursor:pointer;"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
+    <span class="off" id="nav-vendors" style="cursor:pointer;"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
     <span class="off"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
     <span class="off"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
   </div>
@@ -241,6 +241,22 @@
       <span id="deals-sub" style="font-size:11px; color:var(--text-muted); margin-left:auto;">tap a deal to edit</span>
     </div>
     <div id="deals-list"><div class="empty">Loading&hellip;</div></div>
+  </div>
+  <div id="page-people" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-users" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">People</span>
+      <button id="btn-addcontact" style="margin-left:auto;">+ Add person</button>
+    </div>
+    <div id="people-list"><div class="empty">Loading&hellip;</div></div>
+  </div>
+  <div id="page-vendors" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-tools" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">Partners &amp; Vendors</span>
+      <button id="btn-addvendor" style="margin-left:auto;">+ Add vendor</button>
+    </div>
+    <div id="vendors-list"><div class="empty">Loading&hellip;</div></div>
   </div>
 </div>
 </div>
@@ -319,6 +335,19 @@
   <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Saves straight to your TRANSACTION CHECKLISTS doc as plain text.</div>
   <div class="dm-err" id="em-err"></div>
   <button class="dm-btn" id="em-save" type="button">Save changes</button>
+</div></div>
+<div id="ap-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
+  <div class="dm-h"><span id="ap-title">Add person</span><span id="ap-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Name *</label><input id="ap-name" type="text"></div>
+  <div class="dm-row" id="ap-company-row" style="display:none;"><label>Company</label><input id="ap-company" type="text"></div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Phone</label><input id="ap-phone" type="tel"></div>
+    <div class="dm-row"><label>Email</label><input id="ap-email" type="email"></div>
+  </div>
+  <div class="dm-row"><label>Notes</label><textarea id="ap-notes" rows="2"></textarea></div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Type, tags, and status can be set in the doc later.</div>
+  <div class="dm-err" id="ap-err"></div>
+  <button class="dm-btn" id="ap-save" type="button">Save</button>
 </div></div>
 <div id="toast"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
 <div id="diag"><span class="dot2"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
@@ -447,6 +476,7 @@
     }).join("") : '<div class="empty">No closings scheduled</div>';
 
     renderDeals(d);
+    renderPeople(d);
   }
 
   var expandedId = null;
@@ -551,14 +581,73 @@
     }
   });
 
+  var PAGES = ["home", "deals", "people", "vendors"];
   function showPage(p) {
-    $("page-home").style.display = p === "home" ? "" : "none";
-    $("page-deals").style.display = p === "deals" ? "" : "none";
-    $("nav-home").className = p === "home" ? "on" : "off";
-    $("nav-deals").className = p === "deals" ? "on" : "off";
+    for (var i = 0; i < PAGES.length; i++) {
+      $("page-" + PAGES[i]).style.display = PAGES[i] === p ? "" : "none";
+      $("nav-" + PAGES[i]).className = PAGES[i] === p ? "on" : "off";
+    }
   }
-  $("nav-home").addEventListener("click", function () { showPage("home"); });
-  $("nav-deals").addEventListener("click", function () { showPage("deals"); });
+  PAGES.forEach(function (p) { $("nav-" + p).addEventListener("click", function () { showPage(p); }); });
+
+  function personRow(v, isVendor) {
+    var sub = [];
+    if (isVendor && v["Company"]) sub.push(v["Company"]);
+    if (!isVendor && v["Contact Type"]) sub.push(String(v["Contact Type"]));
+    if (v["Phone"]) sub.push(v["Phone"]);
+    if (v["Email"]) sub.push(v["Email"]);
+    return '<div class="deal-row" style="cursor:default;">' +
+      '<div class="dr-mid"><div class="dr-a">' + esc(v["Name"]) + '</div>' +
+      '<div class="dr-s">' + esc(sub.join(" \u00b7 ") || "no details yet") + '</div></div>' +
+      (v["Notes"] ? '<div class="dr-right"><div class="dr-next" style="max-width:200px; white-space:normal;">' + esc(String(v["Notes"]).slice(0, 80)) + '</div></div>' : '') +
+      '</div>';
+  }
+  function renderPeople(d) {
+    var list = (d.contacts || []).map(function (r) { return r.values; });
+    list.sort(function (a2, b2) { return String(a2["Name"]).localeCompare(String(b2["Name"])); });
+    $("people-list").innerHTML = list.length ?
+      '<div class="b-card">' + list.map(function (v) { return personRow(v, false); }).join("") + '</div>' :
+      '<div class="empty">No people yet \u2014 tap + Add person to start your list.</div>';
+    var vlist = (d.vendors || []).map(function (r) { return r.values; });
+    vlist.sort(function (a2, b2) { return String(a2["Name"]).localeCompare(String(b2["Name"])); });
+    $("vendors-list").innerHTML = vlist.length ?
+      '<div class="b-card">' + vlist.map(function (v) { return personRow(v, true); }).join("") + '</div>' :
+      '<div class="empty">No vendors yet \u2014 tap + Add vendor to start your list.</div>';
+  }
+
+  var apMode = "contact";
+  function apOpen(mode) {
+    apMode = mode;
+    $("ap-title").textContent = mode === "vendor" ? "Add vendor" : "Add person";
+    $("ap-company-row").style.display = mode === "vendor" ? "" : "none";
+    ["ap-name", "ap-company", "ap-phone", "ap-email", "ap-notes"].forEach(function (id) { $(id).value = ""; });
+    $("ap-err").textContent = "";
+    $("ap-save").disabled = false; $("ap-save").textContent = "Save";
+    $("ap-ov").style.display = "block";
+  }
+  $("btn-addcontact").addEventListener("click", function () { apOpen("contact"); });
+  $("btn-addvendor").addEventListener("click", function () { apOpen("vendor"); });
+  $("ap-x").addEventListener("click", function () { $("ap-ov").style.display = "none"; });
+  $("ap-ov").addEventListener("click", function (ev) { if (ev.target === $("ap-ov")) $("ap-ov").style.display = "none"; });
+  $("ap-save").addEventListener("click", function () {
+    var name = $("ap-name").value.trim();
+    if (!name) { $("ap-err").textContent = "Name is required."; return; }
+    var qs = "&name=" + encodeURIComponent(name);
+    if (apMode === "vendor" && $("ap-company").value.trim()) qs += "&company=" + encodeURIComponent($("ap-company").value.trim());
+    if ($("ap-phone").value.trim()) qs += "&phone=" + encodeURIComponent($("ap-phone").value.trim());
+    if ($("ap-email").value.trim()) qs += "&email=" + encodeURIComponent($("ap-email").value.trim());
+    if ($("ap-notes").value.trim()) qs += "&notes=" + encodeURIComponent($("ap-notes").value.trim());
+    var btn = $("ap-save");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=" + (apMode === "vendor" ? "addvendor" : "addcontact") + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Save";
+        if (res.ok) { $("ap-ov").style.display = "none"; showToast((apMode === "vendor" ? "Vendor" : "Person") + " added \u2014 " + res.name, false); setTimeout(load, 2500); }
+        else { $("ap-err").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Save"; $("ap-err").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
 
   function stagePill(s) {
     var cls = s === "Coming Soon" ? "sp-coming" : s === "Active" ? "sp-active" : s === "Under Contract" ? "sp-uc" : s === "Closing" ? "sp-closing" : "sp-closed";
