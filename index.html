@@ -202,6 +202,7 @@
         <i class="ti ti-checkbox" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
         <span class="t">Your focus</span>
         <span style="font-size:11px; color:var(--text-muted);">next 14 days</span>
+        <button id="btn-addtask" style="margin-left:auto; font-size:12px;">+ Add task</button>
       </div>
       <div id="focus">
         <div class="empty">Loading&hellip;</div>
@@ -335,6 +336,19 @@
   <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Saves straight to your TRANSACTION CHECKLISTS doc as plain text.</div>
   <div class="dm-err" id="em-err"></div>
   <button class="dm-btn" id="em-save" type="button">Save changes</button>
+</div></div>
+<div id="at-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
+  <div class="dm-h"><span>Add a task</span><span id="at-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Which deal *</label><select id="at-deal"></select></div>
+  <div class="dm-row"><label>Task *</label><textarea id="at-task" rows="2"></textarea></div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Due date</label><input id="at-due" type="date"></div>
+    <div class="dm-row" style="display:flex; align-items:flex-end;"><span style="font-size:11px; color:var(--text-muted); padding-bottom:9px;">Leave blank for no due date</span></div>
+  </div>
+  <div class="dm-row"><label>Notes (how to do it)</label><textarea id="at-details" rows="3"></textarea></div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Adds a one-off task to that deal's checklist. Shows on your focus list if due within 14 days.</div>
+  <div class="dm-err" id="at-err"></div>
+  <button class="dm-btn" id="at-save" type="button">Add task</button>
 </div></div>
 <div id="ap-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
   <div class="dm-h"><span id="ap-title">Add person</span><span id="ap-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
@@ -614,6 +628,40 @@
       '<div class="b-card">' + vlist.map(function (v) { return personRow(v, true); }).join("") + '</div>' :
       '<div class="empty">No vendors yet \u2014 tap + Add vendor to start your list.</div>';
   }
+
+  $("btn-addtask").addEventListener("click", function () {
+    var deals = ((lastData || {}).deals || []).filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var sel = $("at-deal");
+    sel.innerHTML = deals.map(function (r) {
+      var v = r.values;
+      var label = String(v["Property Address"] || "").toUpperCase() + (v["Client"] ? " | " + v["Client"] : "");
+      return '<option value="' + esc(label) + '">' + esc(v["Property Address"]) + (v["Client"] ? " \u00b7 " + esc(v["Client"]) : "") + '</option>';
+    }).join("");
+    $("at-task").value = ""; $("at-due").value = ""; $("at-details").value = "";
+    $("at-err").textContent = "";
+    $("at-save").disabled = false; $("at-save").textContent = "Add task";
+    $("at-ov").style.display = "block";
+  });
+  $("at-x").addEventListener("click", function () { $("at-ov").style.display = "none"; });
+  $("at-ov").addEventListener("click", function (ev) { if (ev.target === $("at-ov")) $("at-ov").style.display = "none"; });
+  $("at-save").addEventListener("click", function () {
+    var task = $("at-task").value.trim(), deal = $("at-deal").value;
+    if (!task) { $("at-err").textContent = "Task text is required."; return; }
+    if (!deal) { $("at-err").textContent = "Pick a deal."; return; }
+    var qs = "&task=" + encodeURIComponent(task) + "&deal=" + encodeURIComponent(deal);
+    if ($("at-due").value.trim()) qs += "&due=" + encodeURIComponent($("at-due").value.trim());
+    if ($("at-details").value.trim()) qs += "&details=" + encodeURIComponent($("at-details").value.trim());
+    var btn = $("at-save");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=addtask" + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Add task";
+        if (res.ok) { $("at-ov").style.display = "none"; showToast("Task added \u2014 " + res.task, false); setTimeout(load, 2500); }
+        else { $("at-err").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Add task"; $("at-err").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
 
   var apMode = "contact";
   function apOpen(mode) {
