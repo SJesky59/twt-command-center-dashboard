@@ -149,6 +149,25 @@
   .stage-n { font-size:19px; font-weight:500; }
   .stage-l { font-size:10px; color:var(--text-secondary); }
   .empty { font-size:12px; color:var(--text-muted); padding:8px 4px; }
+  .vbar { margin-bottom:6px; }
+  .vsearch { width:100%; font:inherit; font-size:13px; padding:9px 12px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); margin-bottom:8px; outline:none; }
+  .vsearch:focus { border-color:var(--text-accent); }
+  .vchips { display:flex; gap:6px; overflow-x:auto; padding-bottom:5px; -webkit-overflow-scrolling:touch; }
+  .vchip { flex-shrink:0; font-size:12px; padding:5px 11px; border-radius:14px; background:var(--surface-1); color:var(--text-secondary); border:0.5px solid var(--border); white-space:nowrap; cursor:pointer; }
+  .vchip:hover { border-color:#c9c8bf; }
+  .vchip.on { background:var(--bg-accent); color:var(--text-accent); border-color:var(--bg-accent); font-weight:500; }
+  .vchip .vc-n { opacity:.55; margin-left:5px; }
+  .vgroup-h { display:flex; align-items:center; gap:8px; margin:16px 0 6px; }
+  .vgroup-t { font-size:11.5px; font-weight:700; letter-spacing:.5px; color:var(--text-secondary); text-transform:uppercase; }
+  .vgroup-n { font-size:11px; color:var(--text-muted); background:var(--surface-1); border-radius:9px; padding:1px 8px; }
+  .v-links { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .vr-link { color:var(--text-accent); text-decoration:none; }
+  .vr-link:hover { text-decoration:underline; }
+  .vrow { padding:11px 13px; border-bottom:0.5px solid var(--border); }
+  .vrow:last-child { border-bottom:none; }
+  .vr-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+  .vr-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+  .vr-notes { font-size:11px; color:var(--text-secondary); margin-top:4px; line-height:1.35; }
   #diag { display:none; align-items:center; gap:8px; position:fixed; bottom:0; left:0; right:0; background:rgba(252,252,251,0.96); padding:6px 1.25rem; z-index:9;
           font-size:11px; color:var(--text-muted); border-top:0.5px solid var(--border); }
   #diag .dot2 { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
@@ -256,6 +275,10 @@
       <i class="ti ti-tools" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
       <span class="t">Partners &amp; Vendors</span>
       <button id="btn-addvendor" style="margin-left:auto;">+ Add vendor</button>
+    </div>
+    <div class="vbar">
+      <input id="vendors-search" class="vsearch" type="text" placeholder="Search vendors &mdash; name, service, notes&hellip;" autocomplete="off">
+      <div id="vendors-chips" class="vchips"></div>
     </div>
     <div id="vendors-list"><div class="empty">Loading&hellip;</div></div>
   </div>
@@ -491,6 +514,7 @@
 
     renderDeals(d);
     renderPeople(d);
+    renderVendors(d);
   }
 
   var expandedId = null;
@@ -622,12 +646,70 @@
     $("people-list").innerHTML = list.length ?
       '<div class="b-card">' + list.map(function (v) { return personRow(v, false); }).join("") + '</div>' :
       '<div class="empty">No people yet \u2014 tap + Add person to start your list.</div>';
-    var vlist = (d.vendors || []).map(function (r) { return r.values; });
-    vlist.sort(function (a2, b2) { return String(a2["Name"]).localeCompare(String(b2["Name"])); });
-    $("vendors-list").innerHTML = vlist.length ?
-      '<div class="b-card">' + vlist.map(function (v) { return personRow(v, true); }).join("") + '</div>' :
-      '<div class="empty">No vendors yet \u2014 tap + Add vendor to start your list.</div>';
   }
+
+  var vendorFilter = "All";
+  var vendorSearch = "";
+  function vName(v) { return v["Name / Company"] || v["Name"] || v["Company"] || "(no name)"; }
+  function vendorRow(v) {
+    var sub = [];
+    if (v["Service"]) sub.push(String(v["Service"]));
+    else if (v["Company"]) sub.push(String(v["Company"]));
+    if (v["Phone"]) sub.push(v["Phone"]);
+    if (v["Contact Person"]) sub.push(String(v["Contact Person"]));
+    var web = v["Website"] ? String(v["Website"]).trim() : "";
+    var linkbits = [];
+    if (v["Email"]) linkbits.push(esc(String(v["Email"])));
+    if (/^https?:\/\//i.test(web)) linkbits.push('<a class="vr-link" href="' + esc(web) + '" target="_blank" rel="noopener">website</a>');
+    var notes = v["Notes"] ? '<div class="vr-notes">' + esc(String(v["Notes"]).slice(0, 120)) + '</div>' : '';
+    return '<div class="vrow">' +
+      '<div class="vr-name">' + esc(vName(v)) + '</div>' +
+      '<div class="vr-sub">' + esc(sub.join(" \u00b7 ") || "no details yet") + '</div>' +
+      (linkbits.length ? '<div class="v-links">' + linkbits.join(" \u00b7 ") + '</div>' : '') +
+      notes + '</div>';
+  }
+  function renderVendors(d) {
+    var vlist = (d.vendors || []).map(function (r) { return r.values; });
+    var counts = {};
+    vlist.forEach(function (v) { var c = String(v["Category"] || "Uncategorized"); counts[c] = (counts[c] || 0) + 1; });
+    var cats = Object.keys(counts).sort();
+    var chips = '<span class="vchip' + (vendorFilter === "All" ? " on" : "") + '" data-cat="All">All<span class="vc-n">' + vlist.length + '</span></span>';
+    chips += cats.map(function (c) {
+      return '<span class="vchip' + (vendorFilter === c ? " on" : "") + '" data-cat="' + esc(c) + '">' + esc(c) + '<span class="vc-n">' + counts[c] + '</span></span>';
+    }).join("");
+    $("vendors-chips").innerHTML = chips;
+    if (!vlist.length) { $("vendors-list").innerHTML = '<div class="empty">No vendors yet \u2014 tap + Add vendor to start your list.</div>'; return; }
+    var q = vendorSearch.trim().toLowerCase();
+    var filtered = vlist.filter(function (v) {
+      if (vendorFilter !== "All" && String(v["Category"] || "Uncategorized") !== vendorFilter) return false;
+      if (!q) return true;
+      var hay = [vName(v), v["Company"], v["Service"], v["Category"], v["Contact Person"], v["Notes"], v["Phone"], v["Email"]].join("  ").toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+    if (!filtered.length) {
+      $("vendors-list").innerHTML = '<div class="empty">No vendors match' + (q ? ' \u201c' + esc(vendorSearch.trim()) + '\u201d' : '') + (vendorFilter !== "All" ? ' in ' + esc(vendorFilter) : '') + '.</div>';
+      return;
+    }
+    var groups = {};
+    filtered.forEach(function (v) { var c = String(v["Category"] || "Uncategorized"); (groups[c] = groups[c] || []).push(v); });
+    var gk = Object.keys(groups).sort();
+    var showHeaders = (vendorFilter === "All");
+    $("vendors-list").innerHTML = gk.map(function (c) {
+      var rows = groups[c].sort(function (a2, b2) { return String(vName(a2)).localeCompare(String(vName(b2))); });
+      var header = showHeaders ? '<div class="vgroup-h"><span class="vgroup-t">' + esc(c) + '</span><span class="vgroup-n">' + rows.length + '</span></div>' : '';
+      return header + '<div class="b-card">' + rows.map(vendorRow).join("") + '</div>';
+    }).join("");
+  }
+  $("vendors-chips").addEventListener("click", function (ev) {
+    var chip = ev.target.closest ? ev.target.closest(".vchip") : null;
+    if (!chip) return;
+    vendorFilter = chip.getAttribute("data-cat");
+    if (lastData) renderVendors(lastData);
+  });
+  $("vendors-search").addEventListener("input", function () {
+    vendorSearch = this.value;
+    if (lastData) renderVendors(lastData);
+  });
 
   $("btn-addtask").addEventListener("click", function () {
     var deals = ((lastData || {}).deals || []).filter(function (r) { return r.values["Stage"] !== "Closed"; });
