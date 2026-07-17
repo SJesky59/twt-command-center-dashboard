@@ -6,22 +6,23 @@
 <title>TWT | Tasks</title>
 <style>
   * { box-sizing:border-box; }
-  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#1a1a1a; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#1a1a1a; -webkit-text-size-adjust:100%; }
   .wrap { max-width:1400px; margin:0 auto; }
   .coda-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #ededea; }
   .coda-bar .tname { font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; }
   .coda-bar .tname .ic { width:18px;height:18px;border-radius:4px;background:#e8f0ee;color:#3a5a6c;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700; }
   .coda-bar .tname .sub { font-weight:400; color:#9a9a92; font-size:12px; }
-  .coda-bar .sync { font-size:11px; color:#5a8a6a; display:flex; align-items:center; gap:6px; cursor:pointer; }
-  .coda-bar .sync .d { width:7px;height:7px;border-radius:50%;background:#57a06e; }
+  .coda-bar .sync { font-size:11px; color:#5a8a6a; display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap; }
+  .coda-bar .sync .d { width:7px;height:7px;border-radius:50%;background:#57a06e; flex:none; }
   .coda-bar .sync.stale .d { background:#c9a227; }
   .coda-toolbar { display:flex; gap:14px; padding:8px 16px; border-bottom:1px solid #ededea; font-size:12px; color:#8a8a82; flex-wrap:wrap; }
   .ftabs { display:flex; gap:7px; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid #ededea; align-items:center; }
-  .ftab { font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px; background:#f4f4f1; color:#55554e; border:1px solid #e3e3de; cursor:pointer; user-select:none; }
+  .ftab { font-size:12px; font-weight:500; padding:6px 13px; border-radius:20px; background:#f4f4f1; color:#55554e; border:1px solid #e3e3de; cursor:pointer; user-select:none; white-space:nowrap; }
   .ftab.on { background:#3a5a6c; color:#fff; border-color:#3a5a6c; }
   .ftab .n { opacity:.6; margin-left:5px; font-weight:600; }
-  .ftsep { width:1px; height:18px; background:#e0e0da; margin:0 3px; }
+  .ftsep { width:1px; height:18px; background:#e0e0da; margin:0 3px; flex:none; }
 
+  /* ---- desktop table ---- */
   table.coda { width:100%; border-collapse:collapse; font-size:13px; }
   table.coda thead th { text-align:left; font-weight:500; color:#8a8a82; background:#fafafa; padding:8px 12px; border-bottom:1px solid #ededea; border-right:1px solid #f2f2ef; white-space:nowrap; font-size:11px; position:sticky; top:0; z-index:2; }
   .grp td { background:#f4f6f7; font-weight:600; font-size:12.5px; color:#33454f; padding:8px 12px; border-bottom:1px solid #e6e9ea; }
@@ -31,16 +32,21 @@
   tr.taskrow:hover td { background:#f9fbfb; }
   tr.taskrow.sel td { background:#eef4f7; }
   tr.taskrow { cursor:pointer; }
-
-  .selbox { width:16px; height:16px; border-radius:4px; border:1.5px solid #c3c3bd; display:inline-block; cursor:pointer; }
-  .selbox.on { background:#3a5a6c; border-color:#3a5a6c; position:relative; }
-  .selbox.on::after { content:"✓"; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
-  .ck.done { width:17px; height:17px; border-radius:50%; background:#57a06e; display:inline-block; position:relative; }
-  .ck.done::after { content:"✓"; color:#fff; font-size:11px; position:absolute; left:3px; top:-1px; }
-  .ck.pending { opacity:.5; }
-
+  .exp { color:#b7b7b0; font-size:13px; }
+  tr.taskrow:hover .exp { color:#3a5a6c; }
+  .coda-detail td { background:#f7fafb; border-bottom:1px solid #e6e9ea; padding:0; }
+  .cd-inner { padding:12px 18px 14px 42px; }
+  .cd-inner .kv { display:flex; gap:8px; font-size:12.5px; padding:3px 0; }
+  .cd-inner .kv .k { color:#8a97a0; width:120px; flex:none; }
+  .cd-inner .kv a { color:#2f6ea8; text-decoration:none; font-weight:500; }
+  .cd-inner .details { white-space:pre-wrap; color:#4a4a44; font-size:12px; line-height:1.45; }
   .task-cell { max-width:520px; }
   .task-cell.struck { color:#a7a7a0; text-decoration:line-through; }
+
+  /* ---- shared bits ---- */
+  .selbox { width:16px; height:16px; border-radius:4px; border:1.5px solid #c3c3bd; display:inline-block; cursor:pointer; flex:none; }
+  .selbox.on { background:#3a5a6c; border-color:#3a5a6c; position:relative; }
+  .selbox.on::after { content:"✓"; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
   .pill { display:inline-block; font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:20px; white-space:nowrap; }
   .pill.listing { background:#fbe4e4; color:#c0453f; }
   .pill.buyer   { background:#e3eefb; color:#2f6ea8; }
@@ -51,18 +57,22 @@
   .u.yellow { background:#fbeecb; color:#a5822a; }
   .u.red    { background:#fbe0de; color:#c0453f; }
   .u.none   { background:#f0f0ed; color:#9a9a92; }
-
-  .exp { color:#b7b7b0; font-size:13px; }
-  tr.taskrow:hover .exp { color:#3a5a6c; }
-  .coda-detail td { background:#f7fafb; border-bottom:1px solid #e6e9ea; padding:0; }
-  .cd-inner { padding:12px 18px 14px 42px; }
-  .cd-inner .kv { display:flex; gap:8px; font-size:12.5px; padding:3px 0; }
-  .cd-inner .kv .k { color:#8a97a0; width:120px; flex:none; }
-  .cd-inner .kv a { color:#2f6ea8; text-decoration:none; font-weight:500; }
-  .cd-inner .kv a:hover { text-decoration:underline; }
-  .cd-inner .details { white-space:pre-wrap; color:#4a4a44; font-size:12px; line-height:1.45; }
-
   .state { padding:40px 16px; text-align:center; color:#9a9a92; font-size:13px; }
+
+  /* ---- mobile cards ---- */
+  .mgrp { position:sticky; top:0; background:#f4f6f7; font-weight:600; font-size:13px; color:#33454f; padding:9px 15px; border-bottom:1px solid #e6e9ea; z-index:1; }
+  .mgrp .mcnt { color:#8a97a0; font-weight:500; margin-left:6px; }
+  .mcard { padding:13px 15px; border-bottom:1px solid #f0f0ec; cursor:pointer; }
+  .mcard.sel { background:#eef4f7; }
+  .mrow { display:flex; align-items:flex-start; gap:12px; }
+  .mtask { font-size:14.5px; font-weight:500; line-height:1.35; flex:1; }
+  .mmeta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:9px 0 0 28px; }
+  .mdue { font-size:12px; color:#77776f; }
+  .mdetail { margin:10px 0 2px 28px; font-size:12.5px; }
+  .mdetail .kv { display:flex; gap:8px; padding:3px 0; }
+  .mdetail .kv .k { color:#8a97a0; width:92px; flex:none; }
+  .mdetail .kv a { color:#2f6ea8; text-decoration:none; font-weight:500; }
+  .mdetail .details { white-space:pre-wrap; color:#4a4a44; font-size:12px; line-height:1.45; margin-top:4px; }
 
   .bulkbar { position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#22303a; color:#fff; border-radius:12px; padding:10px 12px 10px 18px; display:none; align-items:center; gap:14px; box-shadow:0 8px 30px rgba(0,0,0,.25); z-index:20; font-size:13px; }
   .bulkbar.show { display:flex; }
@@ -71,9 +81,17 @@
   .bulkbar .mark { background:#57a06e; color:#fff; }
   .bulkbar .mark:disabled { opacity:.6; cursor:default; }
   .bulkbar .clear { background:transparent; color:#c7d2d8; }
-  .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:74px; background:#0b0b0b; color:#fff; font-size:12.5px; padding:9px 16px; border-radius:20px; opacity:0; transition:opacity .2s; z-index:21; pointer-events:none; text-align:center; }
+  .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:74px; background:#0b0b0b; color:#fff; font-size:12.5px; padding:9px 16px; border-radius:20px; opacity:0; transition:opacity .2s; z-index:21; pointer-events:none; text-align:center; max-width:90%; }
   .toast.show { opacity:1; }
   .toast.err { background:#7a2b26; }
+
+  @media (max-width:640px){
+    .coda-toolbar { display:none; }
+    .coda-bar .tname .sub { display:none; }
+    .coda-bar { padding:12px 14px; }
+    .ftabs { flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:10px 14px; }
+    .ftab { flex:0 0 auto; }
+  }
 </style>
 </head>
 <body>
@@ -84,7 +102,7 @@
   </div>
   <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Current phase · incomplete</span><span>↕ Checklist order</span></div>
   <div class="ftabs" id="ftabs"></div>
-  <table class="coda" id="tbl"><tbody><tr><td class="state">Loading tasks…</td></tr></tbody></table>
+  <div id="tbl"><div class="state">Loading tasks…</div></div>
 </div>
 
 <div class="bulkbar" id="bulkbar">
@@ -116,10 +134,11 @@ function urgency(d){
   if(n<=3) return {cls:"yellow",label:n===0?"Due today":"Due in "+n+"d"};
   return {cls:"green",label:"Due in "+n+"d"};
 }
+function isMobile(){ return window.matchMedia("(max-width:640px)").matches; }
 
 var TABS=[
-  {id:"all",label:"All",kind:"b"},{id:"now",label:"NOW",kind:"b"},{id:"queue",label:"QUEUE",kind:"b"},
-  {id:"listing",label:"Listings",kind:"t"},{id:"buyer",label:"Buyers",kind:"t"},{id:"lease",label:"Leases",kind:"t"}
+  {id:"all",label:"All"},{id:"now",label:"NOW"},{id:"queue",label:"QUEUE"},
+  {id:"listing",label:"Listings"},{id:"buyer",label:"Buyers"},{id:"lease",label:"Leases"}
 ];
 function matches(t,id){
   if(id==="all")return true;
@@ -159,26 +178,23 @@ function renderTabs(){
 }
 
 function groupsForRender(){
-  // visible, incomplete, matching active filter
   var vis=DATA.tasks.filter(function(t){ return !t.done && matches(t,active); });
-  // group by deal address
   var byDeal={};
   vis.forEach(function(t){ (byDeal[t.addr]=byDeal[t.addr]||[]).push(t); });
-  // sort each deal's tasks by phaseNum then order
   var groups=Object.keys(byDeal).map(function(a){
     var rows=byDeal[a].sort(function(x,y){ return (x.phaseNum-y.phaseNum)||(x.order-y.order); });
-    // earliest due for deal sort
     var earliest=rows.reduce(function(m,r){ if(r.due&&(!m||r.due<m))return r.due; return m; },null);
     return {addr:a, rows:rows, earliest:earliest};
   });
-  // sort deals by earliest due (soonest first), no-date last
   groups.sort(function(g1,g2){ if(!g1.earliest&&!g2.earliest)return g1.addr<g2.addr?-1:1; if(!g1.earliest)return 1; if(!g2.earliest)return -1; return g1.earliest-g2.earliest; });
   return groups;
 }
 
-function detailRow(t){
+function driveLink(t){ return t.drive ? "<a href='"+esc(t.drive)+"' target='_blank' rel='noopener'>Open in Google Drive ↗</a>" : "<span style='color:#a0a099'>—</span>"; }
+
+/* ---- desktop table ---- */
+function detailRowHTML(t){
   var u=urgency(t.due);
-  var drive = t.drive ? "<a href='"+esc(t.drive)+"' target='_blank' rel='noopener'>Open in Google Drive ↗</a>" : "<span style='color:#a0a099'>—</span>";
   return "<tr class='coda-detail'><td colspan='6'><div class='cd-inner'>"+
     "<div class='kv'><span class='k'>Task</span><span>"+esc(t.task)+"</span></div>"+
     "<div class='kv'><span class='k'>Deal</span><span>"+esc(t.dealStr)+"</span></div>"+
@@ -186,14 +202,12 @@ function detailRow(t){
     "<div class='kv'><span class='k'>Priority</span><span>"+esc(t.bucket)+"</span></div>"+
     "<div class='kv'><span class='k'>Due Date</span><span>"+fmtDue(t.due)+" · "+u.label+"</span></div>"+
     (t.agent?"<div class='kv'><span class='k'>Agent</span><span>"+esc(t.agent)+"</span></div>":"")+
-    "<div class='kv'><span class='k'>Deal folder</span><span>"+drive+"</span></div>"+
+    "<div class='kv'><span class='k'>Deal folder</span><span>"+driveLink(t)+"</span></div>"+
     (t.details?"<div class='kv'><span class='k'>Details</span><span class='details'>"+esc(t.details)+"</span></div>":"")+
   "</div></td></tr>";
 }
-
-function render(){
-  var groups=groupsForRender();
-  var html="<thead><tr><th style='width:36px'></th><th>Task</th><th>Phase</th><th>Status</th><th>Due Date</th><th style='width:36px'></th></tr></thead><tbody>";
+function renderTableHTML(groups){
+  var html="<table class='coda'><thead><tr><th style='width:36px'></th><th>Task</th><th>Phase</th><th>Status</th><th>Due Date</th><th style='width:36px'></th></tr></thead><tbody>";
   var any=false;
   groups.forEach(function(g){
     any=true;
@@ -201,8 +215,7 @@ function render(){
     var label=g.addr+(head.client?" — "+head.client:"");
     html+="<tr class='grp'><td colspan='6'><span class='chev'>▾</span>"+esc(label)+"<span class='cnt'>"+g.rows.length+"</span></td></tr>";
     g.rows.forEach(function(t){
-      var isSel=!!sel[t.id];
-      var u=urgency(t.due);
+      var isSel=!!sel[t.id]; var u=urgency(t.due);
       var box="<span class='selbox"+(isSel?" on":"")+"' onclick=\"event.stopPropagation();toggleSel('"+t.id+"')\"></span>";
       html+="<tr class='taskrow"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
         "<td style='text-align:center'>"+box+"</td>"+
@@ -211,15 +224,62 @@ function render(){
         "<td><span class='u "+u.cls+"'>"+u.label+"</span></td>"+
         "<td>"+fmtDue(t.due)+"</td>"+
         "<td style='text-align:center'><span class='exp'>⤢</span></td></tr>";
-      if(expandedId===t.id) html+=detailRow(t);
+      if(expandedId===t.id) html+=detailRowHTML(t);
     });
   });
   if(!any) html+="<tr><td colspan='6' class='state'>Nothing here — you're all caught up for this filter. 🎉</td></tr>";
-  html+="</tbody>";
-  document.getElementById("tbl").innerHTML=html;
+  html+="</tbody></table>";
+  return html;
+}
+
+/* ---- mobile cards ---- */
+function mDetailHTML(t){
+  var u=urgency(t.due);
+  return "<div class='mdetail'>"+
+    "<div class='kv'><span class='k'>Deal</span><span>"+esc(t.dealStr)+"</span></div>"+
+    "<div class='kv'><span class='k'>Priority</span><span>"+esc(t.bucket)+"</span></div>"+
+    "<div class='kv'><span class='k'>Due</span><span>"+fmtDue(t.due)+" · "+u.label+"</span></div>"+
+    (t.agent?"<div class='kv'><span class='k'>Agent</span><span>"+esc(t.agent)+"</span></div>":"")+
+    "<div class='kv'><span class='k'>Folder</span><span>"+driveLink(t)+"</span></div>"+
+    (t.details?"<div class='details'>"+esc(t.details)+"</div>":"")+
+  "</div>";
+}
+function renderCardsHTML(groups){
+  var any=false, html="";
+  groups.forEach(function(g){
+    any=true;
+    var head=g.rows[0];
+    var label=g.addr+(head.client?" — "+head.client:"");
+    html+="<div class='mgrp'>"+esc(label)+"<span class='mcnt'>"+g.rows.length+"</span></div>";
+    g.rows.forEach(function(t){
+      var isSel=!!sel[t.id]; var u=urgency(t.due);
+      html+="<div class='mcard"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
+        "<div class='mrow'>"+
+          "<span class='selbox"+(isSel?" on":"")+"' onclick=\"event.stopPropagation();toggleSel('"+t.id+"')\"></span>"+
+          "<div class='mtask'>"+esc(t.task)+"</div>"+
+        "</div>"+
+        "<div class='mmeta'>"+
+          "<span class='pill "+t.track+"'>"+esc(t.phase)+"</span>"+
+          "<span class='u "+u.cls+"'>"+u.label+"</span>"+
+          "<span class='mdue'>"+fmtDue(t.due)+"</span>"+
+        "</div>"+
+        (expandedId===t.id? mDetailHTML(t) : "")+
+      "</div>";
+    });
+  });
+  if(!any) html="<div class='state'>Nothing here — you're all caught up for this filter. 🎉</div>";
+  return html;
+}
+
+var lastMobile=null;
+function render(){
+  var groups=groupsForRender();
+  lastMobile=isMobile();
+  document.getElementById("tbl").innerHTML = lastMobile ? renderCardsHTML(groups) : renderTableHTML(groups);
   renderTabs();
   updateBar();
 }
+window.addEventListener("resize", function(){ if(isMobile()!==lastMobile) render(); });
 
 function setTab(id){ active=id; render(); }
 function toggleExpand(id){ expandedId = (expandedId===id)?null:id; render(); }
@@ -263,9 +323,9 @@ function load(){
       var n=DATA.tasks.filter(function(t){return !t.done;}).length;
       setSync(n+" open · updated just now");
     })
-    .catch(function(e){ if(hasShown){setSync("Showing saved - offline", true);return;} setSync("Couldn't load — tap to retry", true); document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Couldn't reach the data. Tap the status to retry.</td></tr></tbody>"; });
+    .catch(function(e){ if(hasShown){setSync("Showing saved - offline", true);return;} setSync("Couldn't load — tap to retry", true); document.getElementById("tbl").innerHTML="<div class='state'>Couldn't reach the data. Tap the status to retry.</div>"; });
 }
-if(!KEY){ document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Missing access key in the URL (?k=…).</td></tr></tbody>"; setSync("No key", true); }
+if(!KEY){ document.getElementById("tbl").innerHTML="<div class='state'>Missing access key in the URL (?k=…).</div>"; setSync("No key", true); }
 else { renderFromCache(); load(); }
 </script>
 </body>
