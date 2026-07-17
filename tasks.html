@@ -249,21 +249,24 @@ function markSelectedDone(){
 }
 
 function setSync(txt, stale){ document.getElementById("synctext").textContent=txt; document.getElementById("sync").classList.toggle("stale",!!stale); }
+var CACHE_KEY="twt_tasks_feed_v1";var hasShown=false;
+function renderFromCache(){try{var c=localStorage.getItem(CACHE_KEY);if(c){transform(JSON.parse(c));render();hasShown=true;var n=DATA.tasks.filter(function(t){return !t.done;}).length;setSync(n+" open - refreshing");return true;}}catch(e){}return false;}
 function load(){
-  setSync("Refreshing…");
+  if(!hasShown) setSync("Refreshing…");
   fetch(PROXY+"?k="+encodeURIComponent(KEY),{cache:"no-store"})
     .then(function(r){return r.json();})
     .then(function(feed){
+      try{localStorage.setItem(CACHE_KEY,JSON.stringify(feed));}catch(e){}hasShown=true;
       transform(feed);
       expandedId=null;
       render();
       var n=DATA.tasks.filter(function(t){return !t.done;}).length;
       setSync(n+" open · updated just now");
     })
-    .catch(function(e){ setSync("Couldn't load — tap to retry", true); document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Couldn't reach the data. Tap the status to retry.</td></tr></tbody>"; });
+    .catch(function(e){ if(hasShown){setSync("Showing saved - offline", true);return;} setSync("Couldn't load — tap to retry", true); document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Couldn't reach the data. Tap the status to retry.</td></tr></tbody>"; });
 }
 if(!KEY){ document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Missing access key in the URL (?k=…).</td></tr></tbody>"; setSync("No key", true); }
-else load();
+else { renderFromCache(); load(); }
 </script>
 </body>
 </html>
