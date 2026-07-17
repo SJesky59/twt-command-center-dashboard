@@ -27,9 +27,10 @@
   /* ---- desktop table ---- */
   table.coda { width:100%; border-collapse:collapse; font-size:13px; }
   table.coda thead th { text-align:left; font-weight:500; color:#8a8a82; background:#fafafa; padding:8px 12px; border-bottom:1px solid #ededea; border-right:1px solid #f2f2ef; white-space:nowrap; font-size:11px; position:sticky; top:0; z-index:2; }
-  .grp td { background:#f4f6f7; font-weight:600; font-size:12.5px; color:#33454f; padding:8px 12px; border-bottom:1px solid #e6e9ea; }
+  .grp td { background:#f4f6f7; font-weight:600; font-size:12.5px; color:#33454f; padding:8px 12px; border-bottom:1px solid #e6e9ea; cursor:pointer; user-select:none; }
+  tr.grp:hover td { background:#eef1f2; }
   .grp .cnt { color:#8a97a0; font-weight:500; margin-left:6px; }
-  .grp .chev { display:inline-block; width:12px; color:#8a97a0; }
+  .grp .chev { display:inline-block; width:14px; color:#8a97a0; }
   table.coda tbody td { padding:8px 12px; border-bottom:1px solid #f2f2ef; border-right:1px solid #f6f6f4; vertical-align:middle; }
   tr.taskrow:hover td { background:#f9fbfb; }
   tr.taskrow.sel td { background:#eef4f7; }
@@ -62,7 +63,8 @@
   .state { padding:40px 16px; text-align:center; color:#9a9a92; font-size:13px; }
 
   /* ---- mobile cards ---- */
-  .mgrp { position:sticky; top:0; background:#f4f6f7; font-weight:600; font-size:13px; color:#33454f; padding:9px 15px; border-bottom:1px solid #e6e9ea; z-index:1; }
+  .mgrp { position:sticky; top:0; background:#f4f6f7; font-weight:600; font-size:13px; color:#33454f; padding:9px 15px; border-bottom:1px solid #e6e9ea; z-index:1; cursor:pointer; user-select:none; }
+  .mgrp .chev { display:inline-block; width:14px; color:#8a97a0; }
   .mgrp .mcnt { color:#8a97a0; font-weight:500; margin-left:6px; }
   .mcard { padding:13px 15px; border-bottom:1px solid #f0f0ec; cursor:pointer; }
   .mcard.sel { background:#eef4f7; }
@@ -121,6 +123,9 @@ var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","D
 
 var DATA={tasks:[],dealsByAddr:{}};
 var active="all", sel={}, expandedId=null;
+var COLLAPSE_KEY="twt_tasks_collapsed_v1", collapsed={};
+try{ collapsed=JSON.parse(localStorage.getItem(COLLAPSE_KEY))||{}; }catch(e){ collapsed={}; }
+function escJs(s){ return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
 
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 function trackFromPhase(p){ p=(p||"").toUpperCase(); if(p.indexOf("BUYER")===0)return "buyer"; if(p.indexOf("LEASE")===0)return "lease"; if(p.indexOf("LISTING")===0||p.indexOf("SELLER")===0)return "listing"; return "other"; }
@@ -215,8 +220,9 @@ function renderTableHTML(groups){
     any=true;
     var head=g.rows[0];
     var label=g.addr+(head.client?" — "+head.client:"");
-    html+="<tr class='grp'><td colspan='6'><span class='chev'>▾</span>"+esc(label)+"<span class='cnt'>"+g.rows.length+"</span></td></tr>";
-    g.rows.forEach(function(t){
+    var isColl=!!collapsed[g.addr];
+    html+="<tr class='grp' onclick=\"toggleGroup('"+escJs(g.addr)+"')\"><td colspan='6'><span class='chev'>"+(isColl?"▸":"▾")+"</span>"+esc(label)+"<span class='cnt'>"+g.rows.length+"</span></td></tr>";
+    if(!isColl) g.rows.forEach(function(t){
       var isSel=!!sel[t.id]; var u=urgency(t.due);
       var box="<span class='selbox"+(isSel?" on":"")+"' onclick=\"event.stopPropagation();toggleSel('"+t.id+"')\"></span>";
       html+="<tr class='taskrow"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
@@ -252,8 +258,9 @@ function renderCardsHTML(groups){
     any=true;
     var head=g.rows[0];
     var label=g.addr+(head.client?" — "+head.client:"");
-    html+="<div class='mgrp'>"+esc(label)+"<span class='mcnt'>"+g.rows.length+"</span></div>";
-    g.rows.forEach(function(t){
+    var isColl=!!collapsed[g.addr];
+    html+="<div class='mgrp' onclick=\"toggleGroup('"+escJs(g.addr)+"')\"><span class='chev'>"+(isColl?"▸":"▾")+"</span>"+esc(label)+"<span class='mcnt'>"+g.rows.length+"</span></div>";
+    if(!isColl) g.rows.forEach(function(t){
       var isSel=!!sel[t.id]; var u=urgency(t.due);
       html+="<div class='mcard"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
         "<div class='mrow'>"+
@@ -284,6 +291,7 @@ function render(){
 window.addEventListener("resize", function(){ if(isMobile()!==lastMobile) render(); });
 
 function setTab(id){ active=id; render(); }
+function toggleGroup(k){ if(collapsed[k])delete collapsed[k]; else collapsed[k]=true; try{localStorage.setItem(COLLAPSE_KEY,JSON.stringify(collapsed));}catch(e){} render(); }
 function toggleExpand(id){ expandedId = (expandedId===id)?null:id; render(); }
 function toggleSel(id){ if(sel[id])delete sel[id]; else sel[id]=true; render(); }
 function clearSel(){ sel={}; render(); }
