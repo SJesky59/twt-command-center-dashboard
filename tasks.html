@@ -61,6 +61,13 @@
   .u.red    { background:#fbe0de; color:#c0453f; }
   .u.none   { background:#f0f0ed; color:#9a9a92; }
   .state { padding:40px 16px; text-align:center; color:#9a9a92; font-size:13px; }
+  .rowact { display:inline-flex; align-items:center; gap:6px; justify-content:flex-end; }
+  .rowdone { font:inherit; font-size:11.5px; font-weight:600; background:#57a06e; color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; white-space:nowrap; }
+  .rowdone:disabled { opacity:.55; cursor:default; }
+  .rowclr { font:inherit; font-size:14px; line-height:1; background:transparent; border:none; color:#9a9a92; cursor:pointer; padding:2px 5px; }
+  .rowclr:hover { color:#c0453f; }
+  .mmeta .rowact { margin-left:auto; }
+  .mmeta .rowdone { font-size:13px; padding:6px 13px; }
 
   /* ---- mobile cards ---- */
   .mgrp { position:sticky; top:0; background:#f4f6f7; font-weight:600; font-size:13px; color:#33454f; padding:9px 15px; border-bottom:1px solid #e6e9ea; z-index:1; cursor:pointer; user-select:none; }
@@ -109,11 +116,6 @@
   <div id="tbl"><div class="state">Loading tasks…</div></div>
 </div>
 
-<div class="bulkbar" id="bulkbar">
-  <span class="cnt" id="bulkcnt">0 selected</span>
-  <button class="mark" id="markbtn" onclick="markSelectedDone()">✓ Mark done</button>
-  <button class="clear" onclick="clearSel()">Clear</button>
-</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -122,7 +124,7 @@ var KEY=new URLSearchParams(location.search).get("k")||"";
 var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 var DATA={tasks:[],dealsByAddr:{}};
-var active="all", sel={}, expandedId=null;
+var active="all", sel={}, expandedId=null, saving=false;
 var COLLAPSE_KEY="twt_tasks_collapsed_v1", collapsed={};
 try{ collapsed=JSON.parse(localStorage.getItem(COLLAPSE_KEY))||{}; }catch(e){ collapsed={}; }
 function escJs(s){ return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
@@ -198,6 +200,7 @@ function groupsForRender(){
 }
 
 function driveLink(t){ return t.drive ? "<a href='"+esc(t.drive)+"' target='_blank' rel='noopener'>Open in Google Drive ↗</a>" : "<span style='color:#a0a099'>—</span>"; }
+function rowActionHTML(){ var n=Object.keys(sel).length; var lbl=saving?"Saving…":("✓ Done"+(n>1?" ("+n+")":"")); return "<span class='rowact'><button class='rowdone'"+(saving?" disabled":"")+" onclick=\"event.stopPropagation();markSelectedDone()\">"+lbl+"</button><button class='rowclr' onclick=\"event.stopPropagation();clearSel()\" title='Clear selection'>✕</button></span>"; }
 
 /* ---- desktop table ---- */
 function detailRowHTML(t){
@@ -214,7 +217,7 @@ function detailRowHTML(t){
   "</div></td></tr>";
 }
 function renderTableHTML(groups){
-  var html="<table class='coda'><thead><tr><th style='width:36px'></th><th>Task</th><th>Phase</th><th>Status</th><th>Due Date</th><th style='width:36px'></th></tr></thead><tbody>";
+  var html="<table class='coda'><thead><tr><th style='width:36px'></th><th>Task</th><th>Phase</th><th>Status</th><th>Due Date</th><th style='width:120px'></th></tr></thead><tbody>";
   var any=false;
   groups.forEach(function(g){
     any=true;
@@ -231,7 +234,7 @@ function renderTableHTML(groups){
         "<td><span class='pill "+t.track+"'>"+esc(t.phase)+"</span></td>"+
         "<td><span class='u "+u.cls+"'>"+u.label+"</span></td>"+
         "<td>"+fmtDue(t.due)+"</td>"+
-        "<td style='text-align:center'><span class='exp'>⤢</span></td></tr>";
+        "<td style='text-align:right; padding-right:14px'>"+(isSel? rowActionHTML() : "<span class='exp'>⤢</span>")+"</td></tr>";
       if(expandedId===t.id) html+=detailRowHTML(t);
     });
   });
@@ -271,6 +274,7 @@ function renderCardsHTML(groups){
           "<span class='pill "+t.track+"'>"+esc(t.phase)+"</span>"+
           "<span class='u "+u.cls+"'>"+u.label+"</span>"+
           "<span class='mdue'>"+fmtDue(t.due)+"</span>"+
+          (isSel? rowActionHTML() : "")+
         "</div>"+
         (expandedId===t.id? mDetailHTML(t) : "")+
       "</div>";
@@ -295,7 +299,7 @@ function toggleGroup(k){ if(collapsed[k])delete collapsed[k]; else collapsed[k]=
 function toggleExpand(id){ expandedId = (expandedId===id)?null:id; render(); }
 function toggleSel(id){ if(sel[id])delete sel[id]; else sel[id]=true; render(); }
 function clearSel(){ sel={}; render(); }
-function updateBar(){ var n=Object.keys(sel).length; document.getElementById("bulkcnt").textContent=n+" selected"; document.getElementById("bulkbar").classList.toggle("show",n>0); }
+function updateBar(){}
 
 var tt;
 function showToast(m,isErr){ var el=document.getElementById("toast"); el.textContent=m; el.className="toast show"+(isErr?" err":""); clearTimeout(tt); tt=setTimeout(function(){el.className="toast";},3200); }
@@ -305,12 +309,12 @@ function completeOne(id){
     .then(function(r){return r.json();}).then(function(res){ return res && res.ok; }).catch(function(){ return false; });
 }
 function markSelectedDone(){
-  var ids=Object.keys(sel); if(!ids.length) return;
-  var btn=document.getElementById("markbtn"); btn.disabled=true; btn.textContent="Saving…";
+  var ids=Object.keys(sel); if(!ids.length||saving) return;
+  saving=true; render();
   var okc=0;
   var chain=ids.reduce(function(p,id){ return p.then(function(){ return completeOne(id).then(function(ok){ if(ok){okc++; var t=DATA.tasks.find(function(x){return x.id===id;}); if(t)t.done=true;} }); }); }, Promise.resolve());
   chain.then(function(){
-    btn.disabled=false; btn.textContent="✓ Mark done"; sel={};
+    saving=false; sel={};
     render();
     if(okc===ids.length) showToast("✓ "+okc+" task"+(okc>1?"s":"")+" marked done · synced to Transaction Checklists + Dashboard");
     else showToast("Marked "+okc+" of "+ids.length+" — some didn't save. Refreshing…", true);
