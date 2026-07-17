@@ -127,6 +127,9 @@ var DATA={tasks:[],dealsByAddr:{}};
 var active="all", sel={}, expandedId=null, saving=false;
 var COLLAPSE_KEY="twt_tasks_collapsed_v1", collapsed={};
 try{ collapsed=JSON.parse(localStorage.getItem(COLLAPSE_KEY))||{}; }catch(e){ collapsed={}; }
+var COMPLETED_KEY="twt_tasks_completed_v1", completedIds={}, COMPLETED_TTL=600000;
+try{ completedIds=JSON.parse(localStorage.getItem(COMPLETED_KEY))||{}; }catch(e){ completedIds={}; }
+function saveCompleted(){ try{ localStorage.setItem(COMPLETED_KEY, JSON.stringify(completedIds)); }catch(e){} }
 function escJs(s){ return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
 
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
@@ -177,6 +180,12 @@ function transform(feed){
       drive:deal.drive||"", agent:deal.agent||""
     });
   });
+  // Keep just-completed tasks hidden until the feed catches up (proxy cache + Coda commit lag).
+  var now=(new Date()).getTime(), present={};
+  out.forEach(function(t){ present[t.id]=true; });
+  Object.keys(completedIds).forEach(function(id){ if(!present[id] || (now-completedIds[id])>COMPLETED_TTL) delete completedIds[id]; });
+  out.forEach(function(t){ if(completedIds[t.id]) t.done=true; });
+  saveCompleted();
   DATA.tasks=out;
 }
 
@@ -312,9 +321,9 @@ function markSelectedDone(){
   var ids=Object.keys(sel); if(!ids.length||saving) return;
   saving=true; render();
   var okc=0;
-  var chain=ids.reduce(function(p,id){ return p.then(function(){ return completeOne(id).then(function(ok){ if(ok){okc++; var t=DATA.tasks.find(function(x){return x.id===id;}); if(t)t.done=true;} }); }); }, Promise.resolve());
+  var chain=ids.reduce(function(p,id){ return p.then(function(){ return completeOne(id).then(function(ok){ if(ok){okc++; completedIds[id]=(new Date()).getTime(); var t=DATA.tasks.find(function(x){return x.id===id;}); if(t)t.done=true;} }); }); }, Promise.resolve());
   chain.then(function(){
-    saving=false; sel={};
+    saving=false; sel={}; saveCompleted();
     render();
     if(okc===ids.length) showToast("✓ "+okc+" task"+(okc>1?"s":"")+" marked done · synced to Transaction Checklists + Dashboard");
     else showToast("Marked "+okc+" of "+ids.length+" — some didn't save. Refreshing…", true);
