@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TWT | Tasks</title>
+<style>
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#1a1a1a; }
+  .wrap { max-width:1400px; margin:0 auto; }
+  .coda-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #ededea; }
+  .coda-bar .tname { font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .coda-bar .tname .ic { width:18px;height:18px;border-radius:4px;background:#e8f0ee;color:#3a5a6c;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700; }
+  .coda-bar .tname .sub { font-weight:400; color:#9a9a92; font-size:12px; }
+  .coda-bar .sync { font-size:11px; color:#5a8a6a; display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .coda-bar .sync .d { width:7px;height:7px;border-radius:50%;background:#57a06e; }
+  .coda-bar .sync.stale .d { background:#c9a227; }
+  .coda-toolbar { display:flex; gap:14px; padding:8px 16px; border-bottom:1px solid #ededea; font-size:12px; color:#8a8a82; flex-wrap:wrap; }
+  .ftabs { display:flex; gap:7px; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid #ededea; align-items:center; }
+  .ftab { font-size:12px; font-weight:500; padding:5px 12px; border-radius:20px; background:#f4f4f1; color:#55554e; border:1px solid #e3e3de; cursor:pointer; user-select:none; }
+  .ftab.on { background:#3a5a6c; color:#fff; border-color:#3a5a6c; }
+  .ftab .n { opacity:.6; margin-left:5px; font-weight:600; }
+  .ftsep { width:1px; height:18px; background:#e0e0da; margin:0 3px; }
+
+  table.coda { width:100%; border-collapse:collapse; font-size:13px; }
+  table.coda thead th { text-align:left; font-weight:500; color:#8a8a82; background:#fafafa; padding:8px 12px; border-bottom:1px solid #ededea; border-right:1px solid #f2f2ef; white-space:nowrap; font-size:11px; position:sticky; top:0; z-index:2; }
+  .grp td { background:#f4f6f7; font-weight:600; font-size:12.5px; color:#33454f; padding:8px 12px; border-bottom:1px solid #e6e9ea; }
+  .grp .cnt { color:#8a97a0; font-weight:500; margin-left:6px; }
+  .grp .chev { display:inline-block; width:12px; color:#8a97a0; }
+  table.coda tbody td { padding:8px 12px; border-bottom:1px solid #f2f2ef; border-right:1px solid #f6f6f4; vertical-align:middle; }
+  tr.taskrow:hover td { background:#f9fbfb; }
+  tr.taskrow.sel td { background:#eef4f7; }
+  tr.taskrow { cursor:pointer; }
+
+  .selbox { width:16px; height:16px; border-radius:4px; border:1.5px solid #c3c3bd; display:inline-block; cursor:pointer; }
+  .selbox.on { background:#3a5a6c; border-color:#3a5a6c; position:relative; }
+  .selbox.on::after { content:"✓"; color:#fff; font-size:11px; position:absolute; left:2px; top:-2px; }
+  .ck.done { width:17px; height:17px; border-radius:50%; background:#57a06e; display:inline-block; position:relative; }
+  .ck.done::after { content:"✓"; color:#fff; font-size:11px; position:absolute; left:3px; top:-1px; }
+  .ck.pending { opacity:.5; }
+
+  .task-cell { max-width:520px; }
+  .task-cell.struck { color:#a7a7a0; text-decoration:line-through; }
+  .pill { display:inline-block; font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:20px; white-space:nowrap; }
+  .pill.listing { background:#fbe4e4; color:#c0453f; }
+  .pill.buyer   { background:#e3eefb; color:#2f6ea8; }
+  .pill.lease   { background:#e2f2e6; color:#3f8a57; }
+  .pill.other   { background:#eee; color:#777; }
+  .u { display:inline-block; font-size:10.5px; font-weight:600; padding:2px 9px; border-radius:20px; white-space:nowrap; }
+  .u.green  { background:#e2f2e6; color:#3f8a57; }
+  .u.yellow { background:#fbeecb; color:#a5822a; }
+  .u.red    { background:#fbe0de; color:#c0453f; }
+  .u.none   { background:#f0f0ed; color:#9a9a92; }
+
+  .exp { color:#b7b7b0; font-size:13px; }
+  tr.taskrow:hover .exp { color:#3a5a6c; }
+  .coda-detail td { background:#f7fafb; border-bottom:1px solid #e6e9ea; padding:0; }
+  .cd-inner { padding:12px 18px 14px 42px; }
+  .cd-inner .kv { display:flex; gap:8px; font-size:12.5px; padding:3px 0; }
+  .cd-inner .kv .k { color:#8a97a0; width:120px; flex:none; }
+  .cd-inner .kv a { color:#2f6ea8; text-decoration:none; font-weight:500; }
+  .cd-inner .kv a:hover { text-decoration:underline; }
+  .cd-inner .details { white-space:pre-wrap; color:#4a4a44; font-size:12px; line-height:1.45; }
+
+  .state { padding:40px 16px; text-align:center; color:#9a9a92; font-size:13px; }
+
+  .bulkbar { position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#22303a; color:#fff; border-radius:12px; padding:10px 12px 10px 18px; display:none; align-items:center; gap:14px; box-shadow:0 8px 30px rgba(0,0,0,.25); z-index:20; font-size:13px; }
+  .bulkbar.show { display:flex; }
+  .bulkbar .cnt { font-weight:600; }
+  .bulkbar button { font:inherit; font-size:13px; font-weight:600; border:none; border-radius:8px; padding:8px 14px; cursor:pointer; }
+  .bulkbar .mark { background:#57a06e; color:#fff; }
+  .bulkbar .mark:disabled { opacity:.6; cursor:default; }
+  .bulkbar .clear { background:transparent; color:#c7d2d8; }
+  .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:74px; background:#0b0b0b; color:#fff; font-size:12.5px; padding:9px 16px; border-radius:20px; opacity:0; transition:opacity .2s; z-index:21; pointer-events:none; text-align:center; }
+  .toast.show { opacity:1; }
+  .toast.err { background:#7a2b26; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="coda-bar">
+    <div class="tname"><span class="ic">✓</span> Tasks <span class="sub">live from Transaction Checklists</span></div>
+    <div class="sync" id="sync" onclick="load()"><span class="d"></span> <span id="synctext">Loading…</span></div>
+  </div>
+  <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Current phase · incomplete</span><span>↕ Checklist order</span></div>
+  <div class="ftabs" id="ftabs"></div>
+  <table class="coda" id="tbl"><tbody><tr><td class="state">Loading tasks…</td></tr></tbody></table>
+</div>
+
+<div class="bulkbar" id="bulkbar">
+  <span class="cnt" id="bulkcnt">0 selected</span>
+  <button class="mark" id="markbtn" onclick="markSelectedDone()">✓ Mark done</button>
+  <button class="clear" onclick="clearSel()">Clear</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var PROXY="https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
+var KEY=new URLSearchParams(location.search).get("k")||"";
+var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+var DATA={tasks:[],dealsByAddr:{}};
+var active="all", sel={}, expandedId=null;
+
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+function trackFromPhase(p){ p=(p||"").toUpperCase(); if(p.indexOf("BUYER")===0)return "buyer"; if(p.indexOf("LEASE")===0)return "lease"; if(p.indexOf("LISTING")===0||p.indexOf("SELLER")===0)return "listing"; return "other"; }
+function addrOf(dealStr){ return String(dealStr||"").split("|")[0].trim(); }
+function parseDue(v){ if(!v)return null; var d=new Date(v); return isNaN(d)?null:d; }
+function startOfDay(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+function fmtDue(d){ return d? (MONTHS[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear()) : "—"; }
+function urgency(d){
+  if(!d) return {cls:"none",label:"No date"};
+  var today=startOfDay(new Date()), due=startOfDay(d);
+  var n=Math.round((due-today)/86400000);
+  if(n<0) return {cls:"red",label:n===-1?"Overdue 1d":"Overdue "+(-n)+"d"};
+  if(n<=3) return {cls:"yellow",label:n===0?"Due today":"Due in "+n+"d"};
+  return {cls:"green",label:"Due in "+n+"d"};
+}
+
+var TABS=[
+  {id:"all",label:"All",kind:"b"},{id:"now",label:"NOW",kind:"b"},{id:"queue",label:"QUEUE",kind:"b"},
+  {id:"listing",label:"Listings",kind:"t"},{id:"buyer",label:"Buyers",kind:"t"},{id:"lease",label:"Leases",kind:"t"}
+];
+function matches(t,id){
+  if(id==="all")return true;
+  if(id==="now")return t.bucket==="NOW";
+  if(id==="queue")return t.bucket==="QUEUE";
+  return t.track===id;
+}
+function countFor(id){ var n=0; DATA.tasks.forEach(function(t){ if(!t.done && matches(t,id)) n++; }); return n; }
+
+function transform(feed){
+  var dba={};
+  (feed.deals||[]).forEach(function(d){ var v=d.values||{}; var a=v["Property Address"]; if(a) dba[a.trim()]={drive:v["Drive Folder"]||"",type:v["Deal Type"]||"",client:v["Client"]||"",city:v["City"]||"",agent:v["Agent"]||""}; });
+  DATA.dealsByAddr=dba;
+  var out=[];
+  (feed.tasks||[]).forEach(function(t,i){
+    var v=t.values||{};
+    var addr=addrOf(v["Deal"]);
+    var deal=dba[addr]||{};
+    var due=parseDue(v["Due Date"]);
+    out.push({
+      id:t.id, task:v["Task"]||t.name||"(task)", dealStr:v["Deal"]||"", addr:addr,
+      client:deal.client||(String(v["Deal"]||"").split("|")[1]||"").trim(),
+      phase:v["Phase"]||"", track:trackFromPhase(v["Phase"]),
+      due:due, bucket:(v["Status"]||"NOW"), done:!!v["Complete"],
+      notes:v["Notes"]||"", details:v["Details"]||"",
+      order:(v["Order"]!=null?Number(v["Order"]):i), phaseNum:(v["Phase #"]!=null?Number(v["Phase #"]):0),
+      drive:deal.drive||"", agent:deal.agent||""
+    });
+  });
+  DATA.tasks=out;
+}
+
+function renderTabs(){
+  var h="";
+  TABS.forEach(function(t,i){ if(i===3) h+="<span class='ftsep'></span>"; h+="<span class='ftab"+(t.id===active?" on":"")+"' onclick=\"setTab('"+t.id+"')\">"+t.label+"<span class='n'>"+countFor(t.id)+"</span></span>"; });
+  document.getElementById("ftabs").innerHTML=h;
+}
+
+function groupsForRender(){
+  // visible, incomplete, matching active filter
+  var vis=DATA.tasks.filter(function(t){ return !t.done && matches(t,active); });
+  // group by deal address
+  var byDeal={};
+  vis.forEach(function(t){ (byDeal[t.addr]=byDeal[t.addr]||[]).push(t); });
+  // sort each deal's tasks by phaseNum then order
+  var groups=Object.keys(byDeal).map(function(a){
+    var rows=byDeal[a].sort(function(x,y){ return (x.phaseNum-y.phaseNum)||(x.order-y.order); });
+    // earliest due for deal sort
+    var earliest=rows.reduce(function(m,r){ if(r.due&&(!m||r.due<m))return r.due; return m; },null);
+    return {addr:a, rows:rows, earliest:earliest};
+  });
+  // sort deals by earliest due (soonest first), no-date last
+  groups.sort(function(g1,g2){ if(!g1.earliest&&!g2.earliest)return g1.addr<g2.addr?-1:1; if(!g1.earliest)return 1; if(!g2.earliest)return -1; return g1.earliest-g2.earliest; });
+  return groups;
+}
+
+function detailRow(t){
+  var u=urgency(t.due);
+  var drive = t.drive ? "<a href='"+esc(t.drive)+"' target='_blank' rel='noopener'>Open in Google Drive ↗</a>" : "<span style='color:#a0a099'>—</span>";
+  return "<tr class='coda-detail'><td colspan='6'><div class='cd-inner'>"+
+    "<div class='kv'><span class='k'>Task</span><span>"+esc(t.task)+"</span></div>"+
+    "<div class='kv'><span class='k'>Deal</span><span>"+esc(t.dealStr)+"</span></div>"+
+    "<div class='kv'><span class='k'>Phase</span><span>"+esc(t.phase)+"</span></div>"+
+    "<div class='kv'><span class='k'>Priority</span><span>"+esc(t.bucket)+"</span></div>"+
+    "<div class='kv'><span class='k'>Due Date</span><span>"+fmtDue(t.due)+" · "+u.label+"</span></div>"+
+    (t.agent?"<div class='kv'><span class='k'>Agent</span><span>"+esc(t.agent)+"</span></div>":"")+
+    "<div class='kv'><span class='k'>Deal folder</span><span>"+drive+"</span></div>"+
+    (t.details?"<div class='kv'><span class='k'>Details</span><span class='details'>"+esc(t.details)+"</span></div>":"")+
+  "</div></td></tr>";
+}
+
+function render(){
+  var groups=groupsForRender();
+  var html="<thead><tr><th style='width:36px'></th><th>Task</th><th>Phase</th><th>Status</th><th>Due Date</th><th style='width:36px'></th></tr></thead><tbody>";
+  var any=false;
+  groups.forEach(function(g){
+    any=true;
+    var head=g.rows[0];
+    var label=g.addr+(head.client?" — "+head.client:"");
+    html+="<tr class='grp'><td colspan='6'><span class='chev'>▾</span>"+esc(label)+"<span class='cnt'>"+g.rows.length+"</span></td></tr>";
+    g.rows.forEach(function(t){
+      var isSel=!!sel[t.id];
+      var u=urgency(t.due);
+      var box="<span class='selbox"+(isSel?" on":"")+"' onclick=\"event.stopPropagation();toggleSel('"+t.id+"')\"></span>";
+      html+="<tr class='taskrow"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
+        "<td style='text-align:center'>"+box+"</td>"+
+        "<td class='task-cell'>"+esc(t.task)+"</td>"+
+        "<td><span class='pill "+t.track+"'>"+esc(t.phase)+"</span></td>"+
+        "<td><span class='u "+u.cls+"'>"+u.label+"</span></td>"+
+        "<td>"+fmtDue(t.due)+"</td>"+
+        "<td style='text-align:center'><span class='exp'>⤢</span></td></tr>";
+      if(expandedId===t.id) html+=detailRow(t);
+    });
+  });
+  if(!any) html+="<tr><td colspan='6' class='state'>Nothing here — you're all caught up for this filter. 🎉</td></tr>";
+  html+="</tbody>";
+  document.getElementById("tbl").innerHTML=html;
+  renderTabs();
+  updateBar();
+}
+
+function setTab(id){ active=id; render(); }
+function toggleExpand(id){ expandedId = (expandedId===id)?null:id; render(); }
+function toggleSel(id){ if(sel[id])delete sel[id]; else sel[id]=true; render(); }
+function clearSel(){ sel={}; render(); }
+function updateBar(){ var n=Object.keys(sel).length; document.getElementById("bulkcnt").textContent=n+" selected"; document.getElementById("bulkbar").classList.toggle("show",n>0); }
+
+var tt;
+function showToast(m,isErr){ var el=document.getElementById("toast"); el.textContent=m; el.className="toast show"+(isErr?" err":""); clearTimeout(tt); tt=setTimeout(function(){el.className="toast";},3200); }
+
+function completeOne(id){
+  return fetch(PROXY+"?k="+encodeURIComponent(KEY)+"&action=setcomplete&row="+encodeURIComponent(id)+"&val=1",{redirect:"follow"})
+    .then(function(r){return r.json();}).then(function(res){ return res && res.ok; }).catch(function(){ return false; });
+}
+function markSelectedDone(){
+  var ids=Object.keys(sel); if(!ids.length) return;
+  var btn=document.getElementById("markbtn"); btn.disabled=true; btn.textContent="Saving…";
+  var okc=0;
+  var chain=ids.reduce(function(p,id){ return p.then(function(){ return completeOne(id).then(function(ok){ if(ok){okc++; var t=DATA.tasks.find(function(x){return x.id===id;}); if(t)t.done=true;} }); }); }, Promise.resolve());
+  chain.then(function(){
+    btn.disabled=false; btn.textContent="✓ Mark done"; sel={};
+    render();
+    if(okc===ids.length) showToast("✓ "+okc+" task"+(okc>1?"s":"")+" marked done · synced to Transaction Checklists + Dashboard");
+    else showToast("Marked "+okc+" of "+ids.length+" — some didn't save. Refreshing…", true);
+    setTimeout(load, 2500);
+  });
+}
+
+function setSync(txt, stale){ document.getElementById("synctext").textContent=txt; document.getElementById("sync").classList.toggle("stale",!!stale); }
+function load(){
+  setSync("Refreshing…");
+  fetch(PROXY+"?k="+encodeURIComponent(KEY),{cache:"no-store"})
+    .then(function(r){return r.json();})
+    .then(function(feed){
+      transform(feed);
+      expandedId=null;
+      render();
+      var n=DATA.tasks.filter(function(t){return !t.done;}).length;
+      setSync(n+" open · updated just now");
+    })
+    .catch(function(e){ setSync("Couldn't load — tap to retry", true); document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Couldn't reach the data. Tap the status to retry.</td></tr></tbody>"; });
+}
+if(!KEY){ document.getElementById("tbl").innerHTML="<tbody><tr><td class='state'>Missing access key in the URL (?k=…).</td></tr></tbody>"; setSync("No key", true); }
+else load();
+</script>
+</body>
+</html>
