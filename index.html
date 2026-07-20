@@ -371,7 +371,7 @@
     <div class="dm-row" style="display:flex; align-items:flex-end;"><span style="font-size:11px; color:var(--text-muted); padding-bottom:9px;">Leave blank for no due date</span></div>
   </div>
   <div class="dm-row"><label>Notes (how to do it)</label><textarea id="at-details" rows="3"></textarea></div>
-  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Adds a one-off task to that deal's checklist. Shows on your focus list if due within 14 days.</div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Adds a one-off task to that deal's checklist. Shows on your focus list if due within 21 days.</div>
   <div class="dm-err" id="at-err"></div>
   <button class="dm-btn" id="at-save" type="button">Add task</button>
 </div></div>
@@ -417,6 +417,12 @@
   function today0() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
   function fmtDay(d) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
   function daysTo(d) { return Math.round((d - today0()) / 86400000); }
+  // Same normalization as tasks.html: match Deals-table addresses to checklist deal labels.
+  var SUFFIX_MAP = { LANE: "LN", ROAD: "RD", DRIVE: "DR", COURT: "CT", TRAIL: "TRL", TRACE: "TRCE", CIRCLE: "CIR", TERRACE: "TER", PLACE: "PL", AVENUE: "AVE", BOULEVARD: "BLVD", HIGHWAY: "HWY", PARKWAY: "PKWY", STREET: "ST", POINT: "PT", SQUARE: "SQ" };
+  function addrKey(s) {
+    return String(s || "").toUpperCase().replace(/[.,]/g, "").split(/\s+/).filter(Boolean)
+      .map(function (w) { return SUFFIX_MAP[w] || w; }).join(" ");
+  }
 
   function setDiag(cls, dataMsg) {
     var el = $("diag");
@@ -455,11 +461,27 @@
     $("subline").textContent = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) +
       " \u00b7 " + open.length + " active deals \u00b7 " + (hot.length ? hot.length + " need you today" : "all clear today");
 
+    // Deals with NO checklist at all (present in Deals table, zero rows in Transaction Checklists).
+    // Only computed when the feed carries the nextUp rollup (proxy v12+).
+    var noChecklist = [];
+    if (d.nextUp) {
+      var ckSet = {};
+      Object.keys(d.nextUp).forEach(function (k) { ckSet[addrKey(String(k).split("|")[0])] = true; });
+      noChecklist = open.filter(function (v) { return v["Property Address"] && !ckSet[addrKey(v["Property Address"])]; });
+    }
     var attEl = $("attention");
-    if (!hot.length) {
+    var ncCards = noChecklist.map(function (v) {
+      return '<div class="att-card"><div class="att-l"><span class="dot" style="background:#E24B4A;"></span><div style="min-width:0;">' +
+        '<div class="att-a">' + esc(v["Property Address"]) + '</div>' +
+        '<div class="att-s">' + esc(v["Deal Type"] || "?") + ' \u00b7 ' + esc(v["Client"] || "") + '</div></div></div>' +
+        '<span class="pill dang">No checklist</span></div>';
+    }).join("");
+    if (!hot.length && !noChecklist.length) {
       attEl.innerHTML = '<div class="att-card"><div class="att-l"><span class="dot" style="background:#0ca30c;"></span><div><div class="att-a">All deals healthy</div><div class="att-s">No deadlines within 3 days</div></div></div></div>';
+    } else if (!hot.length) {
+      attEl.innerHTML = ncCards;
     } else {
-      attEl.innerHTML = hot.slice(0, 4).map(function (v) {
+      attEl.innerHTML = ncCards + hot.slice(0, 4).map(function (v) {
         var red = v["Health"] === "\ud83d\udd34";
         var nd = pDate(v["Next Deadline"]);
         var pill = nd ? (daysTo(nd) <= 0 ? "Due today" : "Due " + fmtDay(nd)) : "Check deal";
@@ -481,7 +503,7 @@
       { key: "late", label: "LATE", cls: "late", rows: [] },
       { key: "today", label: "TODAY", cls: "today", rows: [] },
       { key: "week", label: "THIS WEEK", cls: "week", rows: [] },
-      { key: "next", label: "NEXT WEEK", cls: "week", rows: [] }
+      { key: "next", label: "UPCOMING", cls: "week", rows: [] }
     ];
     open_t.forEach(function (t) {
       var dd = pDate(t["Due Date"]);
