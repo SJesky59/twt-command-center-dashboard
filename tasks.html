@@ -31,6 +31,11 @@
   tr.grp:hover td { background:#eef1f2; }
   .grp .cnt { color:#8a97a0; font-weight:500; margin-left:6px; }
   .grp .chev { display:inline-block; width:14px; color:#8a97a0; }
+  .grp.cu td { cursor:default; }
+  .cumsg { color:#3d8b5f; font-weight:500; margin-left:10px; }
+  .cuwarn .cumsg { color:#b3541e; }
+  .mgrp.cu { cursor:default; }
+  .mgrp.cu .cumsg { font-weight:500; font-size:12px; margin-top:3px; }
   table.coda tbody td { padding:8px 12px; border-bottom:1px solid #f2f2ef; border-right:1px solid #f6f6f4; vertical-align:middle; }
   tr.taskrow:hover td { background:#f9fbfb; }
   tr.taskrow.sel td { background:#eef4f7; }
@@ -111,7 +116,7 @@
     <div class="tname"><span class="ic">✓</span> Tasks <span class="sub">live from Transaction Checklists</span></div>
     <div class="sync" id="sync" onclick="load()"><span class="d"></span> <span id="synctext">Loading…</span></div>
   </div>
-  <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Current phase · incomplete</span><span>↕ Checklist order</span></div>
+  <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Incomplete · due within 21 days</span><span>↕ Checklist order</span></div>
   <div class="ftabs" id="ftabs"></div>
   <div id="tbl"><div class="state">Loading tasks…</div></div>
 </div>
@@ -123,7 +128,7 @@ var PROXY="https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp
 var KEY=new URLSearchParams(location.search).get("k")||"";
 var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-var DATA={tasks:[],dealsByAddr:{}};
+var DATA={tasks:[],dealsByAddr:{},nextUp:{}};
 var active="all", sel={}, expandedId=null, saving=false;
 var COLLAPSE_KEY="twt_tasks_collapsed_v1", collapsed={};
 try{ collapsed=JSON.parse(localStorage.getItem(COLLAPSE_KEY))||{}; }catch(e){ collapsed={}; }
@@ -135,6 +140,14 @@ function escJs(s){ return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 function trackFromPhase(p){ p=(p||"").toUpperCase(); if(p.indexOf("BUYER")===0)return "buyer"; if(p.indexOf("LEASE")===0)return "lease"; if(p.indexOf("LISTING")===0||p.indexOf("SELLER")===0)return "listing"; return "other"; }
 function addrOf(dealStr){ return String(dealStr||"").split("|")[0].trim(); }
+// Normalize an address into a match key: uppercase, single spaces, common street
+// suffixes abbreviated the same way on both sides (LANE->LN, ROAD->RD, etc.) so
+// "140 Rose Cottage Lane" (Deals) matches "140 ROSE COTTAGE LN" (checklist).
+var SUFFIX_MAP={LANE:"LN",ROAD:"RD",DRIVE:"DR",COURT:"CT",TRAIL:"TRL",TRACE:"TRCE",CIRCLE:"CIR",TERRACE:"TER",PLACE:"PL",AVENUE:"AVE",BOULEVARD:"BLVD",HIGHWAY:"HWY",PARKWAY:"PKWY",STREET:"ST",POINT:"PT",SQUARE:"SQ"};
+function addrKey(s){
+  return String(s||"").toUpperCase().replace(/[.,]/g,"").split(/\s+/).filter(Boolean)
+    .map(function(w){ return SUFFIX_MAP[w]||w; }).join(" ");
+}
 function parseDue(v){ if(!v)return null; var d=new Date(v); return isNaN(d)?null:d; }
 function startOfDay(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
 function fmtDue(d){ return d? (MONTHS[d.getMonth()]+" "+d.getDate()+", "+d.getFullYear()) : "—"; }
@@ -149,25 +162,33 @@ function urgency(d){
 function isMobile(){ return window.matchMedia("(max-width:640px)").matches; }
 
 var TABS=[
-  {id:"all",label:"All"},{id:"now",label:"NOW"},{id:"queue",label:"QUEUE"},
+  {id:"all",label:"All"},{id:"now",label:"NOW"},{id:"queue",label:"QUEUE"},{id:"upcoming",label:"UPCOMING"},
   {id:"listing",label:"Listings"},{id:"buyer",label:"Buyers"},{id:"lease",label:"Leases"}
 ];
 function matches(t,id){
   if(id==="all")return true;
   if(id==="now")return t.bucket==="NOW";
   if(id==="queue")return t.bucket==="QUEUE";
+  if(id==="upcoming")return t.bucket==="UPCOMING";
   return t.track===id;
 }
 function countFor(id){ var n=0; DATA.tasks.forEach(function(t){ if(!t.done && matches(t,id)) n++; }); return n; }
 
 function transform(feed){
   var dba={};
-  (feed.deals||[]).forEach(function(d){ var v=d.values||{}; var a=v["Property Address"]; if(a) dba[a.trim()]={drive:v["Drive Folder"]||"",type:v["Deal Type"]||"",client:v["Client"]||"",city:v["City"]||"",agent:v["Agent"]||""}; });
+  // Keyed by UPPERCASED address so "3515 Creek Court" (Deals table) matches
+  // "3515 CREEK COURT | Lokesh & Foram" (checklist deal label) regardless of case.
+  (feed.deals||[]).forEach(function(d){ var v=d.values||{}; var a=v["Property Address"]; if(a) dba[addrKey(a)]={display:a.trim(),drive:v["Drive Folder"]||"",type:v["Deal Type"]||"",client:v["Client"]||"",city:v["City"]||"",agent:v["Agent"]||"",stage:v["Stage"]||""}; });
   DATA.dealsByAddr=dba;
+  // Per-deal "next open task" rollup from the server (covers tasks beyond the window).
+  var nu={};
+  Object.keys(feed.nextUp||{}).forEach(function(k){ nu[addrKey(addrOf(k))]=feed.nextUp[k]; });
+  DATA.nextUp=nu;
+  DATA.hasNextUp=!!feed.nextUp; // old proxy version = no rollup; skip caught-up rows then
   var out=[];
   (feed.tasks||[]).forEach(function(t,i){
     var v=t.values||{};
-    var addr=addrOf(v["Deal"]);
+    var addr=addrKey(addrOf(v["Deal"]));
     var deal=dba[addr]||{};
     var due=parseDue(v["Due Date"]);
     out.push({
@@ -191,10 +212,12 @@ function transform(feed){
 
 function renderTabs(){
   var h="";
-  TABS.forEach(function(t,i){ if(i===3) h+="<span class='ftsep'></span>"; h+="<span class='ftab"+(t.id===active?" on":"")+"' onclick=\"setTab('"+t.id+"')\">"+t.label+"<span class='n'>"+countFor(t.id)+"</span></span>"; });
+  TABS.forEach(function(t,i){ if(i===4) h+="<span class='ftsep'></span>"; h+="<span class='ftab"+(t.id===active?" on":"")+"' onclick=\"setTab('"+t.id+"')\">"+t.label+"<span class='n'>"+countFor(t.id)+"</span></span>"; });
   document.getElementById("ftabs").innerHTML=h;
 }
 
+function dispAddr(a){ var d=DATA.dealsByAddr[a]; return (d&&d.display)?d.display:a; }
+function trackOfType(ty){ ty=String(ty||"").toLowerCase(); if(ty==="buyer")return "buyer"; if(ty==="lease")return "lease"; if(ty==="listing")return "listing"; return "other"; }
 function groupsForRender(){
   var vis=DATA.tasks.filter(function(t){ return !t.done && matches(t,active); });
   var byDeal={};
@@ -205,6 +228,30 @@ function groupsForRender(){
     return {addr:a, rows:rows, earliest:earliest};
   });
   groups.sort(function(g1,g2){ if(!g1.earliest&&!g2.earliest)return g1.addr<g2.addr?-1:1; if(!g1.earliest)return 1; if(!g2.earliest)return -1; return g1.earliest-g2.earliest; });
+  // Companion tweak: on All (and the per-track tabs), every active deal stays visible.
+  // A deal with zero tasks in the window gets a one-line "all caught up" header
+  // instead of vanishing - so "caught up" never looks like "checklist missing".
+  if(DATA.hasNextUp&&(active==="all"||active==="listing"||active==="buyer"||active==="lease")){
+    Object.keys(DATA.dealsByAddr).forEach(function(a){
+      var d=DATA.dealsByAddr[a];
+      if(String(d.stage||"").toLowerCase()==="closed") return;
+      if(byDeal[a]) return;
+      if(active!=="all" && trackOfType(d.type)!==active) return;
+      var nu=DATA.nextUp[a];
+      var msg, warn=false;
+      if(nu && nu.due){
+        var nd=parseDue(nu.due);
+        msg="All caught up - next task due "+fmtDue(nd)+": "+nu.task;
+      } else if(nu && nu.open>0){
+        msg="All dated tasks done - "+nu.open+" open item"+(nu.open>1?"s":"")+" with no date (conditional/ongoing)";
+      } else if(nu){
+        msg="Every checklist task is done";
+      } else {
+        msg="No checklist found for this deal - check the Transaction Checklists doc"; warn=true;
+      }
+      groups.push({addr:a, rows:[], caughtUp:{msg:msg, warn:warn}});
+    });
+  }
   return groups;
 }
 
@@ -230,8 +277,14 @@ function renderTableHTML(groups){
   var any=false;
   groups.forEach(function(g){
     any=true;
+    if(g.caughtUp){
+      var d0=DATA.dealsByAddr[g.addr]||{};
+      var lbl0=dispAddr(g.addr)+(d0.client?" — "+d0.client:"");
+      html+="<tr class='grp cu"+(g.caughtUp.warn?" cuwarn":"")+"'><td colspan='6'>"+esc(lbl0)+"<span class='cumsg'>"+(g.caughtUp.warn?"⚠ ":"✓ ")+esc(g.caughtUp.msg)+"</span></td></tr>";
+      return;
+    }
     var head=g.rows[0];
-    var label=g.addr+(head.client?" — "+head.client:"");
+    var label=dispAddr(g.addr)+(head.client?" — "+head.client:"");
     var isColl=!!collapsed[g.addr];
     html+="<tr class='grp' onclick=\"toggleGroup('"+escJs(g.addr)+"')\"><td colspan='6'><span class='chev'>"+(isColl?"▸":"▾")+"</span>"+esc(label)+"<span class='cnt'>"+g.rows.length+"</span></td></tr>";
     if(!isColl) g.rows.forEach(function(t){
@@ -268,8 +321,14 @@ function renderCardsHTML(groups){
   var any=false, html="";
   groups.forEach(function(g){
     any=true;
+    if(g.caughtUp){
+      var d0=DATA.dealsByAddr[g.addr]||{};
+      var lbl0=dispAddr(g.addr)+(d0.client?" — "+d0.client:"");
+      html+="<div class='mgrp cu"+(g.caughtUp.warn?" cuwarn":"")+"'>"+esc(lbl0)+"<div class='cumsg'>"+(g.caughtUp.warn?"⚠ ":"✓ ")+esc(g.caughtUp.msg)+"</div></div>";
+      return;
+    }
     var head=g.rows[0];
-    var label=g.addr+(head.client?" — "+head.client:"");
+    var label=dispAddr(g.addr)+(head.client?" — "+head.client:"");
     var isColl=!!collapsed[g.addr];
     html+="<div class='mgrp' onclick=\"toggleGroup('"+escJs(g.addr)+"')\"><span class='chev'>"+(isColl?"▸":"▾")+"</span>"+esc(label)+"<span class='mcnt'>"+g.rows.length+"</span></div>";
     if(!isColl) g.rows.forEach(function(t){
