@@ -65,6 +65,7 @@
   .u.yellow { background:#fbeecb; color:#a5822a; }
   .u.red    { background:#fbe0de; color:#c0453f; }
   .u.none   { background:#f0f0ed; color:#9a9a92; }
+  .tw { display:inline-block; font-size:10.5px; font-weight:600; padding:2px 9px; border-radius:20px; white-space:nowrap; background:#eef0f4; color:#6b7280; }
   .state { padding:40px 16px; text-align:center; color:#9a9a92; font-size:13px; }
   .rowact { display:inline-flex; align-items:center; gap:6px; justify-content:flex-end; }
   .rowdone { font:inherit; font-size:11.5px; font-weight:600; background:#57a06e; color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; white-space:nowrap; }
@@ -116,7 +117,7 @@
     <div class="tname"><span class="ic">✓</span> Tasks <span class="sub">live from Transaction Checklists</span></div>
     <div class="sync" id="sync" onclick="load()"><span class="d"></span> <span id="synctext">Loading…</span></div>
   </div>
-  <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Incomplete · due within 21 days</span><span>↕ Checklist order</span></div>
+  <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Incomplete · full checklist</span><span>↕ Checklist order</span></div>
   <div class="ftabs" id="ftabs"></div>
   <div id="tbl"><div class="state">Loading tasks…</div></div>
 </div>
@@ -195,7 +196,7 @@ function transform(feed){
       id:t.id, task:v["Task"]||t.name||"(task)", dealStr:v["Deal"]||"", addr:addr,
       client:deal.client||(String(v["Deal"]||"").split("|")[1]||"").trim(),
       phase:v["Phase"]||"", track:trackFromPhase(v["Phase"]),
-      due:due, bucket:(v["Status"]||"NOW"), done:!!v["Complete"],
+      due:due, bucket:(v["Status"]||""), done:!!v["Complete"],
       notes:v["Notes"]||"", details:v["Details"]||"",
       order:(v["Order"]!=null?Number(v["Order"]):i), phaseNum:(v["Phase #"]!=null?Number(v["Phase #"]):0),
       drive:deal.drive||"", agent:deal.agent||""
@@ -289,13 +290,16 @@ function renderTableHTML(groups){
     html+="<tr class='grp' onclick=\"toggleGroup('"+escJs(g.addr)+"')\"><td colspan='6'><span class='chev'>"+(isColl?"▸":"▾")+"</span>"+esc(label)+"<span class='cnt'>"+g.rows.length+"</span></td></tr>";
     if(!isColl) g.rows.forEach(function(t){
       var isSel=!!sel[t.id]; var u=urgency(t.due);
+      var whenT=t.notes?String(t.notes).replace(/^Timing:\s*/,""):"";
+      var statusCell=t.due?("<span class='u "+u.cls+"'>"+u.label+"</span>"):"";
+      var dueCell=t.due?fmtDue(t.due):(whenT?"<span class='tw'>"+esc(whenT)+"</span>":"");
       var box="<span class='selbox"+(isSel?" on":"")+"' onclick=\"event.stopPropagation();toggleSel('"+t.id+"')\"></span>";
       html+="<tr class='taskrow"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
         "<td style='text-align:center'>"+box+"</td>"+
         "<td class='task-cell'>"+esc(t.task)+"</td>"+
         "<td><span class='pill "+t.track+"'>"+esc(t.phase)+"</span></td>"+
-        "<td><span class='u "+u.cls+"'>"+u.label+"</span></td>"+
-        "<td>"+fmtDue(t.due)+"</td>"+
+        "<td>"+statusCell+"</td>"+
+        "<td>"+dueCell+"</td>"+
         "<td style='text-align:right; padding-right:14px'>"+(isSel? rowActionHTML() : "<span class='exp'>⤢</span>")+"</td></tr>";
       if(expandedId===t.id) html+=detailRowHTML(t);
     });
@@ -333,6 +337,9 @@ function renderCardsHTML(groups){
     html+="<div class='mgrp' onclick=\"toggleGroup('"+escJs(g.addr)+"')\"><span class='chev'>"+(isColl?"▸":"▾")+"</span>"+esc(label)+"<span class='mcnt'>"+g.rows.length+"</span></div>";
     if(!isColl) g.rows.forEach(function(t){
       var isSel=!!sel[t.id]; var u=urgency(t.due);
+      var whenT=t.notes?String(t.notes).replace(/^Timing:\s*/,""):"";
+      var statusM=t.due?("<span class='u "+u.cls+"'>"+u.label+"</span>"):"";
+      var dueM=t.due?("<span class='mdue'>"+fmtDue(t.due)+"</span>"):(whenT?"<span class='tw'>"+esc(whenT)+"</span>":"");
       html+="<div class='mcard"+(isSel?" sel":"")+"' onclick=\"toggleExpand('"+t.id+"')\">"+
         "<div class='mrow'>"+
           "<span class='selbox"+(isSel?" on":"")+"' onclick=\"event.stopPropagation();toggleSel('"+t.id+"')\"></span>"+
@@ -340,8 +347,8 @@ function renderCardsHTML(groups){
         "</div>"+
         "<div class='mmeta'>"+
           "<span class='pill "+t.track+"'>"+esc(t.phase)+"</span>"+
-          "<span class='u "+u.cls+"'>"+u.label+"</span>"+
-          "<span class='mdue'>"+fmtDue(t.due)+"</span>"+
+          statusM+
+          dueM+
           (isSel? rowActionHTML() : "")+
         "</div>"+
         (expandedId===t.id? mDetailHTML(t) : "")+
@@ -395,7 +402,7 @@ var CACHE_KEY="twt_tasks_feed_v1";var hasShown=false;
 function renderFromCache(){try{var c=localStorage.getItem(CACHE_KEY);if(c){transform(JSON.parse(c));render();hasShown=true;var n=DATA.tasks.filter(function(t){return !t.done;}).length;setSync(n+" open - refreshing");return true;}}catch(e){}return false;}
 function load(){
   if(!hasShown) setSync("Refreshing…");
-  fetch(PROXY+"?k="+encodeURIComponent(KEY),{cache:"no-store"})
+  fetch(PROXY+"?k="+encodeURIComponent(KEY)+"&action=alltasks",{cache:"no-store"})
     .then(function(r){return r.json();})
     .then(function(feed){
       try{localStorage.setItem(CACHE_KEY,JSON.stringify(feed));}catch(e){}hasShown=true;
