@@ -118,8 +118,6 @@
   </div>
   <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity.</div>
 
-  <div class="key" id="key"></div>
-
   <div class="viewbar">
     <span class="viewhint" id="viewhint">Tip: ⚙ Columns on any stage picks exactly what shows.</span>
     <button class="addbtn" onclick="openAdd()">+ Add Deal</button>
@@ -471,7 +469,7 @@ async function saveAdd(){
  }catch(e){toast("Add failed — check connection");}
  finally{if(btn){btn.disabled=false;btn.textContent="Add deal";}}
 }
-renderKey();loadDeals();
+loadDeals();
 </script>
 </body>
 </html>
