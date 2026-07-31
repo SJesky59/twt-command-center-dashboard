@@ -59,6 +59,9 @@
   td,th{overflow:hidden;text-overflow:ellipsis;}
   th .rz{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;user-select:none;z-index:3;}
   th .rz:hover{background:var(--accent);opacity:.35;}
+  .totrow{display:flex;flex-wrap:wrap;gap:8px 24px;padding:11px 16px 12px;border-bottom:1px solid var(--line);background:#fbfcff;}
+  .tot-tile .tl{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;}
+  .tot-tile .tv{font-size:14.5px;font-weight:700;color:var(--text);margin-top:1px;}
   .drow{cursor:pointer;}
   .drow:hover td{background:var(--hover);}
   .exp{color:var(--muted);font-size:11px;transition:.15s;display:inline-block;width:12px;}
@@ -304,6 +307,18 @@ let _rz=null;
 function startResize(e,key){e.preventDefault();e.stopPropagation();_rz={key:key,x:e.clientX,w:cw(key)};document.addEventListener("mousemove",_rzMove);document.addEventListener("mouseup",_rzUp);document.body.style.cursor="col-resize";}
 function _rzMove(e){if(!_rz)return;var nw=Math.max(40,_rz.w+(e.clientX-_rz.x));colW[_rz.key]=nw;document.querySelectorAll('col[data-k="'+_rz.key+'"]').forEach(function(c){c.style.width=nw+"px";});}
 function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove",_rzMove);document.removeEventListener("mouseup",_rzUp);document.body.style.cursor="";try{localStorage.setItem("twt-deals-colw-v1",JSON.stringify(colW));}catch(e){}}
+// ---- Stage totals (Under Contract / Closed) — board's Sum/Average formulas over Coda data ----
+function _sum(list,f){return list.reduce((a,d)=>a+(+f(d)||0),0);}
+function stageTotals(s){
+ const list=deals.filter(d=>d.s===s); if(!list.length) return "";
+ const n=list.length;
+ const vol=_sum(list,d=>d.p), gci=_sum(list,d=>effTot(d)), fm=_sum(list,d=>effFmls(d)), rf=_sum(list,d=>d.ref);
+ const priced=list.filter(d=>+d.p>0); const avgP=priced.length?vol/priced.length:0;
+ const cl=list.filter(d=>d.t!=="Lease"&&+d.c>0); const avgC=cl.length?_sum(cl,d=>d.c)/cl.length:0;
+ const tx=_sum(list,d=>(d.numTx!==""&&d.numTx!=null)?d.numTx:0);
+ const tiles=[["Deals",n],["Sales Volume",money(vol)],["Total Comm",money(gci)],["Avg Price",money(avgP)],["Avg Comm %",avgC?avgC.toFixed(2)+"%":"—"],["FMLS Fees",money(fm)],["Referral",money(rf)],["Transactions",tx]];
+ return `<div class="totrow">${tiles.map(t=>`<div class="tot-tile"><div class="tl">${t[0]}</div><div class="tv">${t[1]}</div></div>`).join("")}</div>`;
+}
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 const MDK=["photos","oh","list","exp"],MDYK=["close"];
@@ -387,7 +402,8 @@ function group(s,openable){
  const list=sortList(deals.filter(d=>d.s===s),s);
  const body=list.length?tableFor(list,s):`<div style="padding:14px;color:var(--muted);font-size:12px">No deals in this stage.</div>`;
  const custom=colOverride[viewMode][s]?" ✎":"";
- return `<div class="grp"><div class="ghead"><span class="ttl" ${openable?`onclick="toggle(this)"`:""}><span class="gbar" style="background:${sColor(s)}"></span>${s}<span class="gcount">${list.length} deal${list.length===1?"":"s"}</span>${openable?'<span class="chev">▾</span>':''}</span><button class="colbtn" onclick="event.stopPropagation();togglePicker('${s}')">⚙ Columns${custom}</button></div>${openPickerStage===s?pickerPanel(s):""}<div class="gbody">${body}</div></div>`;
+ const totals=(s==="Under Contract"||s==="Closed")?stageTotals(s):"";
+ return `<div class="grp"><div class="ghead"><span class="ttl" ${openable?`onclick="toggle(this)"`:""}><span class="gbar" style="background:${sColor(s)}"></span>${s}<span class="gcount">${list.length} deal${list.length===1?"":"s"}</span>${openable?'<span class="chev">▾</span>':''}</span><button class="colbtn" onclick="event.stopPropagation();togglePicker('${s}')">⚙ Columns${custom}</button></div>${openPickerStage===s?pickerPanel(s):""}<div class="gbody">${totals}${body}</div></div>`;
 }
 let cur="All";
 function renderTabs(){
