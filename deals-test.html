@@ -53,9 +53,12 @@
   .grp.closed .gbody{display:none;}
   .colbtn{margin-left:auto;font-size:11px;color:var(--accent);background:#eef4ff;border:1px solid #d5e2ff;border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:600;}
   .scroll{overflow-x:auto;}
-  table{border-collapse:collapse;width:100%;font-size:12px;}
-  th{text-align:left;font-size:9.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd;}
+  table{border-collapse:collapse;width:100%;font-size:12px;table-layout:fixed;}
+  th{text-align:left;font-size:9.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd;position:relative;}
   td{padding:7px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;}
+  td,th{overflow:hidden;text-overflow:ellipsis;}
+  th .rz{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;user-select:none;z-index:3;}
+  th .rz:hover{background:var(--accent);opacity:.35;}
   .drow{cursor:pointer;}
   .drow:hover td{background:var(--hover);}
   .exp{color:var(--muted);font-size:11px;transition:.15s;display:inline-block;width:12px;}
@@ -71,7 +74,7 @@
   .pill{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:20px;white-space:nowrap;}
   .lnk{color:var(--accent);font-weight:600;font-size:11.5px;text-decoration:none;cursor:pointer;}
   .stagesel,.ldsel{font-size:11px;font-weight:600;border:1px solid var(--line);border-radius:20px;padding:3px 8px;cursor:pointer;background:#fff;}
-  .cin{border:1px solid transparent;background:transparent;border-radius:6px;padding:5px 7px;font-size:12px;width:100%;min-width:70px;font-family:inherit;color:var(--text);}
+  .cin{border:1px solid transparent;background:transparent;border-radius:6px;padding:5px 7px;font-size:12px;width:100%;min-width:0;font-family:inherit;color:var(--text);}
   .cin:hover{background:#fff;border-color:var(--line);}
   .cin:focus{outline:none;background:#fff;border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,107,255,.12);}
   .cin.r{text-align:right;}
@@ -118,10 +121,10 @@
     <div class="apptitle"><svg class="hicon" width="22" height="22" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="tagg" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#d76a43"/><stop offset="1" stop-color="#b8462b"/></linearGradient></defs><path d="M11.5 3.2 3.2 11.5a1.6 1.6 0 0 0 0 2.3l7 7a1.6 1.6 0 0 0 2.3 0l8.3-8.3V3.2z" fill="url(#tagg)"/><circle cx="17" cy="7" r="1.7" fill="#fff"/></svg> Deals <span class="appsub">live from Command Center</span></div>
     <div class="appmeta"><span class="livedot"></span> <span id="dealcount">—</span> · synced</div>
   </div>
-  <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity.</div>
+  <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity. Drag a column edge to resize.</div>
 
   <div class="viewbar">
-    <span class="viewhint" id="viewhint">Tip: ⚙ Columns on any stage picks exactly what shows.</span>
+    <span class="viewhint" id="viewhint">Tip: ⚙ Columns on any stage picks exactly what shows. Drag column edges to set widths (they stick).</span>
     <button class="addbtn" onclick="openAdd()">+ Add Deal</button>
   </div>
 
@@ -292,6 +295,15 @@ const MASTER=["type","agent","lead","client","city","list","exp","listPrice","sa
 const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
 const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
 const AUTO=["tot","fmls","numTx"];
+// ---- Resizable columns (widths persist across sessions via localStorage) ----
+const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
+let colW={};
+try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v1")||"{}")||{};}catch(e){colW={};}
+function cw(k){return colW[k]||DEFAULTW[k]||100;}
+let _rz=null;
+function startResize(e,key){e.preventDefault();e.stopPropagation();_rz={key:key,x:e.clientX,w:cw(key)};document.addEventListener("mousemove",_rzMove);document.addEventListener("mouseup",_rzUp);document.body.style.cursor="col-resize";}
+function _rzMove(e){if(!_rz)return;var nw=Math.max(40,_rz.w+(e.clientX-_rz.x));colW[_rz.key]=nw;document.querySelectorAll('col[data-k="'+_rz.key+'"]').forEach(function(c){c.style.width=nw+"px";});}
+function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove",_rzMove);document.removeEventListener("mouseup",_rzUp);document.body.style.cursor="";try{localStorage.setItem("twt-deals-colw-v1",JSON.stringify(colW));}catch(e){}}
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 const MDK=["photos","oh","list","exp"],MDYK=["close"];
@@ -357,7 +369,8 @@ function pickerPanel(s){
 }
 function tableFor(list,s){
  const cols=colsFor(s);
- let h=`<div class="scroll"><table><thead><tr><th style="width:22px"></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}</th>`).join("")}</tr></thead><tbody>`;
+ const colg=`<colgroup><col style="width:24px"><col data-k="stage" style="width:${cw('stage')}px"><col data-k="addr" style="width:${cw('addr')}px">${cols.map(k=>`<col data-k="${k}" style="width:${cw(k)}px">`).join("")}</colgroup>`;
+ let h=`<div class="scroll"><table>${colg}<thead><tr><th style="width:24px"></th><th>Stage<div class="rz" onmousedown="startResize(event,'stage')"></div></th><th class="addr">Address<div class="rz" onmousedown="startResize(event,'addr')"></div></th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<div class="rz" onmousedown="startResize(event,'${k}')"></div></th>`).join("")}</tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
    h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td>${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}</td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
