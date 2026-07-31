@@ -53,9 +53,12 @@
   .grp.closed .gbody{display:none;}
   .colbtn{margin-left:auto;font-size:11px;color:var(--accent);background:#eef4ff;border:1px solid #d5e2ff;border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:600;}
   .scroll{overflow-x:auto;}
-  table{border-collapse:collapse;width:100%;font-size:12px;}
-  th{text-align:left;font-size:9.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd;}
+  table{border-collapse:collapse;width:100%;font-size:12px;table-layout:fixed;}
+  th{text-align:left;font-size:9.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd;position:relative;}
   td{padding:7px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;}
+  td,th{overflow:hidden;text-overflow:ellipsis;}
+  th .rz{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;user-select:none;z-index:3;}
+  th .rz:hover{background:var(--accent);opacity:.35;}
   .drow{cursor:pointer;}
   .drow:hover td{background:var(--hover);}
   .exp{color:var(--muted);font-size:11px;transition:.15s;display:inline-block;width:12px;}
@@ -66,10 +69,12 @@
   .tot{font-weight:700;color:var(--green);text-align:right;}
   .tot.lease{color:#8a5cf0;}
   .fmls{color:var(--muted);text-align:right;}
+  input.cin.tot{color:var(--green);font-weight:700;} input.cin.tot.lease{color:#8a5cf0;} input.cin.fmls{color:var(--muted);}
+  input.cin.man{border-color:#8a5cf0!important;background:#f8f5ff;} input.cin.man:hover{background:#f8f5ff;}
   .pill{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:20px;white-space:nowrap;}
   .lnk{color:var(--accent);font-weight:600;font-size:11.5px;text-decoration:none;cursor:pointer;}
   .stagesel,.ldsel{font-size:11px;font-weight:600;border:1px solid var(--line);border-radius:20px;padding:3px 8px;cursor:pointer;background:#fff;}
-  .cin{border:1px solid transparent;background:transparent;border-radius:6px;padding:5px 7px;font-size:12px;width:100%;min-width:70px;font-family:inherit;color:var(--text);}
+  .cin{border:1px solid transparent;background:transparent;border-radius:6px;padding:5px 7px;font-size:12px;width:100%;min-width:0;font-family:inherit;color:var(--text);}
   .cin:hover{background:#fff;border-color:var(--line);}
   .cin:focus{outline:none;background:#fff;border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,107,255,.12);}
   .cin.r{text-align:right;}
@@ -116,10 +121,10 @@
     <div class="apptitle"><svg class="hicon" width="22" height="22" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="tagg" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#d76a43"/><stop offset="1" stop-color="#b8462b"/></linearGradient></defs><path d="M11.5 3.2 3.2 11.5a1.6 1.6 0 0 0 0 2.3l7 7a1.6 1.6 0 0 0 2.3 0l8.3-8.3V3.2z" fill="url(#tagg)"/><circle cx="17" cy="7" r="1.7" fill="#fff"/></svg> Deals <span class="appsub">live from Command Center</span></div>
     <div class="appmeta"><span class="livedot"></span> <span id="dealcount">—</span> · synced</div>
   </div>
-  <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity.</div>
+  <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity. Drag a column edge to resize.</div>
 
   <div class="viewbar">
-    <span class="viewhint" id="viewhint">Tip: ⚙ Columns on any stage picks exactly what shows.</span>
+    <span class="viewhint" id="viewhint">Tip: ⚙ Columns on any stage picks exactly what shows. Drag column edges to set widths (they stick).</span>
     <button class="addbtn" onclick="openAdd()">+ Add Deal</button>
   </div>
 
@@ -168,7 +173,7 @@ function _mdy(v){ if(v==null||v==="")return""; if(typeof v==="object"&&v.input)v
 function mapDeal(r){ var v=r.values||{}; return {
   rowId:r.id, a:v["Property Address"]||"", t:v["Deal Type"]||"Buyer", s:v["Stage"]||"Coming Soon", ag:v["Agent"]||"",
   client:v["Client"]||"", city:v["City"]||"", lead:v["Lead Source"]||"",
-  p:_num(v["Price"]), c:_pct(v["Commission %"]), tot:_num(v["Total Commission"]),
+  p:_num(v["Price"]), c:_pct(v["Commission %"]), tot:_num(v["Total Commission"]), fmls:_num(v["FMLS Fee"]),
   listPrice:_num(v["Listing Price"]), ref:_num(v["Referral Fee"]), numTx:_num(v["# of Transactions"]),
   lockbox:v["Coded Lockbox"]||"", serial:v["Serial #"]||"", cbs:v["CBS"]||"", coop:v["Cooperating Agent / License #"]||"",
   ld:v["Listing Docs"]||"To Do", drive:(v["Drive Folder"]?1:0), driveUrl:v["Drive Folder"]||"",
@@ -182,6 +187,7 @@ async function loadDeals(){
     var d=await r.json();
     if(d.error){ toast("Load error: "+d.error); return; }
     deals=(d.deals||[]).map(mapDeal).filter(function(x){return x.a;});
+    deals.forEach(detectManual);
     draw();
     toast("Loaded "+deals.length+" deals");
   }catch(e){ toast("Load failed — check connection"); }
@@ -201,9 +207,10 @@ function fieldToParam(d,k){ switch(k){
   case"city": return {city:d.city};
   case"client": return {client:d.client};
   case"notes": return {notes:d.notes};
-  case"salesPrice": return {price:d.p, totalcommission: total(d)};
-  case"comm": return {commission:d.c, totalcommission: total(d)};
-  case"tot": return {totalcommission:d.tot};
+  case"salesPrice": return {price:d.p, totalcommission: effTot(d), fmls: effFmls(d)};
+  case"comm": return {commission:d.c, totalcommission: effTot(d)};
+  case"tot": return {totalcommission: effTot(d)};
+  case"fmls": return {fmls: effFmls(d)};
   case"listPrice": return {listprice:d.listPrice};
   case"ref": return {referralfee:d.ref};
   case"numTx": return {numtx:d.numTx};
@@ -233,7 +240,18 @@ const LDOC={"To Do":"#e5484d","Prepared":"#eab308","Pending":"#2f6bff","Signed":
 function pill(text,color){return `<span class="pill" style="color:${color};background:${color}1f">${text}</span>`;}
 const money=n=>(n||n===0)&&n!==""?"$"+Math.round(n).toLocaleString():"—";
 function fmlsFee(t,p){if(t==="Lease"){if(p<=1499)return 15;if(p<=2499)return 25;if(p<=4999)return 50;if(p<=9999)return 100;if(p<=20000)return 150;return 200;}return Math.round(p*0.0012);}
-function total(d){if(d.flat)return d.flat;return d.t==="Lease"?(d.lease||0):Math.round((d.p||0)*(d.c||0)/100);}
+// Total Commission: auto = Price×Comm% for sales, blank for leases (type a flat amount). Overridable.
+function defTot(d){return d.t==="Lease"?"":Math.round((d.p||0)*(d.c||0)/100);}
+function effTot(d){return (d.totManual&&d.tot!==""&&d.tot!=null)?d.tot:defTot(d);}
+// FMLS Fee: auto = tiered lease / Price×0.12%. Overridable.
+function defFmls(d){return fmlsFee(d.t,(d.t==="Lease")?(d.p||d.lease||0):(d.p||0));}
+function effFmls(d){return (d.fmlsManual&&d.fmls!==""&&d.fmls!=null)?d.fmls:defFmls(d);}
+function total(d){return effTot(d);} // effective total commission
+// On load, decide if a stored value is a manual override (differs from the auto default)
+function detectManual(d){
+  var dt=defTot(d); d.totManual=(d.tot!==""&&d.tot!=null)&&((d.t==="Lease")||Math.abs((+d.tot||0)-(+dt||0))>0.5);
+  var df=defFmls(d); d.fmlsManual=(d.fmls!==""&&d.fmls!=null)&&Math.abs((+d.fmls||0)-(+df||0))>0.5;
+}
 function txVal(d){return d.numTx?d.numTx:1;} // default 1
 function health(d){
  if(d.s==="Closed"||d.s==="Withdrawn")return"done";
@@ -277,6 +295,15 @@ const MASTER=["type","agent","lead","client","city","list","exp","listPrice","sa
 const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
 const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
 const AUTO=["tot","fmls","numTx"];
+// ---- Resizable columns (widths persist across sessions via localStorage) ----
+const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
+let colW={};
+try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v1")||"{}")||{};}catch(e){colW={};}
+function cw(k){return colW[k]||DEFAULTW[k]||100;}
+let _rz=null;
+function startResize(e,key){e.preventDefault();e.stopPropagation();_rz={key:key,x:e.clientX,w:cw(key)};document.addEventListener("mousemove",_rzMove);document.addEventListener("mouseup",_rzUp);document.body.style.cursor="col-resize";}
+function _rzMove(e){if(!_rz)return;var nw=Math.max(40,_rz.w+(e.clientX-_rz.x));colW[_rz.key]=nw;document.querySelectorAll('col[data-k="'+_rz.key+'"]').forEach(function(c){c.style.width=nw+"px";});}
+function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove",_rzMove);document.removeEventListener("mouseup",_rzUp);document.body.style.cursor="";try{localStorage.setItem("twt-deals-colw-v1",JSON.stringify(colW));}catch(e){}}
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 const MDK=["photos","oh","list","exp"],MDYK=["close"];
@@ -299,8 +326,8 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"listPrice":return inp(gi,'listPrice',d.listPrice,1); case"salesPrice":return inp(gi,'salesPrice',d.p,1);
  case"comm":return d.flat?'<span style="color:#8a5cf0;font-weight:600">flat</span>':(d.t==="Lease"?'<span class="fmls" style="display:block;text-align:right">—</span>':inp(gi,'comm',d.c,1));
  case"ref":return inp(gi,'ref',d.ref,1);
- case"tot":return `<span id="tot-${gi}" class="tot ${d.t==="Lease"?"lease":""}">${money(total(d))}</span>`;
- case"fmls":return `<span id="fmls-${gi}" class="fmls">${money(fmlsFee(d.t,d.p||d.lease||0))}</span>`;
+ case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
+ case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
  case"numTx":return inp(gi,'numTx',txVal(d),1);
  case"drive":return d.drive?`<a class="lnk" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
  case"ld":return ldSelect(gi,d.ld||"To Do");
@@ -309,8 +336,8 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"notes":return inp(gi,'notes',d.notes);
 }}
 function editField(gi,k){const d=deals[gi];
- if(k==="tot")return `<span class="tot ${d.t==="Lease"?"lease":""}">${money(total(d))}</span>`;
- if(k==="fmls")return `<span class="fmls">${money(fmlsFee(d.t,d.p||d.lease||0))}</span>`;
+ if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
+ if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
  if(k==="drive")return d.drive?'<a class="lnk">Open ↗</a>':'<a class="lnk" style="color:#9aa6b8">+ link</a>';
  return cell(d,k);
 }
@@ -342,7 +369,8 @@ function pickerPanel(s){
 }
 function tableFor(list,s){
  const cols=colsFor(s);
- let h=`<div class="scroll"><table><thead><tr><th style="width:22px"></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}</th>`).join("")}</tr></thead><tbody>`;
+ const colg=`<colgroup><col style="width:24px"><col data-k="stage" style="width:${cw('stage')}px"><col data-k="addr" style="width:${cw('addr')}px">${cols.map(k=>`<col data-k="${k}" style="width:${cw(k)}px">`).join("")}</colgroup>`;
+ let h=`<div class="scroll"><table>${colg}<thead><tr><th style="width:24px"></th><th>Stage<div class="rz" onmousedown="startResize(event,'stage')"></div></th><th class="addr">Address<div class="rz" onmousedown="startResize(event,'addr')"></div></th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<div class="rz" onmousedown="startResize(event,'${k}')"></div></th>`).join("")}</tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
    h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td>${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}</td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
@@ -404,7 +432,12 @@ async function buildChecklist(i){const d=deals[i];
  }catch(e){toast("Checklist failed");}
 }
 // editing — each change updates local state, redraws, then pushes one field to the doorway
-function upd(i,k,v){const d=deals[i];d[k]=v;if(k==='t'&&v==='Lease'&&!d.lease)d.lease=d.p;draw();saveField(i,k);}
+function upd(i,k,v){const d=deals[i];d[k]=v;if(k==='t'&&v==='Lease'&&!d.lease)d.lease=d.p;draw();saveField(i,k);
+ if(k==='t'){ if(!d.totManual)saveField(i,'tot'); if(!d.fmlsManual)saveField(i,'fmls'); }
+}
+// Total Commission / FMLS Fee: type a value to override, clear the field to revert to auto
+function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true;} draw(); saveField(i,'tot');}
+function updFmls(i,v){const d=deals[i]; if(v===""||v==null){d.fmlsManual=false;d.fmls="";}else{d.fmls=+v||0;d.fmlsManual=true;} draw(); saveField(i,'fmls');}
 function updField(i,k,v){const d=deals[i];
  if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
  else if(['listPrice','ref','numTx'].includes(k))d[k]=+v||0;
@@ -419,8 +452,8 @@ function updLive(i,k,v){const d=deals[i];
  if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
  else if(k==='comm')d.c=+v||0;
  else if(k==='listPrice')d.listPrice=+v||0;
- const ts=document.getElementById('tot-'+i);if(ts)ts.textContent=money(total(d));
- const fs=document.getElementById('fmls-'+i);if(fs)fs.textContent=money(fmlsFee(d.t,d.p||d.lease||0));
+ const ts=document.getElementById('tot-'+i);if(ts&&!d.totManual){var tv=effTot(d);ts.value=(tv===""||tv==null)?"":tv;}
+ const fs=document.getElementById('fmls-'+i);if(fs&&!d.fmlsManual){var fv=effFmls(d);fs.value=(fv===""||fv==null)?"":fv;}
 }
 let tt;function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),1900);}
 
@@ -439,9 +472,9 @@ function mRecalc(){
  const t=document.getElementById("mType").value,p=+document.getElementById("mPrice").value||0,c=+document.getElementById("mComm").value||0;
  const isLease=t==="Lease";
  document.getElementById("mPriceLbl").textContent=isLease?"Monthly Rent":"Sales Price";
- document.getElementById("mCommLbl").textContent=isLease?"Commission (manual)":"Commission %";
- document.getElementById("mComm").disabled=isLease;
- document.getElementById("mTot").textContent=money(isLease?p:Math.round(p*c/100));
+ document.getElementById("mCommLbl").textContent=isLease?"Flat Commission ($)":"Commission %";
+ document.getElementById("mComm").disabled=false;
+ document.getElementById("mTot").textContent=money(isLease?c:Math.round(p*c/100));
  document.getElementById("mFmls").textContent=money(fmlsFee(t,p));
 }
 async function saveAdd(){
@@ -452,13 +485,15 @@ async function saveAdd(){
  if(!addr){toast("Enter a property address");return;}
  const stage=document.getElementById("mStage").value;
  // build the doorway param set (names match editdeal / fieldToParam)
- const dTmp={t,p,c,flat:(t==="Lease")};if(t==="Lease")dTmp.lease=p;
+ const isLease=t==="Lease";
+ const totVal=isLease?(c||0):Math.round(p*c/100); // lease: c field holds the flat commission
+ const fmlsVal=fmlsFee(t,p);
  const params={action:"adddeal",address:addr,stage,dealtype:t,
    agent:document.getElementById("mAgent").value,
    client:document.getElementById("mClient").value.trim(),
    city:document.getElementById("mCity").value.trim(),
    leadsource:document.getElementById("mLead").value,
-   price:p, commission:c, totalcommission:total(dTmp)};
+   price:p, commission:isLease?0:c, totalcommission:totVal, fmls:fmlsVal};
  if(t!=="Buyer")params.listprice=p;
  // doorway auto-builds checklist for Active / Under Contract; others skip unless overridden
  const btn=document.querySelector(".msave"); if(btn){btn.disabled=true;btn.textContent="Adding…";}
