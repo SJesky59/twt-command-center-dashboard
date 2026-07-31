@@ -169,7 +169,7 @@
 const PROXY="https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
 const KEY="9c19ce6f06fda04692552dc6ea0e0c4f";
 let deals=[];
-function _num(v){ if(v==null||v==="")return""; if(typeof v==="object")return v.scalar!=null?v.scalar:""; var n=+v; return isNaN(n)?"":n; }
+function _num(v){ if(v==null||v==="")return""; if(typeof v==="object")return v.scalar!=null?v.scalar:""; var n=+String(v).replace(/[$,%\s]/g,""); return isNaN(n)?"":n; }
 function _pct(v){ var n=_num(v); if(n===""||n==null)return""; return n<=1? Math.round(n*10000)/100 : n; }
 function _md(v){ if(v==null||v==="")return""; if(typeof v==="object"&&v.input)v=v.input; var m=String(v).match(/(\d{4})-(\d{1,2})-(\d{1,2})/); return m?(+m[2])+"/"+(+m[3]):String(v); }
 function _mdy(v){ if(v==null||v==="")return""; if(typeof v==="object"&&v.input)v=v.input; var m=String(v).match(/(\d{4})-(\d{1,2})-(\d{1,2})/); return m?(+m[2])+"/"+(+m[3])+"/"+m[1]:String(v); }
