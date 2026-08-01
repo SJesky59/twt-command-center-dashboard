@@ -586,6 +586,31 @@
       '<span class="pencil" data-act="edit" title="Edit task">✎</span></div>';
   }
   function rerenderFocus() { if (lastData) render(lastData); }
+function _titleAddr(s){return String(s||"").toLowerCase().replace(/(^|\s)([a-z])/g,function(m,p,c){return p+c.toUpperCase();});}
+function renderChecklistOrder(rows){
+  var byDeal={};
+  rows.forEach(function(t){var k=String(t["Deal"]||"").split("|")[0].trim()||"(no deal)";(byDeal[k]=byDeal[k]||[]).push(t);});
+  var groups=Object.keys(byDeal).map(function(k){
+    var rs=byDeal[k].slice().sort(function(a,b){return ((+a["Phase #"]||0)-(+b["Phase #"]||0))||((+a["Order"]||0)-(+b["Order"]||0));});
+    var earliest=rs.reduce(function(m,r){var d=pDate(r["Due Date"]);if(d&&(!m||d<m))return d;return m;},null);
+    var late=rs.filter(function(r){var d=pDate(r["Due Date"]);return d&&daysTo(d)<0;}).length;
+    return {deal:k,rows:rs,earliest:earliest,late:late};
+  });
+  groups.sort(function(a,b){if(!a.earliest&&!b.earliest)return a.deal<b.deal?-1:1;if(!a.earliest)return 1;if(!b.earliest)return -1;return a.earliest-b.earliest;});
+  return groups.map(function(g){
+    var flag=g.late?'<span class="dg-flag flag-late">'+g.late+' late</span>':"";
+    return '<div class="dg"><div class="dg-h"><span class="dg-a">'+esc(_titleAddr(g.deal))+'</span>'+flag+'</div><div class="b-card">'+g.rows.map(taskRow).join("")+'</div></div>';
+  }).join("");
+}
+document.addEventListener("click",function(ev){
+  var b=ev.target && ev.target.closest ? ev.target.closest(".ftg") : null;
+  if(!b) return;
+  focusView=b.getAttribute("data-fv");
+  var btns=document.querySelectorAll(".ftg");
+  for(var i=0;i<btns.length;i++){btns[i].className="ftg"+(btns[i].getAttribute("data-fv")===focusView?" on":"");}
+  if(typeof rerenderFocus==="function") rerenderFocus();
+});
+
 
   function showToast(msg, withUndo) {
     var el = $("toast");
@@ -1020,32 +1045,6 @@ function renderForecast(open){
   else { ic.innerHTML=SUN; word.textContent="Clear skies"; word.style.color="#0b0b0b"; det.textContent="All "+open.length+" deals moving. Nothing needs shelter today."; }
 }
 (function(){var V=[["The faithful love of the Lord never ends! His mercies never cease. Great is his faithfulness; his mercies begin afresh each morning.", "Lamentations 3:22-23"], ["Commit your actions to the Lord, and your plans will succeed.", "Proverbs 16:3"], ["This is my command\u2014be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.", "Joshua 1:9"], ["Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.", "Philippians 4:6"], ["Work willingly at whatever you do, as though you were working for the Lord rather than for people.", "Colossians 3:23"], ["But those who trust in the Lord will find new strength. They will soar high on wings like eagles.", "Isaiah 40:31"], ["Come to me, all of you who are weary and carry heavy burdens, and I will give you rest.", "Matthew 11:28"], ["Trust in the Lord with all your heart; do not depend on your own understanding.", "Proverbs 3:5"], ["Be still, and know that I am God!", "Psalm 46:10"], ["Don't be afraid, for I am with you. Don't be discouraged, for I am your God. I will strengthen you and help you.", "Isaiah 41:10"]];var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);var v=V[doy%V.length];var t=document.getElementById("verse-txt"),r=document.getElementById("verse-ref");if(t){t.textContent="\u201c"+v[0]+"\u201d";r.textContent=v[1];}})();
-
-
-function _titleAddr(s){return String(s||"").toLowerCase().replace(/(^|\s)([a-z])/g,function(m,p,c){return p+c.toUpperCase();});}
-function renderChecklistOrder(rows){
-  var byDeal={};
-  rows.forEach(function(t){var k=String(t["Deal"]||"").split("|")[0].trim()||"(no deal)";(byDeal[k]=byDeal[k]||[]).push(t);});
-  var groups=Object.keys(byDeal).map(function(k){
-    var rs=byDeal[k].slice().sort(function(a,b){return ((+a["Phase #"]||0)-(+b["Phase #"]||0))||((+a["Order"]||0)-(+b["Order"]||0));});
-    var earliest=rs.reduce(function(m,r){var d=pDate(r["Due Date"]);if(d&&(!m||d<m))return d;return m;},null);
-    var late=rs.filter(function(r){var d=pDate(r["Due Date"]);return d&&daysTo(d)<0;}).length;
-    return {deal:k,rows:rs,earliest:earliest,late:late};
-  });
-  groups.sort(function(a,b){if(!a.earliest&&!b.earliest)return a.deal<b.deal?-1:1;if(!a.earliest)return 1;if(!b.earliest)return -1;return a.earliest-b.earliest;});
-  return groups.map(function(g){
-    var flag=g.late?'<span class="dg-flag flag-late">'+g.late+' late</span>':"";
-    return '<div class="dg"><div class="dg-h"><span class="dg-a">'+esc(_titleAddr(g.deal))+'</span>'+flag+'</div><div class="b-card">'+g.rows.map(taskRow).join("")+'</div></div>';
-  }).join("");
-}
-document.addEventListener("click",function(ev){
-  var b=ev.target && ev.target.closest ? ev.target.closest(".ftg") : null;
-  if(!b) return;
-  focusView=b.getAttribute("data-fv");
-  var btns=document.querySelectorAll(".ftg");
-  for(var i=0;i<btns.length;i++){btns[i].className="ftg"+(btns[i].getAttribute("data-fv")===focusView?" on":"");}
-  if(typeof rerenderFocus==="function") rerenderFocus();
-});
 
 </script>
 </body>
