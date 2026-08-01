@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TWT | Command Center</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<style>
+  @font-face {
+    font-family: "tabler-icons";
+    src: url(data:font/woff2;base64,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) format("woff2");
+    font-weight: normal; font-style: normal; font-display: block;
+  }
+  .ti { font-family: "tabler-icons" !important; font-style: normal; font-weight: normal; line-height: 1; display: inline-block;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  .ti-home:before{content:"\eac1"} .ti-building-community:before{content:"\ebf6"} .ti-users:before{content:"\ebf2"}
+  .ti-tools:before{content:"\ebca"} .ti-mail:before{content:"\eae5"} .ti-speakerphone:before{content:"\ed61"}
+  .ti-plus:before{content:"\eb0b"} .ti-alert-triangle:before{content:"\ea06"} .ti-checkbox:before{content:"\eba6"}
+  .ti-calendar-event:before{content:"\ea52"} .ti-layout-kanban:before{content:"\ec3f"}
+
+  :root {
+    --radius: 8px;
+    --border: #e1e0d9;
+    --surface-1: #f2f1ee;
+    --surface-2: #ffffff;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --text-accent: #1c5cab;
+    --bg-accent: #e6effc;
+    --text-warning: #9d6508;
+    --bg-warning: #fbf1d9;
+    --text-danger: #b8302f;
+    --bg-danger: #fcebea;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: #fcfcfb; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    font-size: 14px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 72px;
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem; }
+  button {
+    font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+    color: var(--text-accent); background: var(--bg-accent);
+    border: none; border-radius: var(--radius); padding: 7px 13px;
+  }
+  button:hover { filter: brightness(0.97); }
+  .nav { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding-bottom:12px; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem; }
+  .nav .on  { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--text-accent); background:var(--bg-accent); padding:6px 12px; border-radius:var(--radius); }
+  .nav .off { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); padding:6px 12px; }
+  .kpi { background:var(--surface-1); border-radius:var(--radius); padding:0.9rem 1rem; }
+  .kpi .lbl { font-size:13px; color:var(--text-secondary); }
+  .kpi .num { font-size:23px; font-weight:500; }
+  .sec-h { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .sec-h .t { font-size:14px; font-weight:500; }
+  .att-card { display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:11px 13px; }
+  .att-l { display:flex; align-items:center; gap:9px; min-width:0; }
+  .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .att-a { font-size:13px; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .att-s { font-size:11px; color:var(--text-muted); }
+  .pill { font-size:11px; padding:3px 8px; border-radius:var(--radius); white-space:nowrap; flex-shrink:0; margin-left:8px; }
+  .pill.warn { background:var(--bg-warning); color:var(--text-warning); }
+  .pill.dang { background:var(--bg-danger); color:var(--text-danger); }
+  .bucket { margin-bottom:14px; }
+  .bucket-h { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .bucket-t { font-size:12px; font-weight:700; letter-spacing:.6px; }
+  .bucket-t.late { color:var(--text-danger); }
+  .bucket-t.today { color:var(--text-accent); }
+  .bucket-t.week { color:var(--text-secondary); }
+  .bucket-n { font-size:11px; color:var(--text-muted); background:var(--surface-1); border-radius:9px; padding:1px 8px; }
+  .b-card { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; }
+  .b-card.late { border-left:3px solid #d03b3b; }
+  .b-card.today { border-left:3px solid #1c5cab; }
+  .t-row { display:flex; align-items:flex-start; gap:10px; padding:10px 13px; border-bottom:0.5px solid var(--border); cursor:pointer; }
+  .t-row:last-child { border-bottom:none; }
+  .ckbox { width:20px; height:20px; border-radius:50%; border:1.5px solid #b9b7ae; flex-shrink:0; background:#fff; cursor:pointer; margin-top:1px; }
+  .ckbox.late { border-color:#d98a89; }
+  .ckbox:hover { border-color:#1c5cab; }
+  .t-mid { flex:1; min-width:0; }
+  .t-txt { font-size:13px; color:var(--text-primary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .t-row.open .t-txt { white-space:normal; }
+  .t-sub { display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap; }
+  .deal-chip { font-size:10.5px; font-weight:500; padding:2px 7px; border-radius:5px; white-space:nowrap; max-width:180px; overflow:hidden; text-overflow:ellipsis; }
+  .dc0 { background:#e6effc; color:#1c5cab; } .dc1 { background:#e3f4e9; color:#0e7a3c; }
+  .dc2 { background:#f2e9fc; color:#6d3ab8; } .dc3 { background:#fbf1d9; color:#9d6508; }
+  .dc4 { background:#fcebea; color:#b8302f; } .dc5 { background:#e8f4f6; color:#0c6b7a; }
+  .t-due { font-size:11px; color:var(--text-muted); white-space:nowrap; }
+  .t-due.lt { color:var(--text-danger); font-weight:500; }
+  .t-due.td { color:var(--text-accent); font-weight:500; }
+  .pencil { color:var(--text-muted); font-size:13px; flex-shrink:0; padding:2px 4px; cursor:pointer; }
+  .pencil:hover { color:var(--text-accent); }
+  .x { display:none; margin-top:9px; padding:11px 13px; background:var(--surface-1); border-radius:8px; }
+  .t-row.open .x { display:block; }
+  .x-h { font-size:11px; font-weight:600; color:var(--text-muted); letter-spacing:.4px; margin-bottom:5px; }
+  .x-d { font-size:12.5px; color:var(--text-primary); line-height:1.55; white-space:pre-wrap; }
+  .x-btns { display:flex; gap:8px; margin-top:11px; }
+  .bd { font:inherit; font-size:12px; font-weight:500; color:#fff; background:#1c5cab; border:none; border-radius:8px; padding:7px 14px; cursor:pointer; }
+  .bd:disabled { opacity:.55; cursor:default; }
+  .be { font:inherit; font-size:12px; font-weight:500; color:var(--text-primary); background:#fff; border:0.5px solid var(--border); border-radius:8px; padding:7px 14px; cursor:pointer; }
+  .showmore { display:block; width:100%; font:inherit; font-size:12px; font-weight:500; color:var(--text-accent); background:var(--surface-1); border:none; padding:8px; cursor:pointer; }
+  #em-ov { display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px; }
+  #em-ov.show { display:block; }
+  #em { max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25); }
+  #toast { display:none; position:fixed; bottom:14px; left:50%; transform:translateX(-50%); background:#0b0b0b; color:#fff; font-size:12px;
+           padding:9px 14px; border-radius:8px; z-index:20; align-items:center; gap:12px; box-shadow:0 4px 14px rgba(0,0,0,.25); }
+  #toast.show { display:flex; }
+  #toast button { font-size:12px; font-weight:600; color:#8ec2ff; background:none; border:none; padding:0; cursor:pointer; }
+  #dm-ov { display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px; }
+  #dm-ov.show { display:block; }
+  #dm { max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25); }
+  .dm-h { display:flex; align-items:center; justify-content:space-between; font-size:15px; font-weight:600; margin-bottom:12px; }
+  #dm-x { cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px; }
+  .dm-row { margin-bottom:9px; }
+  .dm-row label { display:block; font-size:11px; color:var(--text-secondary); margin-bottom:3px; }
+  .dm-row input, .dm-row select, .dm-row textarea {
+    width:100%; font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-1);
+    border:0.5px solid var(--border); border-radius:6px; padding:8px 10px; box-sizing:border-box; }
+  .dm-2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .dm-err { font-size:12px; color:var(--text-danger); margin:6px 0; min-height:14px; }
+  .dm-btn { width:100%; font:inherit; font-size:13px; font-weight:600; color:#fff; background:#1c5cab; border:none; border-radius:8px; padding:11px; cursor:pointer; margin-top:4px; }
+  .dm-btn.sec { background:var(--surface-1); color:var(--text-primary); font-weight:500; }
+  .dm-btn:disabled { opacity:.55; }
+  .dm-kv { display:flex; gap:8px; font-size:13px; padding:5px 0; border-bottom:0.5px solid var(--border); }
+  .dm-kv .k { color:var(--text-muted); min-width:110px; flex-shrink:0; font-size:12px; }
+  .dm-gci { font-size:12px; color:var(--text-accent); background:var(--bg-accent); border-radius:6px; padding:8px 10px; margin-top:10px; }
+  .deal-row { display:flex; align-items:center; gap:10px; padding:11px 13px; border-bottom:0.5px solid var(--border); cursor:pointer; }
+  .deal-row:last-child { border-bottom:none; }
+  .deal-row:hover { background:var(--surface-1); }
+  .dr-mid { flex:1; min-width:0; }
+  .dr-a { font-size:13px; font-weight:600; color:var(--text-primary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .dr-s { font-size:11px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:1px; }
+  .dr-right { text-align:right; flex-shrink:0; }
+  .dr-gci { font-size:12px; font-weight:600; }
+  .dr-next { font-size:10.5px; color:var(--text-muted); }
+  .stage-pill { font-size:10px; font-weight:600; padding:2px 8px; border-radius:9px; white-space:nowrap; flex-shrink:0; }
+  .sp-coming { background:var(--surface-1); color:var(--text-secondary); }
+  .sp-active { background:var(--bg-accent); color:var(--text-accent); }
+  .sp-uc { background:var(--bg-warning); color:var(--text-warning); }
+  .sp-closing { background:#e3f4e9; color:#0e7a3c; }
+  .sp-closed { background:var(--surface-1); color:var(--text-muted); }
+  .close-row { display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:0.5px solid var(--border); }
+  .close-row:last-child { border-bottom:none; }
+  .close-a { font-size:13px; color:var(--text-primary); }
+  .close-d { font-size:12px; color:var(--text-secondary); }
+  .stage-t { background:var(--surface-1); border-radius:var(--radius); padding:8px; text-align:center; }
+  .stage-n { font-size:19px; font-weight:500; }
+  .stage-l { font-size:10px; color:var(--text-secondary); }
+  .empty { font-size:12px; color:var(--text-muted); padding:8px 4px; }
+  .vbar { margin-bottom:6px; }
+  .vsearch { width:100%; font:inherit; font-size:13px; padding:9px 12px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); margin-bottom:8px; outline:none; }
+  .vsearch:focus { border-color:var(--text-accent); }
+  .vchips { display:flex; gap:6px; overflow-x:auto; padding-bottom:5px; -webkit-overflow-scrolling:touch; }
+  .vchip { flex-shrink:0; font-size:12px; padding:5px 11px; border-radius:14px; background:var(--surface-1); color:var(--text-secondary); border:0.5px solid var(--border); white-space:nowrap; cursor:pointer; }
+  .vchip:hover { border-color:#c9c8bf; }
+  .vchip.on { background:var(--bg-accent); color:var(--text-accent); border-color:var(--bg-accent); font-weight:500; }
+  .vchip .vc-n { opacity:.55; margin-left:5px; }
+  .vgroup-h { display:flex; align-items:center; gap:8px; margin:16px 0 6px; }
+  .vgroup-t { font-size:11.5px; font-weight:700; letter-spacing:.5px; color:var(--text-secondary); text-transform:uppercase; }
+  .vgroup-n { font-size:11px; color:var(--text-muted); background:var(--surface-1); border-radius:9px; padding:1px 8px; }
+  .v-links { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .vr-link { color:var(--text-accent); text-decoration:none; }
+  .vr-link:hover { text-decoration:underline; }
+  .vrow { padding:11px 13px; border-bottom:0.5px solid var(--border); }
+  .vrow:last-child { border-bottom:none; }
+  .vr-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+  .vr-sub { font-size:11px; color:var(--text-muted); margin-top:1px; }
+  .vr-notes { font-size:11px; color:var(--text-secondary); margin-top:4px; line-height:1.35; }
+  #diag { display:none; align-items:center; gap:8px; position:fixed; bottom:0; left:0; right:0; background:rgba(252,252,251,0.96); padding:6px 1.25rem; z-index:9;
+          font-size:11px; color:var(--text-muted); border-top:0.5px solid var(--border); }
+  #diag .dot2 { width:7px; height:7px; border-radius:50%; background:#c3c2b7; flex-shrink:0; }
+  #diag.ok .dot2 { background:#0ca30c; }
+  #diag.err .dot2 { background:#d03b3b; }
+  #diag.err { display:flex; }
+  @media (max-width: 520px) { html { zoom: 1.25; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="padding: 1rem 0;">
+  <div class="nav">
+    <span class="on" id="nav-home" style="cursor:pointer;"><i class="ti ti-home" style="font-size:15px;" aria-hidden="true"></i> Home</span>
+    <span class="off" id="nav-deals" style="cursor:pointer;"><i class="ti ti-building-community" style="font-size:15px;" aria-hidden="true"></i> Deals</span>
+    <span class="off" id="nav-people" style="cursor:pointer;"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
+    <span class="off" id="nav-vendors" style="cursor:pointer;"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
+    <span class="off"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
+    <span class="off"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+    <div>
+      <div id="greet" style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
+      <div id="subline" style="font-size:12px; color:var(--text-muted);">Loading your pipeline&hellip;</div>
+    </div>
+    <div style="display:flex; gap:8px;"><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
+  </div>
+
+  <div id="page-home">
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
+    <div class="kpi"><div class="lbl">Active</div><div class="num" id="kpi-active">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">Under contract</div><div class="num" id="kpi-uc">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">Closing · next 30d</div><div class="num" id="kpi-closing">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">GCI pipeline</div><div class="num" id="kpi-gci">&ndash;</div></div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:1.5rem;">
+    <div>
+      <div class="sec-h">
+        <i class="ti ti-alert-triangle" style="font-size:16px; color:var(--text-warning);" aria-hidden="true"></i>
+        <span class="t">Needs attention today</span>
+      </div>
+      <div id="attention" style="display:flex; flex-direction:column; gap:8px;">
+        <div class="empty">Loading&hellip;</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-h">
+        <i class="ti ti-checkbox" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+        <span class="t">Your focus</span>
+        <span style="font-size:11px; color:var(--text-muted);">next 21 days</span>
+        <button id="btn-addtask" style="margin-left:auto; font-size:12px;">+ Add task</button>
+      </div>
+      <div id="focus">
+        <div class="empty">Loading&hellip;</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;">
+    <div>
+      <div class="sec-h">
+        <i class="ti ti-calendar-event" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
+        <span class="t">Upcoming closings</span>
+      </div>
+      <div id="closings">
+        <div class="empty">Loading&hellip;</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-h">
+        <i class="ti ti-layout-kanban" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
+        <span class="t">Pipeline by stage</span>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+        <div class="stage-t"><div class="stage-n" id="st-coming">&ndash;</div><div class="stage-l">Coming</div></div>
+        <div class="stage-t"><div class="stage-n" id="st-active">&ndash;</div><div class="stage-l">Active</div></div>
+        <div class="stage-t"><div class="stage-n" id="st-uc">&ndash;</div><div class="stage-l">UC</div></div>
+        <div class="stage-t"><div class="stage-n" id="st-closing">&ndash;</div><div class="stage-l">Closing</div></div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div id="page-deals" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-building-community" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">All deals</span>
+      <span id="deals-sub" style="font-size:11px; color:var(--text-muted); margin-left:auto;">tap a deal to edit</span>
+    </div>
+    <div id="deals-list"><div class="empty">Loading&hellip;</div></div>
+  </div>
+  <div id="page-people" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-users" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">People</span>
+      <button id="btn-addcontact" style="margin-left:auto;">+ Add person</button>
+    </div>
+    <div id="people-list"><div class="empty">Loading&hellip;</div></div>
+  </div>
+  <div id="page-vendors" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-tools" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">Partners &amp; Vendors</span>
+      <button id="btn-addvendor" style="margin-left:auto;">+ Add vendor</button>
+    </div>
+    <div class="vbar">
+      <input id="vendors-search" class="vsearch" type="text" placeholder="Search vendors &mdash; name, service, notes&hellip;" autocomplete="off">
+      <div id="vendors-chips" class="vchips"></div>
+    </div>
+    <div id="vendors-list"><div class="empty">Loading&hellip;</div></div>
+  </div>
+</div>
+</div>
+<div id="dm-ov"><div id="dm">
+  <div class="dm-h"><span id="dm-title">Add deal</span><span id="dm-x">&#10005;</span></div>
+  <div id="dm-form">
+    <div class="dm-row"><label>Property Address *</label><input id="dm-address" type="text" placeholder="123 Main St"></div>
+    <div class="dm-2">
+      <div class="dm-row"><label>City</label><input id="dm-city" type="text"></div>
+      <div class="dm-row"><label>Client</label><input id="dm-client" type="text"></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Deal Type</label><select id="dm-type"><option value=""></option><option>Buyer</option><option>Listing</option><option>Lease</option></select></div>
+      <div class="dm-row"><label>Stage</label><select id="dm-stage"><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option></select></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Agent</label><select id="dm-agent"><option value=""></option><option>Luke</option><option>Steve</option></select></div>
+      <div class="dm-row"><label>Price ($)</label><input id="dm-price" type="number" min="0" step="1000" placeholder="450000"></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Commission % (e.g. 3)</label><input id="dm-comm" type="number" min="0" max="15" step="0.25" placeholder="3"></div>
+      <div class="dm-row"><label>List Date</label><input id="dm-listdate" type="date"></div>
+    </div>
+    <div class="dm-2">
+      <div class="dm-row"><label>Binding Date</label><input id="dm-bindingdate" type="date"></div>
+      <div class="dm-row"><label>DD End Date</label><input id="dm-ddend" type="date"></div>
+    </div>
+    <div class="dm-row"><label>Closing Date</label><input id="dm-closingdate" type="date"></div>
+    <div class="dm-row"><label>Notes</label><textarea id="dm-notes" rows="2"></textarea></div>
+    <div class="dm-err" id="dm-err1"></div>
+    <button class="dm-btn" id="dm-review" type="button">Review before saving</button>
+  </div>
+  <div id="dm-rev" style="display:none;">
+    <div id="dm-rev-list"></div>
+    <div class="dm-gci" id="dm-gci"></div>
+    <div class="dm-err" id="dm-err2"></div>
+    <button class="dm-btn" id="dm-confirm" type="button">&#10003; Confirm &amp; add deal</button>
+    <button class="dm-btn sec" id="dm-back" type="button">&#8592; Back to edit</button>
+  </div>
+</div></div>
+<div id="ed-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
+  <div class="dm-h"><span>Edit deal</span><span id="ed-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Which deal</label><select id="ed-deal"></select></div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Stage</label><select id="ed-stage"><option value=""></option><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option></select></div>
+    <div class="dm-row"><label>Agent</label><select id="ed-agent"><option value=""></option><option>Luke</option><option>Steve</option></select></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Price ($)</label><input id="ed-price" type="number" min="0" step="1000"></div>
+    <div class="dm-row"><label>Commission %</label><input id="ed-comm" type="number" min="0" max="15" step="0.25"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Binding Date</label><input id="ed-binding" type="date"></div>
+    <div class="dm-row"><label>DD End Date</label><input id="ed-ddend" type="date"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Closing Date</label><input id="ed-closing" type="date"></div>
+    <div class="dm-row"><label>List / Active Date</label><input id="ed-list" type="date"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Appointment Date</label><input id="ed-appt" type="date"></div>
+    <div class="dm-row"><label>Listing Appt Date</label><input id="ed-listappt" type="date"></div>
+  </div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Open House Date</label><input id="ed-oh" type="date"></div>
+    <div class="dm-row"><label>Lease Execution</label><input id="ed-lease" type="date"></div>
+  </div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Only fields you fill in get changed. Dates update the checklist too, so task due dates recalculate.</div>
+  <div class="dm-err" id="ed-err"></div>
+  <button class="dm-btn" id="ed-save" type="button">Save changes</button>
+</div></div>
+<div id="em-ov"><div id="em">
+  <div class="dm-h"><span>Edit task</span><span id="em-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Task</label><textarea id="em-task" rows="2"></textarea></div>
+  <div class="dm-row"><label>Instructions (how to do it)</label><textarea id="em-details" rows="6"></textarea></div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Saves straight to your TRANSACTION CHECKLISTS doc as plain text.</div>
+  <div class="dm-err" id="em-err"></div>
+  <button class="dm-btn" id="em-save" type="button">Save changes</button>
+</div></div>
+<div id="at-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
+  <div class="dm-h"><span>Add a task</span><span id="at-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Which deal *</label><select id="at-deal"></select></div>
+  <div class="dm-row"><label>Task *</label><textarea id="at-task" rows="2"></textarea></div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Due date</label><input id="at-due" type="date"></div>
+    <div class="dm-row" style="display:flex; align-items:flex-end;"><span style="font-size:11px; color:var(--text-muted); padding-bottom:9px;">Leave blank for no due date</span></div>
+  </div>
+  <div class="dm-row"><label>Notes (how to do it)</label><textarea id="at-details" rows="3"></textarea></div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Adds a one-off task to that deal's checklist. Shows on your focus list if due within 21 days.</div>
+  <div class="dm-err" id="at-err"></div>
+  <button class="dm-btn" id="at-save" type="button">Add task</button>
+</div></div>
+<div id="ap-ov" style="display:none; position:fixed; inset:0; background:rgba(11,11,11,0.4); z-index:30; overflow-y:auto; padding:20px 12px;"><div style="max-width:480px; margin:0 auto; background:#fff; border-radius:12px; padding:18px 18px 20px; box-shadow:0 10px 40px rgba(0,0,0,.25);">
+  <div class="dm-h"><span id="ap-title">Add person</span><span id="ap-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
+  <div class="dm-row"><label>Name *</label><input id="ap-name" type="text"></div>
+  <div class="dm-row" id="ap-company-row" style="display:none;"><label>Company</label><input id="ap-company" type="text"></div>
+  <div class="dm-2">
+    <div class="dm-row"><label>Phone</label><input id="ap-phone" type="tel"></div>
+    <div class="dm-row"><label>Email</label><input id="ap-email" type="email"></div>
+  </div>
+  <div class="dm-row"><label>Notes</label><textarea id="ap-notes" rows="2"></textarea></div>
+  <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Type, tags, and status can be set in the doc later.</div>
+  <div class="dm-err" id="ap-err"></div>
+  <button class="dm-btn" id="ap-save" type="button">Save</button>
+</div></div>
+<div id="toast"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
+<div id="diag"><span class="dot2"></span><span id="diag-text">Diagnostics: JavaScript is NOT executing (static render)</span></div>
+<script>
+(function () {
+  "use strict";
+  var PROXY = "https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
+  var KEY = new URLSearchParams(location.search).get("k") || "";
+  var REFRESH_MS = 60000;
+
+  var envParts = ["JS: executing"];
+  try {
+    localStorage.setItem("twt-embed-test", "1");
+    envParts.push(localStorage.getItem("twt-embed-test") === "1" ? "localStorage: OK" : "localStorage: blocked");
+  } catch (e) { envParts.push("localStorage: blocked"); }
+  envParts.push("frame: " + (window.self !== window.top ? "embedded" : "standalone"));
+  var mobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+  var ratio = window.innerWidth / Math.max(screen.width, 1);
+  if (mobile && ratio > 1.15) {
+    try { document.documentElement.style.zoom = ratio; envParts.push("mobile zoom " + ratio.toFixed(2) + "x"); } catch (e) {}
+  }
+  console.log("[TWT-DASH] " + envParts.join(" | "));
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function money(s) { var n = parseFloat(String(s || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? 0 : n; }
+  function pDate(s) { if (!s) return null; var d = new Date(String(s).slice(0, 10) + "T00:00:00"); return isNaN(d) ? null : d; }
+  function today0() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+  function fmtDay(d) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+  function daysTo(d) { return Math.round((d - today0()) / 86400000); }
+  // Same normalization as tasks.html: match Deals-table addresses to checklist deal labels.
+  var SUFFIX_MAP = { LANE: "LN", ROAD: "RD", DRIVE: "DR", COURT: "CT", TRAIL: "TRL", TRACE: "TRCE", CIRCLE: "CIR", TERRACE: "TER", PLACE: "PL", AVENUE: "AVE", BOULEVARD: "BLVD", HIGHWAY: "HWY", PARKWAY: "PKWY", STREET: "ST", POINT: "PT", SQUARE: "SQ" };
+  function addrKey(s) {
+    return String(s || "").toUpperCase().replace(/[.,]/g, "").split(/\s+/).filter(Boolean)
+      .map(function (w) { return SUFFIX_MAP[w] || w; }).join(" ");
+  }
+
+  function setDiag(cls, dataMsg) {
+    var el = $("diag");
+    el.className = cls;
+    $("diag-text").textContent = "Diagnostics: " + envParts.join(" \u00b7 ") + " \u00b7 " + dataMsg;
+  }
+
+  function render(d) {
+    lastData = d;
+    var deals = (d.deals || []).map(function (r) { return r.values; });
+    var tasks = (d.tasks || []).map(function (r) { var v = r.values; v.__id = r.id; return v; });
+    var open = deals.filter(function (v) { return v["Stage"] !== "Closed" && v["Stage"] !== "Withdrawn" && v["Stage"] !== "Potential"; });
+
+    var byStage = {};
+    open.forEach(function (v) { var s = v["Stage"] || "?"; byStage[s] = (byStage[s] || 0) + 1; });
+    var now = new Date();
+    var closingThisMonth = open.filter(function (v) {
+      var cd = pDate(v["Closing Date"]);
+      if (!cd) return false; var dd = daysTo(cd); return dd >= 0 && dd <= 30;
+    }).length;
+    var gci = open.reduce(function (a, v) { return a + money(v["Total Commission"]); }, 0);
+
+    $("kpi-active").textContent = byStage["Active"] || 0;
+    $("kpi-uc").textContent = byStage["Under Contract"] || 0;
+    $("kpi-closing").textContent = closingThisMonth;
+    $("kpi-gci").textContent = gci >= 100000 ? "$" + Math.round(gci / 1000) + "k" : "$" + gci.toLocaleString("en-US");
+    $("st-coming").textContent = byStage["Coming Soon"] || 0;
+    $("st-active").textContent = byStage["Active"] || 0;
+    $("st-uc").textContent = byStage["Under Contract"] || 0;
+    $("st-closing").textContent = byStage["Closing"] || 0;
+
+    var hot = open.filter(function (v) { return v["Health"] && v["Health"] !== "\ud83d\udfe2"; });
+    hot.sort(function (a, b) { return (a["Health"] === "\ud83d\udd34" ? 0 : 1) - (b["Health"] === "\ud83d\udd34" ? 0 : 1); });
+    var h = new Date().getHours();
+    $("greet").textContent = (h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening") + ", Steven";
+    $("subline").textContent = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) +
+      " \u00b7 " + open.length + " open deals \u00b7 " + (hot.length ? hot.length + " need you today" : "all clear today");
+
+    // Deals with NO checklist at all (present in Deals table, zero rows in Transaction Checklists).
+    // Only computed when the feed carries the nextUp rollup (proxy v12+).
+    var noChecklist = [];
+    if (d.nextUp) {
+      var ckSet = {};
+      Object.keys(d.nextUp).forEach(function (k) { ckSet[addrKey(String(k).split("|")[0])] = true; });
+      noChecklist = open.filter(function (v) { return v["Property Address"] && !ckSet[addrKey(v["Property Address"])]; });
+    }
+    var attEl = $("attention");
+    var ncCards = noChecklist.map(function (v) {
+      return '<div class="att-card"><div class="att-l"><span class="dot" style="background:#E24B4A;"></span><div style="min-width:0;">' +
+        '<div class="att-a">' + esc(v["Property Address"]) + '</div>' +
+        '<div class="att-s">' + esc(v["Deal Type"] || "?") + ' \u00b7 ' + esc(v["Client"] || "") + '</div></div></div>' +
+        '<span class="pill dang">No checklist</span></div>';
+    }).join("");
+    if (!hot.length && !noChecklist.length) {
+      attEl.innerHTML = '<div class="att-card"><div class="att-l"><span class="dot" style="background:#0ca30c;"></span><div><div class="att-a">All deals healthy</div><div class="att-s">No deadlines within 3 days</div></div></div></div>';
+    } else if (!hot.length) {
+      attEl.innerHTML = ncCards;
+    } else {
+      attEl.innerHTML = ncCards + hot.slice(0, 4).map(function (v) {
+        var red = v["Health"] === "\ud83d\udd34";
+        var nd = pDate(v["Next Deadline"]);
+        var pill = nd ? (daysTo(nd) <= 0 ? "Due today" : "Due " + fmtDay(nd)) : "Check deal";
+        return '<div class="att-card"><div class="att-l"><span class="dot" style="background:' + (red ? "#E24B4A" : "#EF9F27") + ';"></span><div style="min-width:0;">' +
+          '<div class="att-a">' + esc(v["Property Address"]) + '</div>' +
+          '<div class="att-s">' + esc(v["Deal Type"]) + ' \u00b7 ' + esc(v["Client"]) + '</div></div></div>' +
+          '<span class="pill ' + (red ? "dang" : "warn") + '">' + esc(pill) + '</span></div>';
+      }).join("");
+    }
+
+    var open_t = tasks.filter(function (t) { return !t["Complete"]; });
+    tasksById = {};
+    open_t.forEach(function (t) { if (t.__id) tasksById[t.__id] = t; });
+    open_t.sort(function (a, b) {
+      var da = pDate(a["Due Date"]) || new Date(9999, 0), db = pDate(b["Due Date"]) || new Date(9999, 0);
+      return (da - db) || String(a["Deal"] || "").localeCompare(String(b["Deal"] || ""));
+    });
+    var buckets = [
+      { key: "late", label: "LATE", cls: "late", rows: [] },
+      { key: "today", label: "TODAY", cls: "today", rows: [] },
+      { key: "week", label: "THIS WEEK", cls: "week", rows: [] },
+      { key: "next", label: "UPCOMING", cls: "week", rows: [] }
+    ];
+    open_t.forEach(function (t) {
+      var dd = pDate(t["Due Date"]);
+      var n = dd ? daysTo(dd) : 99;
+      (n < 0 ? buckets[0] : n === 0 ? buckets[1] : n <= 7 ? buckets[2] : buckets[3]).rows.push(t);
+    });
+    var focusEl = $("focus");
+    if (!open_t.length) {
+      focusEl.innerHTML = '<div class="empty">No open tasks \ud83c\udf89</div>';
+    } else {
+      focusEl.innerHTML = buckets.filter(function (b) { return b.rows.length; }).map(function (b) {
+        var expanded = !!bucketOpen[b.key];
+        var shown = expanded ? b.rows : b.rows.slice(0, 6);
+        var more = b.rows.length > 6 ?
+          '<button class="showmore" type="button" data-bucket="' + b.key + '">' +
+          (expanded ? "Show less \u25b4" : "Show all " + b.rows.length + " \u25be") + '</button>' : "";
+        return '<div class="bucket"><div class="bucket-h"><span class="bucket-t ' + b.cls + '">' + b.label +
+          '</span><span class="bucket-n">' + b.rows.length + '</span></div>' +
+          '<div class="b-card ' + (b.key === "late" ? "late" : b.key === "today" ? "today" : "") + '">' +
+          shown.map(taskRow).join("") + more + '</div></div>';
+      }).join("");
+    }
+
+    var closers = open.filter(function (v) { return pDate(v["Closing Date"]); });
+    closers.sort(function (a, b) { return pDate(a["Closing Date"]) - pDate(b["Closing Date"]); });
+    var upcoming = closers.filter(function (v) { return daysTo(pDate(v["Closing Date"])) >= 0; }).slice(0, 4);
+    var clEl = $("closings");
+    clEl.innerHTML = upcoming.length ? upcoming.map(function (v) {
+      return '<div class="close-row"><span class="close-a">' + esc(v["Property Address"]) + '</span>' +
+        '<span class="close-d">' + esc(fmtDay(pDate(v["Closing Date"]))) + ' \u00b7 ' + esc(v["Total Commission"] || "") + '</span></div>';
+    }).join("") : '<div class="empty">No closings scheduled</div>';
+
+    renderDeals(d);
+    renderPeople(d);
+    renderVendors(d);
+  }
+
+  var expandedId = null;
+  var undoRow = null;
+  var toastTimer = null;
+  var tasksById = {};
+  var bucketOpen = {};
+  var lastData = null;
+
+  function fmtDay2(d) { return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }); }
+  function dealChip(deal) {
+    var dp = String(deal || "").split("|");
+    var raw = dp[0].trim();
+    if (!raw) return "";
+    var addr = raw.toLowerCase().replace(/(^|\s)([a-z])/g, function (m, p, c) { return p + c.toUpperCase(); });
+    var hsh = 0;
+    for (var i = 0; i < raw.length; i++) { hsh = (hsh * 31 + raw.charCodeAt(i)) >>> 0; }
+    return '<span class="deal-chip dc' + (hsh % 6) + '">' + esc(addr) + '</span>';
+  }
+  function taskRow(t) {
+    var dd = pDate(t["Due Date"]);
+    var late = dd && daysTo(dd) < 0, todayDue = dd && daysTo(dd) === 0;
+    var dueTxt = !dd ? "" : late ? "was due " + fmtDay(dd) : todayDue ? "TODAY" : fmtDay2(dd);
+    var open_x = t.__id && t.__id === expandedId;
+    var det = String(t["Details"] || "").trim();
+    var x = '<div class="x">' +
+      (det ? '<div class="x-h">HOW TO DO IT</div><div class="x-d">' + esc(det) + '</div>'
+           : '<div class="x-d" style="color:var(--text-muted);">No instructions saved for this task.</div>') +
+      (t["Notes"] ? '<div class="x-h" style="margin-top:8px;">TIMING RULE</div><div class="x-d">' + esc(String(t["Notes"]).replace(/^Timing: /, "")) + '</div>' : "") +
+      '<div class="x-btns"><button class="bd" type="button" data-act="done">✓ Mark done</button>' +
+      '<button class="be" type="button" data-act="edit">✎ Edit task</button></div></div>';
+    return '<div class="t-row' + (open_x ? " open" : "") + '" data-id="' + esc(t.__id || "") + '">' +
+      '<span class="ckbox' + (late ? " late" : "") + '" data-act="ck" title="Mark done"></span>' +
+      '<div class="t-mid"><div class="t-txt">' + esc(t["Task"]) + '</div>' +
+      '<div class="t-sub">' + dealChip(t["Deal"]) +
+      '<span class="t-due' + (late ? " lt" : todayDue ? " td" : "") + '">' + esc(dueTxt) + '</span></div>' + x + '</div>' +
+      '<span class="pencil" data-act="edit" title="Edit task">✎</span></div>';
+  }
+  function rerenderFocus() { if (lastData) render(lastData); }
+
+  function showToast(msg, withUndo) {
+    var el = $("toast");
+    $("toast-text").textContent = msg;
+    $("toast-undo").style.display = withUndo ? "" : "none";
+    el.className = "show";
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.className = ""; undoRow = null; }, 9000);
+  }
+
+  function writeComplete(rowId, val, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = "Saving\u2026"; }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=setcomplete&row=" + encodeURIComponent(rowId) + "&val=" + val, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res.ok) {
+          if (val === "1") {
+            undoRow = rowId;
+            showToast("Task marked done", true);
+            var row = document.querySelector('.t-row[data-id="' + rowId + '"]');
+            if (row) row.style.display = "none";
+            expandedId = null;
+          } else {
+            showToast("Restored \u2014 back on the list", false);
+          }
+          setTimeout(load, 2500);
+        } else {
+          showToast("Couldn\u2019t save: " + (res.error || "unknown error"), false);
+          if (btn) { btn.disabled = false; btn.textContent = "\u2713 Mark done"; }
+        }
+      })
+      .catch(function (e) {
+        showToast("Couldn\u2019t save \u2014 " + e, false);
+        if (btn) { btn.disabled = false; btn.textContent = "\u2713 Mark done"; }
+      });
+  }
+
+  $("toast-undo").addEventListener("click", function () {
+    if (undoRow) { writeComplete(undoRow, "0", null); undoRow = null; $("toast").className = ""; }
+  });
+
+  $("focus").addEventListener("click", function (ev) {
+    var sm = ev.target.closest ? ev.target.closest(".showmore") : null;
+    if (sm) {
+      var bk = sm.getAttribute("data-bucket");
+      bucketOpen[bk] = !bucketOpen[bk];
+      rerenderFocus();
+      return;
+    }
+    var row = ev.target.closest ? ev.target.closest(".t-row") : null;
+    if (!row || !row.getAttribute("data-id")) return;
+    var id = row.getAttribute("data-id");
+    var doneBtn = ev.target.closest ? ev.target.closest('[data-act="done"]') : null;
+    var ck = ev.target.closest ? ev.target.closest('[data-act="ck"]') : null;
+    var editBtn = ev.target.closest ? ev.target.closest('[data-act="edit"]') : null;
+    if (doneBtn || ck) { writeComplete(id, "1", doneBtn); return; }
+    if (editBtn) { emOpen(id); return; }
+    expandedId = (expandedId === id) ? null : id;
+    var rows = document.querySelectorAll("#focus .t-row");
+    for (var i = 0; i < rows.length; i++) {
+      var cls = rows[i].className.replace(" open", "");
+      rows[i].className = cls + (rows[i].getAttribute("data-id") === expandedId ? " open" : "");
+    }
+  });
+
+  var PAGES = ["home", "deals", "people", "vendors"];
+  function showPage(p) {
+    for (var i = 0; i < PAGES.length; i++) {
+      $("page-" + PAGES[i]).style.display = PAGES[i] === p ? "" : "none";
+      $("nav-" + PAGES[i]).className = PAGES[i] === p ? "on" : "off";
+    }
+  }
+  PAGES.forEach(function (p) { $("nav-" + p).addEventListener("click", function () { showPage(p); }); });
+
+  function personRow(v, isVendor) {
+    var sub = [];
+    if (isVendor && v["Company"]) sub.push(v["Company"]);
+    if (!isVendor && v["Contact Type"]) sub.push(String(v["Contact Type"]));
+    if (v["Phone"]) sub.push(v["Phone"]);
+    if (v["Email"]) sub.push(v["Email"]);
+    return '<div class="deal-row" style="cursor:default;">' +
+      '<div class="dr-mid"><div class="dr-a">' + esc(v["Name"]) + '</div>' +
+      '<div class="dr-s">' + esc(sub.join(" \u00b7 ") || "no details yet") + '</div></div>' +
+      (v["Notes"] ? '<div class="dr-right"><div class="dr-next" style="max-width:200px; white-space:normal;">' + esc(String(v["Notes"]).slice(0, 80)) + '</div></div>' : '') +
+      '</div>';
+  }
+  function renderPeople(d) {
+    var list = (d.contacts || []).map(function (r) { return r.values; });
+    list.sort(function (a2, b2) { return String(a2["Name"]).localeCompare(String(b2["Name"])); });
+    $("people-list").innerHTML = list.length ?
+      '<div class="b-card">' + list.map(function (v) { return personRow(v, false); }).join("") + '</div>' :
+      '<div class="empty">No people yet \u2014 tap + Add person to start your list.</div>';
+  }
+
+  var vendorFilter = "All";
+  var vendorSearch = "";
+  function vName(v) { return v["Name / Company"] || v["Name"] || v["Company"] || "(no name)"; }
+  function vendorRow(v) {
+    var sub = [];
+    if (v["Service"]) sub.push(String(v["Service"]));
+    else if (v["Company"]) sub.push(String(v["Company"]));
+    if (v["Phone"]) sub.push(v["Phone"]);
+    if (v["Contact Person"]) sub.push(String(v["Contact Person"]));
+    var web = v["Website"] ? String(v["Website"]).trim() : "";
+    var linkbits = [];
+    if (v["Email"]) linkbits.push(esc(String(v["Email"])));
+    if (/^https?:\/\//i.test(web)) linkbits.push('<a class="vr-link" href="' + esc(web) + '" target="_blank" rel="noopener">website</a>');
+    var notes = v["Notes"] ? '<div class="vr-notes">' + esc(String(v["Notes"]).slice(0, 120)) + '</div>' : '';
+    return '<div class="vrow">' +
+      '<div class="vr-name">' + esc(vName(v)) + '</div>' +
+      '<div class="vr-sub">' + esc(sub.join(" \u00b7 ") || "no details yet") + '</div>' +
+      (linkbits.length ? '<div class="v-links">' + linkbits.join(" \u00b7 ") + '</div>' : '') +
+      notes + '</div>';
+  }
+  function renderVendors(d) {
+    var vlist = (d.vendors || []).map(function (r) { return r.values; });
+    var counts = {};
+    vlist.forEach(function (v) { var c = String(v["Category"] || "Uncategorized"); counts[c] = (counts[c] || 0) + 1; });
+    var cats = Object.keys(counts).sort();
+    var chips = '<span class="vchip' + (vendorFilter === "All" ? " on" : "") + '" data-cat="All">All<span class="vc-n">' + vlist.length + '</span></span>';
+    chips += cats.map(function (c) {
+      return '<span class="vchip' + (vendorFilter === c ? " on" : "") + '" data-cat="' + esc(c) + '">' + esc(c) + '<span class="vc-n">' + counts[c] + '</span></span>';
+    }).join("");
+    $("vendors-chips").innerHTML = chips;
+    if (!vlist.length) { $("vendors-list").innerHTML = '<div class="empty">No vendors yet \u2014 tap + Add vendor to start your list.</div>'; return; }
+    var q = vendorSearch.trim().toLowerCase();
+    var filtered = vlist.filter(function (v) {
+      if (vendorFilter !== "All" && String(v["Category"] || "Uncategorized") !== vendorFilter) return false;
+      if (!q) return true;
+      var hay = [vName(v), v["Company"], v["Service"], v["Category"], v["Contact Person"], v["Notes"], v["Phone"], v["Email"]].join("  ").toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+    if (!filtered.length) {
+      $("vendors-list").innerHTML = '<div class="empty">No vendors match' + (q ? ' \u201c' + esc(vendorSearch.trim()) + '\u201d' : '') + (vendorFilter !== "All" ? ' in ' + esc(vendorFilter) : '') + '.</div>';
+      return;
+    }
+    var groups = {};
+    filtered.forEach(function (v) { var c = String(v["Category"] || "Uncategorized"); (groups[c] = groups[c] || []).push(v); });
+    var gk = Object.keys(groups).sort();
+    var showHeaders = (vendorFilter === "All");
+    $("vendors-list").innerHTML = gk.map(function (c) {
+      var rows = groups[c].sort(function (a2, b2) { return String(vName(a2)).localeCompare(String(vName(b2))); });
+      var header = showHeaders ? '<div class="vgroup-h"><span class="vgroup-t">' + esc(c) + '</span><span class="vgroup-n">' + rows.length + '</span></div>' : '';
+      return header + '<div class="b-card">' + rows.map(vendorRow).join("") + '</div>';
+    }).join("");
+  }
+  $("vendors-chips").addEventListener("click", function (ev) {
+    var chip = ev.target.closest ? ev.target.closest(".vchip") : null;
+    if (!chip) return;
+    vendorFilter = chip.getAttribute("data-cat");
+    if (lastData) renderVendors(lastData);
+  });
+  $("vendors-search").addEventListener("input", function () {
+    vendorSearch = this.value;
+    if (lastData) renderVendors(lastData);
+  });
+
+  $("btn-addtask").addEventListener("click", function () {
+    var deals = ((lastData || {}).deals || []).filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var sel = $("at-deal");
+    sel.innerHTML = deals.map(function (r) {
+      var v = r.values;
+      var label = String(v["Property Address"] || "").toUpperCase() + (v["Client"] ? " | " + v["Client"] : "");
+      return '<option value="' + esc(label) + '">' + esc(v["Property Address"]) + (v["Client"] ? " \u00b7 " + esc(v["Client"]) : "") + '</option>';
+    }).join("");
+    $("at-task").value = ""; $("at-due").value = ""; $("at-details").value = "";
+    $("at-err").textContent = "";
+    $("at-save").disabled = false; $("at-save").textContent = "Add task";
+    $("at-ov").style.display = "block";
+  });
+  $("at-x").addEventListener("click", function () { $("at-ov").style.display = "none"; });
+  $("at-ov").addEventListener("click", function (ev) { if (ev.target === $("at-ov")) $("at-ov").style.display = "none"; });
+  $("at-save").addEventListener("click", function () {
+    var task = $("at-task").value.trim(), deal = $("at-deal").value;
+    if (!task) { $("at-err").textContent = "Task text is required."; return; }
+    if (!deal) { $("at-err").textContent = "Pick a deal."; return; }
+    var qs = "&task=" + encodeURIComponent(task) + "&deal=" + encodeURIComponent(deal);
+    if ($("at-due").value.trim()) qs += "&due=" + encodeURIComponent($("at-due").value.trim());
+    if ($("at-details").value.trim()) qs += "&details=" + encodeURIComponent($("at-details").value.trim());
+    var btn = $("at-save");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=addtask" + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Add task";
+        if (res.ok) { $("at-ov").style.display = "none"; showToast("Task added \u2014 " + res.task, false); setTimeout(load, 2500); }
+        else { $("at-err").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Add task"; $("at-err").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
+
+  var apMode = "contact";
+  function apOpen(mode) {
+    apMode = mode;
+    $("ap-title").textContent = mode === "vendor" ? "Add vendor" : "Add person";
+    $("ap-company-row").style.display = mode === "vendor" ? "" : "none";
+    ["ap-name", "ap-company", "ap-phone", "ap-email", "ap-notes"].forEach(function (id) { $(id).value = ""; });
+    $("ap-err").textContent = "";
+    $("ap-save").disabled = false; $("ap-save").textContent = "Save";
+    $("ap-ov").style.display = "block";
+  }
+  $("btn-addcontact").addEventListener("click", function () { apOpen("contact"); });
+  $("btn-addvendor").addEventListener("click", function () { apOpen("vendor"); });
+  $("ap-x").addEventListener("click", function () { $("ap-ov").style.display = "none"; });
+  $("ap-ov").addEventListener("click", function (ev) { if (ev.target === $("ap-ov")) $("ap-ov").style.display = "none"; });
+  $("ap-save").addEventListener("click", function () {
+    var name = $("ap-name").value.trim();
+    if (!name) { $("ap-err").textContent = "Name is required."; return; }
+    var qs = "&name=" + encodeURIComponent(name);
+    if (apMode === "vendor" && $("ap-company").value.trim()) qs += "&company=" + encodeURIComponent($("ap-company").value.trim());
+    if ($("ap-phone").value.trim()) qs += "&phone=" + encodeURIComponent($("ap-phone").value.trim());
+    if ($("ap-email").value.trim()) qs += "&email=" + encodeURIComponent($("ap-email").value.trim());
+    if ($("ap-notes").value.trim()) qs += "&notes=" + encodeURIComponent($("ap-notes").value.trim());
+    var btn = $("ap-save");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=" + (apMode === "vendor" ? "addvendor" : "addcontact") + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Save";
+        if (res.ok) { $("ap-ov").style.display = "none"; showToast((apMode === "vendor" ? "Vendor" : "Person") + " added \u2014 " + res.name, false); setTimeout(load, 2500); }
+        else { $("ap-err").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Save"; $("ap-err").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
+
+  function stagePill(s) {
+    var cls = s === "Coming Soon" ? "sp-coming" : s === "Active" ? "sp-active" : s === "Under Contract" ? "sp-uc" : s === "Closing" ? "sp-closing" : "sp-closed";
+    return '<span class="stage-pill ' + cls + '">' + esc(s || "?") + '</span>';
+  }
+  function renderDeals(d) {
+    var rows = (d.deals || []).slice();
+    var open = rows.filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var closed = rows.filter(function (r) { return r.values["Stage"] === "Closed"; });
+    open.sort(function (x, y) {
+      var a2 = pDate(x.values["Next Deadline"]) || new Date(9999, 0), b2 = pDate(y.values["Next Deadline"]) || new Date(9999, 0);
+      return a2 - b2;
+    });
+    var html = open.map(function (r) {
+      var v = r.values;
+      var red = v["Health"] === "\ud83d\udd34", yel = v["Health"] === "\ud83d\udfe1";
+      var nd = pDate(v["Next Deadline"]);
+      var cd = pDate(v["Closing Date"]);
+      return '<div class="deal-row" data-id="' + esc(r.id) + '">' +
+        '<span class="dot" style="background:' + (red ? "#E24B4A" : yel ? "#EF9F27" : "#0ca30c") + ';"></span>' +
+        '<div class="dr-mid"><div class="dr-a">' + esc(v["Property Address"]) + '</div>' +
+        '<div class="dr-s">' + esc(v["Deal Type"] || "?") + (v["Client"] ? " \u00b7 " + esc(v["Client"]) : "") + (v["Agent"] ? " \u00b7 " + esc(v["Agent"]) : "") + '</div></div>' +
+        stagePill(v["Stage"]) +
+        '<div class="dr-right"><div class="dr-gci">' + esc(v["Total Commission"] || "") + '</div>' +
+        '<div class="dr-next">' + (nd ? "next: " + esc(fmtDay(nd)) : cd ? "closes " + esc(fmtDay(cd)) : "no dates") + '</div></div>' +
+        '<span class="pencil">\u270e</span></div>';
+    }).join("");
+    $("deals-list").innerHTML = '<div class="b-card">' + (html || '<div class="empty">No open deals</div>') + '</div>' +
+      (closed.length ? '<div style="font-size:11px; color:var(--text-muted); padding:8px 4px;">' + closed.length + ' closed deal' + (closed.length > 1 ? 's' : '') + ' not shown</div>' : "");
+    $("deals-sub").textContent = open.length + " open \u00b7 tap a deal to edit";
+  }
+  $("deals-list").addEventListener("click", function (ev) {
+    var row = ev.target.closest ? ev.target.closest(".deal-row") : null;
+    if (!row) return;
+    $("btn-editdeal").click();
+    $("ed-deal").value = row.getAttribute("data-id");
+  });
+
+  var edFields = [["stage","ed-stage"],["agent","ed-agent"],["price","ed-price"],["commission","ed-comm"],["bindingdate","ed-binding"],["ddenddate","ed-ddend"],["closingdate","ed-closing"],["listdate","ed-list"],["apptdate","ed-appt"],["listingapptdate","ed-listappt"],["openhousedate","ed-oh"],["leaseexecdate","ed-lease"]];
+  $("btn-editdeal").addEventListener("click", function () {
+    var deals = ((lastData || {}).deals || []).filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var sel = $("ed-deal");
+    sel.innerHTML = deals.map(function (r) { return '<option value="' + esc(r.id) + '">' + esc(r.values["Property Address"]) + '</option>'; }).join("");
+    for (var i = 0; i < edFields.length; i++) { $(edFields[i][1]).value = ""; }
+    $("ed-err").textContent = "";
+    $("ed-save").disabled = false; $("ed-save").textContent = "Save changes";
+    $("ed-ov").style.display = "block";
+  });
+  $("ed-x").addEventListener("click", function () { $("ed-ov").style.display = "none"; });
+  $("ed-ov").addEventListener("click", function (ev) { if (ev.target === $("ed-ov")) $("ed-ov").style.display = "none"; });
+  $("ed-save").addEventListener("click", function () {
+    var qs = "";
+    for (var i = 0; i < edFields.length; i++) {
+      var v = String($(edFields[i][1]).value || "").trim();
+      if (v) qs += "&" + edFields[i][0] + "=" + encodeURIComponent(v);
+    }
+    if (!qs) { $("ed-err").textContent = "Nothing filled in \u2014 nothing to save."; return; }
+    var btn = $("ed-save");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=editdeal&row=" + encodeURIComponent($("ed-deal").value) + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Save changes";
+        if (res.ok) {
+          $("ed-ov").style.display = "none";
+          showToast("Deal updated \u2014 " + res.address + (res.checklist === "updated" ? " \u00b7 due dates recalculating" : ""), false);
+          setTimeout(load, 2500);
+        } else { $("ed-err").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Save changes"; $("ed-err").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
+
+  var emRow = null;
+  function emOpen(id) {
+    var t = tasksById[id];
+    if (!t) return;
+    emRow = id;
+    $("em-task").value = t["Task"] || "";
+    $("em-details").value = t["Details"] || "";
+    $("em-err").textContent = "";
+    $("em-save").disabled = false; $("em-save").textContent = "Save changes";
+    $("em-ov").className = "show";
+  }
+  $("em-x").addEventListener("click", function () { $("em-ov").className = ""; });
+  $("em-ov").addEventListener("click", function (ev) { if (ev.target === $("em-ov")) $("em-ov").className = ""; });
+  $("em-save").addEventListener("click", function () {
+    var task = $("em-task").value.trim(), det = $("em-details").value;
+    if (!task) { $("em-err").textContent = "Task text can’t be empty."; return; }
+    if (!emRow) { $("em-err").textContent = "No task selected."; return; }
+    var btn = $("em-save");
+    btn.disabled = true; btn.textContent = "Saving…";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=edittask&row=" + encodeURIComponent(emRow) +
+      "&task=" + encodeURIComponent(task) + "&details=" + encodeURIComponent(det), { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "Save changes";
+        if (res.ok) {
+          $("em-ov").className = "";
+          showToast("Task updated — saved to checklist", false);
+          setTimeout(load, 2500);
+        } else { $("em-err").textContent = "Couldn’t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "Save changes"; $("em-err").textContent = "Couldn’t save — " + e; });
+  });
+
+  function load() {
+    if (!KEY) { setDiag("err", "data: no key \u2014 open via Command Center doc"); return; }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY), { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) { setDiag("err", "data: " + d.error); return; }
+        render(d);
+        setDiag("ok", "data: live \u00b7 " + d.deals.length + " deals \u00b7 " + d.tasks.length + " tasks \u00b7 updated " + new Date().toLocaleTimeString());
+      })
+      .catch(function (e) { setDiag("err", "data: fetch failed \u2014 " + e); });
+  }
+
+  var DM_FIELDS = [
+    ["address", "dm-address", "Property Address"], ["city", "dm-city", "City"], ["client", "dm-client", "Client"],
+    ["dealtype", "dm-type", "Deal Type"], ["stage", "dm-stage", "Stage"], ["agent", "dm-agent", "Agent"],
+    ["price", "dm-price", "Price"], ["commission", "dm-comm", "Commission %"], ["listdate", "dm-listdate", "List Date"],
+    ["bindingdate", "dm-bindingdate", "Binding Date"], ["ddenddate", "dm-ddend", "DD End Date"],
+    ["closingdate", "dm-closingdate", "Closing Date"], ["notes", "dm-notes", "Notes"]
+  ];
+  function dmValues() {
+    var out = {};
+    for (var i = 0; i < DM_FIELDS.length; i++) {
+      var v = $(DM_FIELDS[i][1]).value;
+      if (v != null && String(v).trim() !== "") out[DM_FIELDS[i][0]] = String(v).trim();
+    }
+    return out;
+  }
+  function dmOpen() {
+    for (var i = 0; i < DM_FIELDS.length; i++) { $(DM_FIELDS[i][1]).value = ""; }
+    $("dm-stage").value = "Coming Soon";
+    $("dm-err1").textContent = ""; $("dm-err2").textContent = "";
+    $("dm-form").style.display = ""; $("dm-rev").style.display = "none";
+    $("dm-title").textContent = "Add deal";
+    $("dm-ov").className = "show";
+  }
+  function dmClose() { $("dm-ov").className = ""; }
+  $("btn-adddeal").addEventListener("click", dmOpen);
+  $("dm-x").addEventListener("click", dmClose);
+  $("dm-ov").addEventListener("click", function (ev) { if (ev.target === $("dm-ov")) dmClose(); });
+  $("dm-back").addEventListener("click", function () { $("dm-rev").style.display = "none"; $("dm-form").style.display = ""; $("dm-title").textContent = "Add deal"; });
+  $("dm-review").addEventListener("click", function () {
+    var v = dmValues();
+    if (!v.address) { $("dm-err1").textContent = "Property Address is required."; return; }
+    if (v.commission && (parseFloat(v.commission) <= 0 || parseFloat(v.commission) > 15)) { $("dm-err1").textContent = "Commission looks off \u2014 enter it like 3 for 3%."; return; }
+    $("dm-err1").textContent = "";
+    var html = "";
+    for (var i = 0; i < DM_FIELDS.length; i++) {
+      var k = DM_FIELDS[i][0];
+      if (v[k]) {
+        var shown = v[k];
+        if (k === "price") shown = "$" + parseFloat(v[k]).toLocaleString("en-US");
+        if (k === "commission") shown = v[k] + "%";
+        html += '<div class="dm-kv"><span class="k">' + esc(DM_FIELDS[i][2]) + '</span><span>' + esc(shown) + '</span></div>';
+      }
+    }
+    $("dm-rev-list").innerHTML = html;
+    if (v.price && v.commission) {
+      var gci = parseFloat(v.price) * parseFloat(v.commission) / 100;
+      $("dm-gci").style.display = "";
+      $("dm-gci").textContent = "GCI will compute to $" + Math.round(gci).toLocaleString("en-US") + " \u00b7 Health & Next Deadline compute automatically";
+    } else { $("dm-gci").style.display = "none"; }
+    $("dm-form").style.display = "none"; $("dm-rev").style.display = "";
+    $("dm-title").textContent = "Review \u2014 nothing saved yet";
+  });
+  $("dm-confirm").addEventListener("click", function () {
+    var v = dmValues();
+    var btn = $("dm-confirm");
+    btn.disabled = true; btn.textContent = "Saving\u2026";
+    var qs = "";
+    for (var k in v) { qs += "&" + k + "=" + encodeURIComponent(v[k]); }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=adddeal" + qs, { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        btn.disabled = false; btn.textContent = "\u2713 Confirm & add deal";
+        if (res.ok) {
+          dmClose();
+          var extra = (res.checklist && res.checklist.tasksCreated) ? " \u00b7 checklist created (" + res.checklist.tasksCreated + " tasks)" : "";
+          showToast("Deal added \u2014 " + res.address + extra, false);
+          setTimeout(load, 2500);
+        } else { $("dm-err2").textContent = "Couldn\u2019t save: " + (res.error || "unknown error"); }
+      })
+      .catch(function (e) { btn.disabled = false; btn.textContent = "\u2713 Confirm & add deal"; $("dm-err2").textContent = "Couldn\u2019t save \u2014 " + e; });
+  });
+
+  setDiag(KEY ? "" : "err", KEY ? "data: loading\u2026" : "data: no key \u2014 open via Command Center doc");
+  load();
+  if (KEY) setInterval(load, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
