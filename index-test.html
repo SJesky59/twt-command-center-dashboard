@@ -177,6 +177,15 @@
   #diag.err .dot2 { background:#d03b3b; }
   #diag.err { display:flex; }
   @media (max-width: 520px) { html { zoom: 1.25; } }
+
+  .v-mark{display:flex;gap:16px;align-items:center;background:#f7f5f0;border:0.5px solid #ece7dc;border-radius:12px;padding:14px 20px;margin-bottom:1.25rem;}
+  .v-mark .v-mk{width:26px;height:26px;flex-shrink:0;color:#b79c5e;}
+  .v-mark .v-txt{font-family:Georgia,serif;font-size:15px;font-style:italic;color:#3a3733;line-height:1.5;flex:1;}
+  .v-mark .v-ref{font-size:10.5px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;padding-left:16px;border-left:0.5px solid #ece7dc;}
+  .fcard{display:flex;align-items:center;gap:16px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:1.5rem;}
+  .fcard .fc-lbl{font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
+  .fcard .fc-word{font-size:16px;font-weight:700;}
+  .fcard .fc-det{font-size:11.5px;color:var(--text-secondary);margin-top:2px;}
 </style>
 </head>
 <body>
@@ -200,13 +209,15 @@
   </div>
 
   <div id="page-home">
+  <div class="v-mark"><svg class="v-mk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8h10" stroke-linecap="round"/></svg><div class="v-txt" id="verse-txt"></div><div class="v-ref" id="verse-ref"></div></div>
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
-    <div class="kpi"><div class="lbl">Active</div><div class="num" id="kpi-active">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">Coming soon</div><div class="num" id="kpi-coming">&ndash;</div></div>
+    <div class="kpi"><div class="lbl">On market</div><div class="num" id="kpi-active">&ndash;</div></div>
     <div class="kpi"><div class="lbl">Under contract</div><div class="num" id="kpi-uc">&ndash;</div></div>
     <div class="kpi"><div class="lbl">Closing · next 30d</div><div class="num" id="kpi-closing">&ndash;</div></div>
-    <div class="kpi"><div class="lbl">GCI pipeline</div><div class="num" id="kpi-gci">&ndash;</div></div>
   </div>
 
+  <div class="fcard" id="forecast"><div id="fc-icon"></div><div><div class="fc-lbl">Book forecast · right now</div><div class="fc-word" id="fc-word">&mdash;</div><div class="fc-det" id="fc-det"></div></div></div>
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:1.5rem;">
     <div>
       <div class="sec-h">
@@ -242,18 +253,6 @@
       </div>
     </div>
 
-    <div>
-      <div class="sec-h">
-        <i class="ti ti-layout-kanban" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
-        <span class="t">Pipeline by stage</span>
-      </div>
-      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
-        <div class="stage-t"><div class="stage-n" id="st-coming">&ndash;</div><div class="stage-l">Coming</div></div>
-        <div class="stage-t"><div class="stage-n" id="st-active">&ndash;</div><div class="stage-l">Active</div></div>
-        <div class="stage-t"><div class="stage-n" id="st-uc">&ndash;</div><div class="stage-l">UC</div></div>
-        <div class="stage-t"><div class="stage-n" id="st-closing">&ndash;</div><div class="stage-l">Closing</div></div>
-      </div>
-    </div>
   </div>
   </div>
   <div id="page-deals" style="display:none;">
@@ -445,14 +444,11 @@
     }).length;
     var gci = open.reduce(function (a, v) { return a + money(v["Total Commission"]); }, 0);
 
+    $("kpi-coming").textContent = byStage["Coming Soon"] || 0;
     $("kpi-active").textContent = byStage["Active"] || 0;
     $("kpi-uc").textContent = byStage["Under Contract"] || 0;
     $("kpi-closing").textContent = closingThisMonth;
-    $("kpi-gci").textContent = gci >= 100000 ? "$" + Math.round(gci / 1000) + "k" : "$" + gci.toLocaleString("en-US");
-    $("st-coming").textContent = byStage["Coming Soon"] || 0;
-    $("st-active").textContent = byStage["Active"] || 0;
-    $("st-uc").textContent = byStage["Under Contract"] || 0;
-    $("st-closing").textContent = byStage["Closing"] || 0;
+    renderForecast(open);
 
     var hot = open.filter(function (v) { return v["Health"] && v["Health"] !== "\ud83d\udfe2"; });
     hot.sort(function (a, b) { return (a["Health"] === "\ud83d\udd34" ? 0 : 1) - (b["Health"] === "\ud83d\udd34" ? 0 : 1); });
@@ -995,6 +991,24 @@
   load();
   if (KEY) setInterval(load, REFRESH_MS);
 })();
+
+function renderForecast(open){
+  var risk=0,watch=0;
+  open.forEach(function(v){var h=v["Health"]||"";
+    if(h.indexOf("\ud83d\udd34")>=0) risk++;
+    else if(h.indexOf("\ud83d\udfe1")>=0) watch++;
+  });
+  var word=document.getElementById("fc-word"), det=document.getElementById("fc-det"), ic=document.getElementById("fc-icon");
+  if(!word) return;
+  var SUN='<svg viewBox="0 0 64 64" width="42" height="42"><circle cx="32" cy="32" r="12" fill="#e0a52a"/><g stroke="#e0a52a" stroke-width="2.5" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/><line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/><line x1="14" y1="14" x2="18" y2="18"/><line x1="46" y1="46" x2="50" y2="50"/><line x1="50" y1="14" x2="46" y2="18"/><line x1="18" y1="46" x2="14" y2="50"/></g></svg>';
+  var CLOUD='<svg viewBox="0 0 64 64" width="42" height="42"><circle cx="26" cy="25" r="10" fill="#e0a52a"/><path d="M20 45a10 10 0 0 1 1-20 13 13 0 0 1 25 3 8 8 0 0 1-2 17z" fill="#b9bcc2"/></svg>';
+  var STORM='<svg viewBox="0 0 64 64" width="42" height="42"><path d="M18 40a11 11 0 0 1 1-22 14 14 0 0 1 27 3 9 9 0 0 1-2 19z" fill="#8a94a6"/><line x1="26" y1="44" x2="23" y2="53" stroke="#4a6ea0" stroke-width="3" stroke-linecap="round"/><line x1="36" y1="44" x2="33" y2="53" stroke="#4a6ea0" stroke-width="3" stroke-linecap="round"/></svg>';
+  if(risk>0){ ic.innerHTML=STORM; word.textContent="Storm brewing"; word.style.color="#b8302f"; det.textContent=risk+" deal"+(risk>1?"s":"")+" at risk \u2014 needs you today."; }
+  else if(watch>0){ ic.innerHTML=CLOUD; word.textContent="Partly cloudy"; word.style.color="#9d6508"; det.textContent=watch+" deal"+(watch>1?"s":"")+" to keep an eye on."; }
+  else { ic.innerHTML=SUN; word.textContent="Clear skies"; word.style.color="#0b0b0b"; det.textContent="All "+open.length+" deals moving. Nothing needs shelter today."; }
+}
+(function(){var V=[["The faithful love of the Lord never ends! His mercies never cease. Great is his faithfulness; his mercies begin afresh each morning.", "Lamentations 3:22-23"], ["Commit your actions to the Lord, and your plans will succeed.", "Proverbs 16:3"], ["This is my command\u2014be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.", "Joshua 1:9"], ["Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.", "Philippians 4:6"], ["Work willingly at whatever you do, as though you were working for the Lord rather than for people.", "Colossians 3:23"], ["But those who trust in the Lord will find new strength. They will soar high on wings like eagles.", "Isaiah 40:31"], ["Come to me, all of you who are weary and carry heavy burdens, and I will give you rest.", "Matthew 11:28"], ["Trust in the Lord with all your heart; do not depend on your own understanding.", "Proverbs 3:5"], ["Be still, and know that I am God!", "Psalm 46:10"], ["Don't be afraid, for I am with you. Don't be discouraged, for I am your God. I will strengthen you and help you.", "Isaiah 41:10"]];var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);var v=V[doy%V.length];var t=document.getElementById("verse-txt"),r=document.getElementById("verse-ref");if(t){t.textContent="\u201c"+v[0]+"\u201d";r.textContent=v[1];}})();
+
 </script>
 </body>
 </html>
