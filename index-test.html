@@ -951,9 +951,8 @@ document.addEventListener("click",function(ev){
   $("deals-list").addEventListener("click", function (ev) {
     var row = ev.target.closest ? ev.target.closest(".deal-row") : null;
     if (!row) return;
-    var _did = row.getAttribute("data-id");
-      var _k = (new URLSearchParams(location.search)).get("k") || "";
-      window.location.href = "deals-test.html?k=" + encodeURIComponent(_k) + "&deal=" + encodeURIComponent(_did);
+    $("btn-editdeal").click();
+      $("ed-deal").value = row.getAttribute("data-id");
   });
 
   var edFields = [["stage","ed-stage"],["agent","ed-agent"],["price","ed-price"],["commission","ed-comm"],["bindingdate","ed-binding"],["ddenddate","ed-ddend"],["closingdate","ed-closing"],["listdate","ed-list"],["apptdate","ed-appt"],["listingapptdate","ed-listappt"],["openhousedate","ed-oh"],["leaseexecdate","ed-lease"]];
