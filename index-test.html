@@ -196,8 +196,11 @@
   .rw.pulse{transform:scale(1.04);}
   .rfg{transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1),stroke .8s linear;}
   .rw.closed #rt-ring{filter:drop-shadow(0 0 5px rgba(10,91,107,.5));}
-  .rc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .rc .b{font-size:20px;font-weight:700;color:#0a5b6b;line-height:1;}
+  .rc .l{font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
   .rc .chk{display:none;}
+  .rw.closed .rc .b,.rw.closed .rc .l{display:none;}
   .rw.closed .rc .chk{display:block;}
   .fmid{flex:1;min-width:0;}
   .leg{display:flex;gap:18px;margin-bottom:10px;flex-wrap:wrap;}
@@ -273,7 +276,7 @@
             <circle id="rwk-ring" class="rfg" cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-linecap="round"/>
             <circle id="rt-ring" class="rfg" cx="60" cy="60" r="35" fill="none" stroke-width="10" stroke-linecap="round"/>
           </svg>
-          <div class="rc"><span class="chk"><svg viewBox="0 0 24 24" width="32" height="32"><path d="M5 13l4 4L19 7" fill="none" stroke="#0a5b6b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+          <div class="rc"><span class="b" id="rv-center">0/0</span><span class="l">today</span><span class="chk"><svg viewBox="0 0 24 24" width="32" height="32"><path d="M5 13l4 4L19 7" fill="none" stroke="#0a5b6b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         </div>
         <div class="fmid">
           <div class="leg">
@@ -645,6 +648,7 @@
     var dw=$("rdot-week"); if(dw) dw.style.background=rMix(R_WPALE,R_WDEEP,rEase(wf));
     $("rv-today").textContent = tT>0 ? (tD+"/"+tT) : "clear";
     $("rv-week").textContent = wD+"/"+wT;
+    var cEl=$("rv-center"); if(cEl) cEl.textContent = tT>0 ? (tD+"/"+tT) : "";
     var left=tT-tD, stEl=$("rcap-st"), slEl=$("rcap-sl");
     if(tT===0){ rw.classList.add("closed"); stEl.textContent="Nothing due today"; slEl.textContent=(wT>0?((wT-wD)+" on deck this week."):"Enjoy the clear day."); }
     else if(left<=0){ rw.classList.add("closed"); stEl.textContent="Today, done"; slEl.textContent="Every task due today is checked off."; }
