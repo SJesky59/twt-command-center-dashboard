@@ -186,6 +186,13 @@
   .fcard .fc-lbl{font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
   .fcard .fc-word{font-size:16px;font-weight:700;}
   .fcard .fc-det{font-size:11.5px;color:var(--text-secondary);margin-top:2px;}
+  .srow{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:1.5rem;}
+  @media(max-width:760px){.srow{grid-template-columns:1fr;}}
+  .srow .fcard{margin-bottom:0;}
+  .tcard{display:flex;align-items:center;gap:16px;background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:14px 18px;}
+  .tcard .t-lbl{font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
+  .tcard .t-num{font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1;}
+  .tcard .t-det{font-size:11.5px;color:var(--text-secondary);margin-top:3px;}
 
   .focus-tog{display:inline-flex;background:var(--surface-1);border-radius:8px;padding:2px;gap:2px;margin-left:10px;}
   .focus-tog .ftg{font:inherit;font-size:11px;font-weight:500;border:none;background:transparent;color:var(--text-secondary);border-radius:6px;padding:4px 9px;cursor:pointer;}
@@ -249,7 +256,7 @@
     <div class="kpi"><div class="lbl">Closing · next 30d</div><div class="num" id="kpi-closing">&ndash;</div></div>
   </div>
 
-  <div class="fcard" id="forecast"><div id="fc-icon"></div><div><div class="fc-lbl">Book forecast · right now</div><div class="fc-word" id="fc-word">&mdash;</div><div class="fc-det" id="fc-det"></div></div></div>
+  <div class="srow"><div class="fcard" id="forecast"><div id="fc-icon"></div><div><div class="fc-lbl">Book forecast · right now</div><div class="fc-word" id="fc-word">&mdash;</div><div class="fc-det" id="fc-det"></div></div></div><div class="tcard" id="trend"><svg id="spark" width="140" height="44" viewBox="0 0 140 44"></svg><div><div class="t-lbl">Health trend &middot; last 14 days</div><div class="t-num" id="tr-num">&mdash;</div><div class="t-det" id="tr-det">building history&hellip;</div></div></div></div>
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:1.5rem;">
     <div>
       <div class="sec-h">
@@ -500,6 +507,7 @@
     $("kpi-uc").textContent = byStage["Under Contract"] || 0;
     $("kpi-closing").textContent = closingThisMonth;
     renderForecast(open);
+    renderTrend(d.trend);
     renderRings(d.stats);
 
     var hot = open.filter(function (v) { return v["Health"] && v["Health"] !== "\ud83d\udfe2"; });
@@ -1117,6 +1125,31 @@ function renderForecast(open){
   if(risk>0){ ic.innerHTML=STORM; word.textContent="Storm brewing"; word.style.color="#b8302f"; det.textContent=risk+" deal"+(risk>1?"s":"")+" at risk \u2014 needs you today."; }
   else if(watch>0){ ic.innerHTML=CLOUD; word.textContent="Partly cloudy"; word.style.color="#9d6508"; det.textContent=watch+" deal"+(watch>1?"s":"")+" to keep an eye on."; }
   else { ic.innerHTML=SUN; word.textContent="Clear skies"; word.style.color="#0b0b0b"; det.textContent="All "+open.length+" deals moving. Nothing needs shelter today."; }
+}
+function renderTrend(trend){
+  var el=document.getElementById("trend"); if(!el) return;
+  trend = trend || [];
+  var spark=document.getElementById("spark"), num=document.getElementById("tr-num"), det=document.getElementById("tr-det");
+  if(!spark) return;
+  if(!trend.length){ spark.innerHTML=""; num.textContent="\u2014"; det.textContent="building history\u2026"; return; }
+  var vals=trend.map(function(p){return +p.h;});
+  var last=vals[vals.length-1], first=vals[0];
+  var w=140,h=44,pad=6;
+  var mn=Math.min.apply(0,vals)-3, mx=Math.max.apply(0,vals)+3; if(mx<=mn){mx=mn+1;}
+  var pts=vals.map(function(v,i){return [pad+(w-2*pad)*(vals.length>1?i/(vals.length-1):0.5), h-pad-(h-2*pad)*(v-mn)/(mx-mn)];});
+  var lp=pts[pts.length-1];
+  var svg="";
+  if(vals.length>1){
+    var dd="M"+pts.map(function(p){return p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" L");
+    var area=dd+" L"+(w-pad).toFixed(1)+" "+(h-pad).toFixed(1)+" L"+pad.toFixed(1)+" "+(h-pad).toFixed(1)+" Z";
+    svg='<path d="'+area+'" fill="#64748b" opacity="0.07"/><path d="'+dd+'" fill="none" stroke="#8a877f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+  svg+='<circle cx="'+lp[0].toFixed(1)+'" cy="'+lp[1].toFixed(1)+'" r="3.4" fill="#0e7a3c"/>';
+  spark.innerHTML=svg;
+  var delta=last-first;
+  var ar = vals.length>1 ? (delta>0?' <span class="ar" style="color:#0e7a3c">\u25b2</span>':(delta<0?' <span class="ar" style="color:#b8302f">\u25bc</span>':'')) : '';
+  num.innerHTML=last+"%"+ar;
+  det.textContent = vals.length>1 ? ("from "+first+"% \u00b7 "+trend.length+" days") : "1 day logged \u00b7 fills over ~2 weeks";
 }
 (function(){var V=[["The faithful love of the Lord never ends! His mercies never cease. Great is his faithfulness; his mercies begin afresh each morning.", "Lamentations 3:22-23"], ["Commit your actions to the Lord, and your plans will succeed.", "Proverbs 16:3"], ["This is my command\u2014be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.", "Joshua 1:9"], ["Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.", "Philippians 4:6"], ["Work willingly at whatever you do, as though you were working for the Lord rather than for people.", "Colossians 3:23"], ["But those who trust in the Lord will find new strength. They will soar high on wings like eagles.", "Isaiah 40:31"], ["Come to me, all of you who are weary and carry heavy burdens, and I will give you rest.", "Matthew 11:28"], ["Trust in the Lord with all your heart; do not depend on your own understanding.", "Proverbs 3:5"], ["Be still, and know that I am God!", "Psalm 46:10"], ["Don't be afraid, for I am with you. Don't be discouraged, for I am your God. I will strengthen you and help you.", "Isaiah 41:10"]];var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);var v=V[doy%V.length];var t=document.getElementById("verse-txt"),r=document.getElementById("verse-ref");if(t){t.textContent="\u201c"+v[0]+"\u201d";r.textContent=v[1];}})();
 
