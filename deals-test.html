@@ -530,19 +530,20 @@ function _openDeepLink_(){
     for(var i=0;i<deals.length;i++){ if(String(deals[i].rowId)===String(target)){ idx=i; break; } }
     if(idx<0){ return; }
     if(typeof cur!=="undefined"){ cur="All"; }
-    if(typeof openDrawers!=="undefined"&&openDrawers.add){ openDrawers.add(idx); }
-    draw();
+    if(typeof draw==="function"){ draw(); }
     setTimeout(function(){
-      var rows=document.querySelectorAll(".drow"); var rowEl=null;
-      for(var j=0;j<rows.length;j++){ if((rows[j].getAttribute("onclick")||"")==="toggleRow("+idx+")"){ rowEl=rows[j]; break; } }
-      if(!rowEl) return;
-      try{ rowEl.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){ rowEl.scrollIntoView(); }
-      rowEl.style.transition="background .5s"; var prev=rowEl.style.background; rowEl.style.background="#fff6cc";
-      setTimeout(function(){ rowEl.style.background=prev; }, 2400);
-    }, 300);
+      try{ if(typeof openDrawers!=="undefined" && !openDrawers.has(idx) && typeof toggleRow==="function"){ toggleRow(idx); } }catch(e){}
+      setTimeout(function(){
+        var rows=document.querySelectorAll(".drow"); var rowEl=null;
+        for(var j=0;j<rows.length;j++){ if((rows[j].getAttribute("onclick")||"")==="toggleRow("+idx+")"){ rowEl=rows[j]; break; } }
+        if(!rowEl) return;
+        try{ rowEl.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){ rowEl.scrollIntoView(); }
+        rowEl.style.transition="background .5s"; var prev=rowEl.style.background; rowEl.style.background="#fff6cc";
+        setTimeout(function(){ rowEl.style.background=prev; }, 2600);
+      }, 220);
+    }, 180);
   }catch(e){}
 }
-
 loadDeals();
 </script>
 </body>
