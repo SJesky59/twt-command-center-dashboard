@@ -193,6 +193,7 @@ async function loadDeals(){
     deals.forEach(detectManual);
     draw();
     toast("Loaded "+deals.length+" deals");
+    _openDeepLink_();
   }catch(e){ toast("Load failed — check connection"); }
 }
 async function callDoor(params){
@@ -520,6 +521,28 @@ async function saveAdd(){
  }catch(e){toast("Add failed — check connection");}
  finally{if(btn){btn.disabled=false;btn.textContent="Add deal";}}
 }
+
+function _openDeepLink_(){
+  try{
+    var p=new URLSearchParams(location.search); var target=p.get("deal");
+    if(!target||typeof deals==="undefined"||!deals.length) return;
+    var idx=-1;
+    for(var i=0;i<deals.length;i++){ if(String(deals[i].rowId)===String(target)){ idx=i; break; } }
+    if(idx<0){ return; }
+    if(typeof cur!=="undefined"){ cur="All"; }
+    if(typeof openDrawers!=="undefined"&&openDrawers.add){ openDrawers.add(idx); }
+    draw();
+    setTimeout(function(){
+      var rows=document.querySelectorAll(".drow"); var rowEl=null;
+      for(var j=0;j<rows.length;j++){ if((rows[j].getAttribute("onclick")||"")==="toggleRow("+idx+")"){ rowEl=rows[j]; break; } }
+      if(!rowEl) return;
+      try{ rowEl.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){ rowEl.scrollIntoView(); }
+      rowEl.style.transition="background .5s"; var prev=rowEl.style.background; rowEl.style.background="#fff6cc";
+      setTimeout(function(){ rowEl.style.background=prev; }, 2400);
+    }, 300);
+  }catch(e){}
+}
+
 loadDeals();
 </script>
 </body>
