@@ -243,6 +243,11 @@
   .dg-a{font-size:13px;font-weight:600;color:var(--text-primary);}
   .dg-flag{margin-left:auto;font-size:10.5px;font-weight:600;border-radius:6px;padding:2px 8px;}
   .flag-late{background:var(--bg-danger);color:var(--text-danger);}
+  /* ===== #1 Sync now button ===== */
+  #btn-syncnow{display:flex;align-items:center;gap:6px;}
+  #sync-ic{display:inline-block;line-height:1;font-size:14px;}
+  #sync-ic.spin{animation:twtspin .8s linear infinite;}
+  @keyframes twtspin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
@@ -262,7 +267,7 @@
       <div id="greet" style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
       <div id="subline" style="font-size:12px; color:var(--text-muted);">Loading your pipeline&hellip;</div>
     </div>
-    <div style="display:flex; gap:8px;"><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
+    <div style="display:flex; gap:8px;"><button id="btn-syncnow" style="background:var(--surface-1); color:var(--text-primary);"><span id="sync-ic">&#8635;</span> <span id="sync-lbl">Sync now</span></button><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
   </div>
 
   <div id="page-home">
@@ -1184,6 +1189,39 @@ document.addEventListener("click",function(ev){
   setDiag(KEY ? "" : "err", KEY ? "data: loading\u2026" : "data: no key \u2014 open via Command Center doc");
   load();
   if (KEY) setInterval(function () { if (!EXPANDED) load(); }, REFRESH_MS);
+
+  // ===== #1 Sync now (fires the board Coda->Sheet sync on demand) =====
+  var SYNC_URL = "https://script.google.com/macros/s/AKfycbzl37rw6V8DG-U9CT8_rrKDYppIsrU4RSVuzaAVmTXlxY43TzOf72CmLVRA0d8hyh-p/exec";
+  var SYNC_KEY = "O5zRulRuZg-uMqx_IwDCLWE2pDRL7Qyh";
+  var syncing = false;
+  function fireSync() {
+    return new Promise(function (resolve) {
+      var done = false, img = new Image();
+      function fin() { if (!done) { done = true; resolve(); } }
+      img.onload = img.onerror = fin;
+      img.src = SYNC_URL + "?k=" + encodeURIComponent(SYNC_KEY) + "&_t=" + (new Date().getTime());
+      setTimeout(fin, 8000);
+    });
+  }
+  (function () {
+    var btn = $("btn-syncnow"); if (!btn) return;
+    btn.addEventListener("click", function () {
+      if (syncing) return; syncing = true;
+      var lbl = $("sync-lbl"), ic = $("sync-ic");
+      var ob = btn.style.background, oc = btn.style.color;
+      ic.classList.add("spin"); lbl.textContent = "Syncing…";
+      fireSync().then(function () {
+        setTimeout(function () {
+          ic.classList.remove("spin"); ic.innerHTML = "&#10003;"; lbl.textContent = "Board synced";
+          btn.style.background = "var(--bg-accent)"; btn.style.color = "var(--text-accent)";
+          setTimeout(function () {
+            ic.innerHTML = "&#8635;"; lbl.textContent = "Sync now";
+            btn.style.background = ob; btn.style.color = oc; syncing = false;
+          }, 2400);
+        }, 2500);
+      });
+    });
+  })();
 })();
 
 function renderForecast(open){
