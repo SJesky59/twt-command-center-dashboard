@@ -130,7 +130,25 @@
   .dm-gci { font-size:12px; color:var(--text-accent); background:var(--bg-accent); border-radius:6px; padding:8px 10px; margin-top:10px; }
   .deal-row { display:flex; align-items:center; gap:10px; padding:11px 13px; border-bottom:0.5px solid var(--border); cursor:pointer; }
   .deal-row:last-child { border-bottom:none; }
-  .deal-row:hover { background:var(--surface-1); }
+    .deal-row:hover { background:var(--surface-1); }
+  /* ===== #2 in-place full deal editor ===== */
+  .deal-wrap:last-child .deal-row { border-bottom:none; }
+  .deal-wrap.open .deal-row { background:var(--surface-1); }
+  .chev-ex { color:var(--text-muted); transition:.15s; display:inline-block; font-size:15px; }
+  .deal-wrap.open .chev-ex { transform:rotate(90deg); color:var(--text-accent); }
+  .deal-drawer { display:none; }
+  .deal-wrap.open .deal-drawer { display:block; padding:4px 14px 14px; background:var(--surface-1); border-bottom:0.5px solid var(--border); }
+  .dg-sec { margin-top:13px; }
+  .dg-h { font-size:10px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--text-accent); margin-bottom:8px; }
+  .dg-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px 12px; }
+  @media (max-width:520px) { .dg-grid { grid-template-columns:1fr; } }
+  .dfield { display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .dfield label { font-size:10.5px; color:var(--text-secondary); font-weight:600; }
+  .dfin { width:100%; font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-2); border:0.5px solid var(--border); border-radius:6px; padding:7px 9px; box-sizing:border-box; }
+  .dfin.r { text-align:right; font-variant-numeric:tabular-nums; }
+  .dfin:focus { outline:none; border-color:var(--text-accent); box-shadow:0 0 0 2px rgba(28,92,171,.14); }
+  .dfin.man { border-color:#8a5cf0; background:#f8f5ff; }
+  .dg-foot { margin-top:12px; font-size:10.5px; color:var(--text-muted); }
   .dr-mid { flex:1; min-width:0; }
   .dr-a { font-size:13px; font-weight:600; color:var(--text-primary); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
   .dr-s { font-size:11px; color:var(--text-muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; margin-top:1px; }
@@ -935,24 +953,81 @@ document.addEventListener("click",function(ev){
       var red = v["Health"] === "\ud83d\udd34", yel = v["Health"] === "\ud83d\udfe1";
       var nd = pDate(v["Next Deadline"]);
       var cd = pDate(v["Closing Date"]);
-      return '<div class="deal-row" data-id="' + esc(r.id) + '">' +
+            return '<div class="deal-wrap" data-id="' + esc(r.id) + '">' +
+        '<div class="deal-row">' +
         '<span class="dot" style="background:' + (red ? "#E24B4A" : yel ? "#EF9F27" : "#0ca30c") + ';"></span>' +
         '<div class="dr-mid"><div class="dr-a">' + esc(v["Property Address"]) + '</div>' +
         '<div class="dr-s">' + esc(v["Deal Type"] || "?") + (v["Client"] ? " \u00b7 " + esc(v["Client"]) : "") + (v["Agent"] ? " \u00b7 " + esc(v["Agent"]) : "") + '</div></div>' +
         stagePill(v["Stage"]) +
         '<div class="dr-right"><div class="dr-gci">' + esc(v["Total Commission"] || "") + '</div>' +
         '<div class="dr-next">' + (nd ? "next: " + esc(fmtDay(nd)) : cd ? "closes " + esc(fmtDay(cd)) : "no dates") + '</div></div>' +
-        '<span class="pencil">\u270e</span></div>';
+        '<span class="chev-ex">\u203a</span></div>' +
+        '<div class="deal-drawer" id="drw_' + esc(r.id) + '"></div>' +
+        '</div>';
     }).join("");
     $("deals-list").innerHTML = '<div class="b-card">' + (html || '<div class="empty">No open deals</div>') + '</div>' +
       (closed.length ? '<div style="font-size:11px; color:var(--text-muted); padding:8px 4px;">' + closed.length + ' closed deal' + (closed.length > 1 ? 's' : '') + ' not shown</div>' : "");
-    $("deals-sub").textContent = open.length + " open \u00b7 tap a deal to edit";
+    $("deals-sub").textContent = open.length + " open \u00b7 tap a deal to edit everything";
+    reopenDrawer();
   }
+    // ===== #2 In-place full deal editor =====
+  var EXPANDED = null;
+  var cstate = {};
+  var STAGE_OPTS = ["Coming Soon","Active","Under Contract","Closed","Potential","Withdrawn"];
+  var LEADS_OPTS = ["Past Client","Referral","Realtor.com","Circle Prospecting","Sign Call","Open House","Personal","Door Knocking","Lsting Call","Met","72Sold","Deallanders","TigerLead","Cole Information","Zillow Rentals","House Hunt Inc","Internet Lead","Dave Ramsey","Social Media"];
+  var LDOC_OPTS = ["To Do","Prepared","Pending","Signed"];
+  var DGROUPS = [
+    ["Basics", [["stage","Stage","sel",STAGE_OPTS,"stage","Stage"],["type","Deal Type","sel",["Buyer","Listing","Lease"],"dealtype","Deal Type"],["agent","Agent","sel",["Luke","Steve"],"agent","Agent"],["lead","Lead Source","sel",LEADS_OPTS,"leadsource","Lead Source"],["client","Client","text",null,"client","Client"],["city","City","text",null,"city","City"]]],
+    ["Dates", [["list","List Date","date",null,"listdate","List Date"],["exp","Expiration","date",null,"expiration","Expiration Date"],["binding","Binding Date","date",null,"bindingdate","Binding Date"],["ddend","DD End","date",null,"ddenddate","DD End Date"],["close","Closing","date",null,"closingdate","Closing Date"],["ld","Listing Docs","sel",LDOC_OPTS,"listingdocs","Listing Docs"]]],
+    ["Money", [["listPrice","Listing Price","num",null,"listprice","Listing Price"],["price","Sales Price","price",null,"price","Price"],["comm","Comm %","comm",null,"commission","Commission %"],["tot","Total Comm","tot",null,"totalcommission","Total Commission"],["ref","Referral Fee","num",null,"referralfee","Referral Fee"],["fmls","FMLS Fee","num",null,"fmls","FMLS Fee"],["numtx","# Tx","numtx",null,"numtx","# of Transactions"]]],
+    ["Access & Docs", [["coop","Coop Agent / Lic #","text",null,"coop","Cooperating Agent / License #"],["serial","Serial #","text",null,"serial","Serial #"],["cbs","CBS","text",null,"cbs","CBS"],["lockbox","Lockbox","text",null,"lockbox","Coded Lockbox"]]],
+    ["Notes", [["notes","Notes","text",null,"notes","Notes"]]]
+  ];
+  function pMoney(s){ if(s==null) return 0; var n=parseFloat(String(s).replace(/[^0-9.\-]/g,"")); return isNaN(n)?0:n; }
+  function isoDate(s){ if(!s) return ""; var m=String(s).match(/(\d{4})-(\d{2})-(\d{2})/); if(m) return m[1]+"-"+m[2]+"-"+m[3]; var d=new Date(s); return isNaN(d)?"":d.toISOString().slice(0,10); }
+  function findDeal(id){ var ds=(lastData&&lastData.deals)||[]; for(var i=0;i<ds.length;i++) if(ds[i].id===id) return ds[i]; return null; }
+  function fieldHTML(id,f,v){
+    var label=f[1],type=f[2],opts=f[3],param=f[4],col=f[5], raw=v[col], oc='onclick="event.stopPropagation()"', inner="";
+    if(type==="sel"){ var cur=(raw==null?"":String(raw)); inner='<select class="dfin" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)"><option value=""></option>'+opts.map(function(o){return '<option'+(o===cur?" selected":"")+'>'+esc(o)+'</option>';}).join("")+'</select>'; }
+    else if(type==="date"){ inner='<input class="dfin" type="date" value="'+isoDate(raw)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
+    else if(type==="num"){ var nv=(raw===""||raw==null)?"":pMoney(raw); inner='<input class="dfin r" type="number" step="0.01" value="'+nv+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
+    else if(type==="numtx"){ var tv=(raw===""||raw==null)?"":raw; inner='<input class="dfin r" type="number" step="1" value="'+esc(tv)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
+    else if(type==="price"){ inner='<input class="dfin r" type="number" step="1000" value="'+(cstate[id].price||"")+'" '+oc+' onchange="dprice(\''+id+'\',this.value)">'; }
+    else if(type==="comm"){ inner='<input class="dfin r" id="fcomm_'+id+'" type="number" step="0.01" value="'+(cstate[id].pct||cstate[id].pct===0?cstate[id].pct:"")+'" '+oc+' onchange="dcomm(\''+id+'\',this.value)">'; }
+    else if(type==="tot"){ inner='<input class="dfin r'+(cstate[id].totManual?" man":"")+'" id="ftot_'+id+'" type="number" value="'+(cstate[id].tot||"")+'" '+oc+' onchange="dtot(\''+id+'\',this.value)">'; }
+    else { inner='<input class="dfin" type="text" value="'+esc(raw==null?"":raw)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
+    return '<div class="dfield"><label>'+esc(label)+'</label>'+inner+'</div>';
+  }
+  function renderDrawer(id){
+    var r=findDeal(id); if(!r) return; var v=r.values;
+    var price=pMoney(v["Price"]), pct=pMoney(v["Commission %"]), tot=pMoney(v["Total Commission"]);
+    var auto=price?Math.round(price*pct/100):0;
+    cstate[id]={price:price,pct:pct,tot:tot,totManual:(tot!==0 && Math.abs(tot-auto)>0.5)};
+    var html=DGROUPS.map(function(g){ return '<div class="dg-sec"><div class="dg-h">'+esc(g[0])+'</div><div class="dg-grid">'+g[1].map(function(f){return fieldHTML(id,f,v);}).join("")+'</div></div>'; }).join("");
+    html+='<div class="dg-foot"><span id="dgsync_'+id+'">Edits save automatically &middot; sync to Coda &middot; Tasks &middot; board</span></div>';
+    var el=document.getElementById("drw_"+id); if(el) el.innerHTML=html;
+  }
+  function reopenDrawer(){ if(!EXPANDED) return; var w=document.querySelector('.deal-wrap[data-id="'+EXPANDED+'"]'); if(w){ w.classList.add("open"); renderDrawer(EXPANDED); } else { EXPANDED=null; } }
+  function dsaveMulti(id, params){
+    var qs=""; for(var k in params){ qs+="&"+k+"="+encodeURIComponent(params[k]); }
+    var sync=document.getElementById("dgsync_"+id); if(sync) sync.textContent="saving…";
+    fetch(PROXY+"?k="+encodeURIComponent(KEY)+"&action=editdeal&row="+encodeURIComponent(id)+qs,{redirect:"follow"})
+      .then(function(r){return r.json();})
+      .then(function(res){ if(sync) sync.textContent = (res&&res.ok) ? "saved ✓ · synced to Coda · Tasks · board" : ("save error: "+((res&&res.error)||"?")); })
+      .catch(function(){ if(sync) sync.textContent="save failed — change it again to retry"; });
+  }
+  function dsave(id,param,val){ var o={}; o[param]=val; dsaveMulti(id,o); }
+  function dcomm(id,val){ var s=cstate[id]; if(!s) return; s.pct=parseFloat(val)||0; s.totManual=false; s.tot=s.price?Math.round(s.price*s.pct/100):0; var tf=document.getElementById("ftot_"+id); if(tf){ tf.value=s.tot; tf.classList.remove("man"); } dsaveMulti(id,{commission:s.pct, totalcommission:s.tot}); }
+  function dtot(id,val){ var s=cstate[id]; if(!s) return; s.tot=parseFloat(val)||0; s.totManual=true; if(s.price>0){ s.pct=Math.round((s.tot/s.price*100)*100)/100; var cf=document.getElementById("fcomm_"+id); if(cf) cf.value=s.pct; } var tf=document.getElementById("ftot_"+id); if(tf) tf.classList.add("man"); dsaveMulti(id,{totalcommission:s.tot, commission:s.pct}); }
+  function dprice(id,val){ var s=cstate[id]; if(!s) return; s.price=parseFloat(val)||0; if(!s.totManual){ s.tot=Math.round(s.price*s.pct/100); var tf=document.getElementById("ftot_"+id); if(tf) tf.value=s.tot; } dsaveMulti(id,{price:s.price, totalcommission:s.tot}); }
   $("deals-list").addEventListener("click", function (ev) {
-    var row = ev.target.closest ? ev.target.closest(".deal-row") : null;
-    if (!row) return;
-    $("btn-editdeal").click();
-      $("ed-deal").value = row.getAttribute("data-id");
+    var head = ev.target.closest ? ev.target.closest(".deal-row") : null;
+    if (!head) return;
+    var wrap = head.closest(".deal-wrap"); if (!wrap) return;
+    var id = wrap.getAttribute("data-id");
+    if (EXPANDED === id) { EXPANDED = null; wrap.classList.remove("open"); load(); return; }
+    var prev = document.querySelector(".deal-wrap.open"); if (prev) prev.classList.remove("open");
+    EXPANDED = id; wrap.classList.add("open"); renderDrawer(id);
   });
 
   var edFields = [["stage","ed-stage"],["agent","ed-agent"],["price","ed-price"],["commission","ed-comm"],["bindingdate","ed-binding"],["ddenddate","ed-ddend"],["closingdate","ed-closing"],["listdate","ed-list"],["apptdate","ed-appt"],["listingapptdate","ed-listappt"],["openhousedate","ed-oh"],["leaseexecdate","ed-lease"]];
@@ -1108,7 +1183,7 @@ document.addEventListener("click",function(ev){
 
   setDiag(KEY ? "" : "err", KEY ? "data: loading\u2026" : "data: no key \u2014 open via Command Center doc");
   load();
-  if (KEY) setInterval(load, REFRESH_MS);
+  if (KEY) setInterval(function () { if (!EXPANDED) load(); }, REFRESH_MS);
 })();
 
 function renderForecast(open){
