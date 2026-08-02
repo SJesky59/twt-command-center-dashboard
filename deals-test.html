@@ -453,12 +453,12 @@ function upd(i,k,v){const d=deals[i];d[k]=v;if(k==='t'&&v==='Lease'&&!d.lease)d.
  if(k==='t'){ if(!d.totManual)saveField(i,'tot'); if(!d.fmlsManual)saveField(i,'fmls'); }
 }
 // Total Commission / FMLS Fee: type a value to override, clear the field to revert to auto
-function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true;} draw(); saveField(i,'tot');}
+function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true; if(d.t!=="Lease"&&(+d.p)>0){d.c=Math.round((d.tot/(+d.p)*100)*100)/100;}} draw(); saveField(i,'tot'); if(d.t!=="Lease"&&d.totManual&&(+d.p)>0)saveField(i,'comm');}
 function updFmls(i,v){const d=deals[i]; if(v===""||v==null){d.fmlsManual=false;d.fmls="";}else{d.fmls=+v||0;d.fmlsManual=true;} draw(); saveField(i,'fmls');}
 function updField(i,k,v){const d=deals[i];
  if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
  else if(['listPrice','ref','numTx'].includes(k))d[k]=+v||0;
- else if(k==='comm')d.c=+v||0;
+ else if(k==='comm'){d.c=+v||0;d.totManual=false;d.tot="";draw();saveField(i,'tot');}
  else if(MDK.includes(k))d[k]=fmtMD(v);
  else if(MDYK.includes(k))d[k]=fmtMDY(v);
  else d[k]=v;
@@ -467,7 +467,7 @@ function updField(i,k,v){const d=deals[i];
 }
 function updLive(i,k,v){const d=deals[i];
  if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
- else if(k==='comm')d.c=+v||0;
+ else if(k==='comm'){d.c=+v||0;d.totManual=false;d.tot="";}
  else if(k==='listPrice')d.listPrice=+v||0;
  const ts=document.getElementById('tot-'+i);if(ts&&!d.totManual){var tv=effTot(d);ts.value=(tv===""||tv==null)?"":tv;}
  const fs=document.getElementById('fmls-'+i);if(fs&&!d.fmlsManual){var fv=effFmls(d);fs.value=(fv===""||fv==null)?"":fv;}
