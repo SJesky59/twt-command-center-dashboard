@@ -546,7 +546,7 @@
     if (d.nextUp) {
       var ckSet = {};
       Object.keys(d.nextUp).forEach(function (k) { ckSet[addrKey(String(k).split("|")[0])] = true; });
-      noChecklist = open.filter(function (v) { return v["Property Address"] && !ckSet[addrKey(v["Property Address"])]; });
+      noChecklist = open.filter(function (v) { return v["Property Address"] && !ckSet[addrKey(v["Property Address"])] && !v["Checklist Not Needed"]; });
     }
     var attEl = $("attention");
     var ncCards = noChecklist.map(function (v) {
