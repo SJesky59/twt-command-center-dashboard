@@ -181,7 +181,8 @@ function mapDeal(r){ var v=r.values||{}; return {
   lockbox:v["Coded Lockbox"]||"", serial:v["Serial #"]||"", cbs:v["CBS"]||"", coop:v["Cooperating Agent / License #"]||"",
   ld:v["Listing Docs"]||"To Do", drive:(v["Drive Folder"]?1:0), driveUrl:v["Drive Folder"]||"",
   list:_md(v["List Date"]), exp:_md(v["Expiration Date"]), close:_mdy(v["Closing Date"]), photos:_md(v["Photos"]),
-  oh:v["Open House"]||"", notes:v["Notes"]||""
+  binding:_md(v["Binding Date"]), ddend:_md(v["DD End Date"]),
+  oh:_md(v["Open House"]), notes:v["Notes"]||""
 };}
 async function loadDeals(){
   try{
@@ -222,7 +223,9 @@ function fieldToParam(d,k){ switch(k){
   case"serial": return {serial:d.serial};
   case"cbs": return {cbs:d.cbs};
   case"coop": return {coop:d.coop};
-  case"oh": return {openhouse:d.oh};
+  case"oh": return {openhouse:_toISO(d.oh)};
+  case"binding": return {bindingdate:_toISO(d.binding)};
+  case"ddend": return {ddenddate:_toISO(d.ddend)};
   case"list": return {listdate:_toISO(d.list)};
   case"exp": return {expiration:_toISO(d.exp)};
   case"close": return {closingdate:_toISO(d.close)};
@@ -283,7 +286,7 @@ const COLS={
  "Potential":["type","agent","client","city","list","listPrice","photos","oh","notes","ld"],
  "Coming Soon":["type","agent","client","city","list","listPrice","photos","oh","notes","ld","cbs","lockbox"],
  "Active":["type","agent","client","city","list","exp","listPrice","numTx","notes","serial","cbs","lockbox"],
- "Under Contract":["type","agent","lead","client","city","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes","coop"],
+ "Under Contract":["type","agent","lead","client","city","binding","ddend","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes","coop"],
  "Closed":["type","agent","lead","client","city","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes"],
  "Withdrawn":["type","agent","client","city","list","exp","listPrice","numTx","notes","serial","cbs","lockbox"],
 };
@@ -295,12 +298,12 @@ const COLS_TRIM={
  "Closed":["type","agent","client","close","salesPrice","tot"],
  "Withdrawn":["type","agent","client","listPrice","exp"],
 };
-const MASTER=["type","agent","lead","client","city","list","exp","listPrice","salesPrice","close","comm","ref","tot","fmls","numTx","drive","coop","serial","cbs","lockbox","photos","oh","ld","notes"];
-const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
+const MASTER=["type","agent","lead","client","city","list","exp","listPrice","salesPrice","close","binding","ddend","comm","ref","tot","fmls","numTx","drive","coop","serial","cbs","lockbox","photos","oh","ld","notes"];
+const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",binding:"Binding",ddend:"DD End",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
 const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
 const AUTO=["tot","fmls","numTx"];
 // ---- Resizable columns (widths persist across sessions via localStorage) ----
-const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
+const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,binding:88,ddend:88,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
 let colW={};
 try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v1")||"{}")||{};}catch(e){colW={};}
 function cw(k){return colW[k]||DEFAULTW[k]||100;}
@@ -322,7 +325,7 @@ function stageTotals(s){
 }
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
-const MDK=["photos","oh","list","exp"],MDYK=["close"];
+const MDK=["photos","oh","list","exp","binding","ddend"],MDYK=["close"];
 function fmtMD(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;return `${+p[0]}/${+p[1]}`;}
 function fmtMDY(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;let y=p[2]||"2026";if(y.length===2)y="20"+y;return `${+p[0]}/${+p[1]}/${y}`;}
 function fmtDate(k,v){return MDK.includes(k)?fmtMD(v):(MDYK.includes(k)?fmtMDY(v):v);}
@@ -339,13 +342,14 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"lead":return pillSel(gi,d.lead||"",Object.keys(LEADS),leadColor(d.lead),`upd(${gi},'lead',this.value)`);
  case"client":return inp(gi,'client',d.client); case"city":return inp(gi,'city',d.city);
  case"list":return inp(gi,'list',d.list); case"exp":return inp(gi,'exp',d.exp); case"close":return inp(gi,'close',d.close);
+ case"binding":return inp(gi,'binding',d.binding); case"ddend":return inp(gi,'ddend',d.ddend);
  case"listPrice":return inp(gi,'listPrice',d.listPrice,1); case"salesPrice":return inp(gi,'salesPrice',d.p,1);
  case"comm":return d.flat?'<span style="color:#8a5cf0;font-weight:600">flat</span>':(d.t==="Lease"?'<span class="fmls" style="display:block;text-align:right">—</span>':inp(gi,'comm',d.c,1));
  case"ref":return inp(gi,'ref',d.ref,1);
  case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
  case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
  case"numTx":return inp(gi,'numTx',txVal(d),1);
- case"drive":return d.drive?`<a class="lnk" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
+ case"drive":return d.drive?`<a class="lnk" href="${d.driveUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
  case"ld":return ldSelect(gi,d.ld||"To Do");
  case"coop":return inp(gi,'coop',d.coop); case"serial":return inp(gi,'serial',d.serial); case"cbs":return inp(gi,'cbs',d.cbs); case"lockbox":return inp(gi,'lockbox',d.lockbox);
  case"photos":return inp(gi,'photos',d.photos); case"oh":return inp(gi,'oh',d.oh);
@@ -354,7 +358,7 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
 function editField(gi,k){const d=deals[gi];
  if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
  if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
- if(k==="drive")return d.drive?'<a class="lnk">Open ↗</a>':'<a class="lnk" style="color:#9aa6b8">+ link</a>';
+ if(k==="drive")return d.drive?`<a class="lnk" href="${d.driveUrl}" target="_blank" rel="noopener">Open ↗</a>`:'<a class="lnk" style="color:#9aa6b8">+ link</a>';
  return cell(d,k);
 }
 function dval(d,k){
@@ -366,7 +370,7 @@ function dval(d,k){
  if(k==="lead")return d.lead?pill(d.lead,leadColor(d.lead)):"";
  if(k==="type")return pill(d.t,tColor(d.t)); if(k==="agent")return pill(d.ag,agColor(d.ag));
  if(k==="ld")return d.ld?pill(d.ld,LDOC[d.ld]):"";
- if(k==="drive")return d.drive?'<a class="lnk">Open ↗</a>':"";
+ if(k==="drive")return d.drive?`<a class="lnk" href="${d.driveUrl}" target="_blank" rel="noopener">Open ↗</a>`:"";
  return d[k]||"";
 }
 let viewMode="full";
