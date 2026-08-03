@@ -299,6 +299,13 @@
       <div id="attention" style="display:flex; flex-direction:column; gap:8px;">
         <div class="empty">Loading&hellip;</div>
       </div>
+      <div class="sec-h" style="margin-top:20px;">
+        <i class="ti ti-calendar-event" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
+        <span class="t">Upcoming closings</span>
+      </div>
+      <div id="closings">
+        <div class="empty">Loading&hellip;</div>
+      </div>
     </div>
 
     <div>
@@ -333,18 +340,7 @@
     </div>
   </div>
 
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;">
-    <div>
-      <div class="sec-h">
-        <i class="ti ti-calendar-event" style="font-size:16px; color:var(--text-secondary);" aria-hidden="true"></i>
-        <span class="t">Upcoming closings</span>
-      </div>
-      <div id="closings">
-        <div class="empty">Loading&hellip;</div>
-      </div>
-    </div>
 
-  </div>
   </div>
   <div id="page-deals" style="display:none;">
     <div class="sec-h">
@@ -650,6 +646,16 @@
     for (var i = 0; i < raw.length; i++) { hsh = (hsh * 31 + raw.charCodeAt(i)) >>> 0; }
     return '<span class="deal-chip dc' + (hsh % 6) + '">' + esc(addr) + '</span>';
   }
+  var STAGEPILL={
+    "PRE-LISTING":["Pre-Listing","#8a5cf0"],"LEASE: PRE-LISTING":["Pre-Listing","#8a5cf0"],
+    "LISTING: GOING LIVE":["Going Live","#2563eb"],"LEASE: GOING LIVE":["Going Live","#2563eb"],
+    "SELLER: OPEN HOUSE":["Open House","#0e7a3c"],
+    "BUYER: APPOINTMENT":["Appointment","#0891b2"],
+    "SELLER: UNDER CONTRACT":["Under Contract","#f59e0b"],"BUYER: UNDER CONTRACT":["Under Contract","#f59e0b"],
+    "LEASE: LIVE LISTING":["Live Listing","#12a06a"],
+    "SELLER: POST-CLOSING":["Post-Closing","#64748b"],"BUYER: POST-CLOSING":["Post-Closing","#64748b"]
+  };
+  function phasePill(phase){ var m=STAGEPILL[String(phase||"").trim().toUpperCase()]; if(!m) return ""; var c=m[1]; return '<span class="stage-pill" style="color:'+c+';background:'+c+'1f;">'+esc(m[0])+'</span>'; }
   function taskRow(t) {
     var dd = pDate(t["Due Date"]);
     var late = dd && daysTo(dd) < 0, todayDue = dd && daysTo(dd) === 0;
@@ -665,7 +671,7 @@
     return '<div class="t-row' + (open_x ? " open" : "") + '" data-id="' + esc(t.__id || "") + '">' +
       '<span class="ckbox' + (late ? " late" : "") + '" data-act="ck" title="Mark done"></span>' +
       '<div class="t-mid"><div class="t-txt">' + esc(t["Task"]) + '</div>' +
-      '<div class="t-sub">' + dealChip(t["Deal"]) +
+      '<div class="t-sub">' + ((typeof focusView!=="undefined"&&focusView==="order")?(phasePill(t["Phase"])||dealChip(t["Deal"])):dealChip(t["Deal"])) +
       '<span class="t-due' + (late ? " lt" : todayDue ? " td" : "") + '">' + esc(dueTxt) + '</span></div>' + x + '</div>' +
       '<span class="pencil" data-act="edit" title="Edit task">✎</span></div>';
   }
