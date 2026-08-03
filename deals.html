@@ -193,6 +193,7 @@ async function loadDeals(){
     deals.forEach(detectManual);
     draw();
     toast("Loaded "+deals.length+" deals");
+    _openDeepLink_();
   }catch(e){ toast("Load failed — check connection"); }
 }
 async function callDoor(params){
@@ -237,7 +238,7 @@ const STAGES=["Potential","Coming Soon","Active","Under Contract","Closed","With
 const sColor=s=>({"Coming Soon":"#2563eb","Active":"#12a06a","Under Contract":"#f59e0b","Closed":"#fb7185","Potential":"#8a5cf0","Withdrawn":"#7a5230"}[s]||"#9aa6b8");
 const tColor=t=>({"Buyer":"#2f6bff","Listing":"#e5484d","Lease":"#12a06a"}[t]||"#9aa6b8");
 const agColor=a=>({"Luke":"#86198f","Steve":"#365314"}[a]||"#64748b");
-const LEADS={"Past Client":"#0b5cad","Referral":"#1a7f37","Realtor.com":"#e36209","Circle Prospecting":"#6f42c1","Sign Call":"#0f766e","Open House":"#cf222e","Personal":"#bf3989","Door Knocking":"#7d4e00","Lsting Call":"#1098ad","Met":"#66a80f","72Sold":"#a40e26","Deallanders":"#9333ea","TigerLead":"#57606a","Cole Information":"#3b247a","Zillow Rentals":"#087f5b","House Hunt Inc":"#99286e","Internet Lead":"#0a3069","Dave Ramsey":"#9a6700","Social Media":"#ae3ec9"};
+const LEADS={"Past Client":"#0b5cad","Referral":"#1a7f37","Realtor.com":"#e36209","Circle Prospecting":"#6f42c1","Sign Call":"#0f766e","Open House":"#cf222e","Personal":"#bf3989","Door Knocking":"#7d4e00","Listing Call":"#1098ad","Met":"#66a80f","72Sold":"#a40e26","Deallanders":"#9333ea","TigerLead":"#57606a","Cole Information":"#3b247a","Zillow Rentals":"#087f5b","House Hunt Inc":"#99286e","Internet Lead":"#0a3069","Dave Ramsey":"#9a6700","Social Media":"#ae3ec9"};
 const leadColor=l=>LEADS[l]||"#64748b";
 const LDOC={"To Do":"#e5484d","Prepared":"#eab308","Pending":"#2f6bff","Signed":"#12a06a"};
 function pill(text,color){return `<span class="pill" style="color:${color};background:${color}1f">${text}</span>`;}
@@ -452,12 +453,12 @@ function upd(i,k,v){const d=deals[i];d[k]=v;if(k==='t'&&v==='Lease'&&!d.lease)d.
  if(k==='t'){ if(!d.totManual)saveField(i,'tot'); if(!d.fmlsManual)saveField(i,'fmls'); }
 }
 // Total Commission / FMLS Fee: type a value to override, clear the field to revert to auto
-function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true;} draw(); saveField(i,'tot');}
+function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true; if(d.t!=="Lease"&&(+d.p)>0){d.c=Math.round((d.tot/(+d.p)*100)*100)/100;}} draw(); saveField(i,'tot'); if(d.t!=="Lease"&&d.totManual&&(+d.p)>0)saveField(i,'comm');}
 function updFmls(i,v){const d=deals[i]; if(v===""||v==null){d.fmlsManual=false;d.fmls="";}else{d.fmls=+v||0;d.fmlsManual=true;} draw(); saveField(i,'fmls');}
 function updField(i,k,v){const d=deals[i];
  if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
  else if(['listPrice','ref','numTx'].includes(k))d[k]=+v||0;
- else if(k==='comm')d.c=+v||0;
+ else if(k==='comm'){d.c=+v||0;d.totManual=false;d.tot="";draw();saveField(i,'tot');}
  else if(MDK.includes(k))d[k]=fmtMD(v);
  else if(MDYK.includes(k))d[k]=fmtMDY(v);
  else d[k]=v;
@@ -466,7 +467,7 @@ function updField(i,k,v){const d=deals[i];
 }
 function updLive(i,k,v){const d=deals[i];
  if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
- else if(k==='comm')d.c=+v||0;
+ else if(k==='comm'){d.c=+v||0;d.totManual=false;d.tot="";}
  else if(k==='listPrice')d.listPrice=+v||0;
  const ts=document.getElementById('tot-'+i);if(ts&&!d.totManual){var tv=effTot(d);ts.value=(tv===""||tv==null)?"":tv;}
  const fs=document.getElementById('fmls-'+i);if(fs&&!d.fmlsManual){var fv=effFmls(d);fs.value=(fv===""||fv==null)?"":fv;}
@@ -519,6 +520,29 @@ async function saveAdd(){
    else{toast("Add error: "+((r&&r.error)||"?"));}
  }catch(e){toast("Add failed — check connection");}
  finally{if(btn){btn.disabled=false;btn.textContent="Add deal";}}
+}
+
+function _openDeepLink_(){
+  try{
+    var p=new URLSearchParams(location.search); var target=p.get("deal");
+    if(!target||typeof deals==="undefined"||!deals.length) return;
+    var idx=-1;
+    for(var i=0;i<deals.length;i++){ if(String(deals[i].rowId)===String(target)){ idx=i; break; } }
+    if(idx<0){ return; }
+    if(typeof cur!=="undefined"){ cur="All"; }
+    if(typeof draw==="function"){ draw(); }
+    setTimeout(function(){
+      try{ if(typeof openDrawers!=="undefined" && !openDrawers.has(idx) && typeof toggleRow==="function"){ toggleRow(idx); } }catch(e){}
+      setTimeout(function(){
+        var rows=document.querySelectorAll(".drow"); var rowEl=null;
+        for(var j=0;j<rows.length;j++){ if((rows[j].getAttribute("onclick")||"")==="toggleRow("+idx+")"){ rowEl=rows[j]; break; } }
+        if(!rowEl) return;
+        try{ rowEl.scrollIntoView({behavior:"smooth",block:"center"}); }catch(e){ rowEl.scrollIntoView(); }
+        rowEl.style.transition="background .5s"; var prev=rowEl.style.background; rowEl.style.background="#fff6cc";
+        setTimeout(function(){ rowEl.style.background=prev; }, 2600);
+      }, 220);
+    }, 180);
+  }catch(e){}
 }
 loadDeals();
 </script>
