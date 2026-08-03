@@ -146,7 +146,15 @@
   @media (max-width:520px) { .dg-grid { grid-template-columns:1fr; } }
   .dfield { display:flex; flex-direction:column; gap:3px; min-width:0; }
   .dfield label { font-size:10.5px; color:var(--text-secondary); font-weight:600; }
-  .dfin { width:100%; font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-2); border:0.5px solid var(--border); border-radius:6px; padding:7px 9px; box-sizing:border-box; }
+  .dfin { width:100%; font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-2); border:0.5px solid var(--border); border-radius:8px; padding:7px 9px; box-sizing:border-box; }
+  .dsel { position:relative; }
+  .dpv { width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px; font:inherit; font-size:13px; font-weight:600; text-align:left; border:0.5px solid var(--border); border-radius:8px; padding:7px 9px; background:var(--surface-2); color:var(--text-primary); cursor:pointer; box-sizing:border-box; }
+  .dpv::after { content:"\25be"; font-size:9px; opacity:.5; flex:0 0 auto; }
+  .dpv-empty { color:var(--text-muted); font-weight:500; }
+  .dmenu { margin-top:4px; background:var(--surface-2); border:0.5px solid var(--border); border-radius:10px; padding:5px; max-height:220px; overflow:auto; box-shadow:0 6px 16px rgba(16,24,40,.10); }
+  .dmi { font-size:12.5px; font-weight:600; border:1px solid transparent; border-radius:8px; padding:7px 10px; margin:2px 0; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dmi.dmi-empty { color:var(--text-muted); font-weight:500; }
+  .dmi:hover { filter:brightness(.97); }
   .dfin.r { text-align:right; font-variant-numeric:tabular-nums; }
   .dfin:focus { outline:none; border-color:var(--text-accent); box-shadow:0 0 0 2px rgba(28,92,171,.14); }
   .dfin.man { border-color:#8a5cf0; background:#f8f5ff; }
@@ -998,9 +1006,28 @@ document.addEventListener("click",function(ev){
   function pMoney(s){ if(s==null) return 0; var n=parseFloat(String(s).replace(/[^0-9.\-]/g,"")); return isNaN(n)?0:n; }
   function isoDate(s){ if(!s) return ""; var m=String(s).match(/(\d{4})-(\d{2})-(\d{2})/); if(m) return m[1]+"-"+m[2]+"-"+m[3]; var d=new Date(s); return isNaN(d)?"":d.toISOString().slice(0,10); }
   function findDeal(id){ var ds=(lastData&&lastData.deals)||[]; for(var i=0;i<ds.length;i++) if(ds[i].id===id) return ds[i]; return null; }
+  var SCOL={"Coming Soon":"#2563eb","Active":"#12a06a","Under Contract":"#f59e0b","Closed":"#fb7185","Potential":"#8a5cf0","Withdrawn":"#7a5230"};
+  var TCOL={"Buyer":"#2f6bff","Listing":"#e5484d","Lease":"#12a06a"};
+  var AGCOL={"Luke":"#86198f","Steve":"#365314"};
+  var LEADCOL={"Past Client":"#0b5cad","Referral":"#1a7f37","Realtor.com":"#e36209","Circle Prospecting":"#6f42c1","Sign Call":"#0f766e","Open House":"#cf222e","Personal":"#bf3989","Door Knocking":"#7d4e00","Listing Call":"#1098ad","Met":"#66a80f","72Sold":"#a40e26","Deallanders":"#9333ea","TigerLead":"#57606a","Cole Information":"#3b247a","Zillow Rentals":"#087f5b","House Hunt Inc":"#99286e","Internet Lead":"#0a3069","Dave Ramsey":"#9a6700","Social Media":"#ae3ec9"};
+  var LDCOL={"To Do":"#e5484d","Prepared":"#eab308","Pending":"#2f6bff","Signed":"#12a06a"};
+  var PLH={stage:"stage",type:"type",agent:"agent",lead:"lead source",ld:"listing docs"};
+  function selColor(key,val){ var m=key==="stage"?SCOL:key==="type"?TCOL:key==="agent"?AGCOL:key==="lead"?LEADCOL:key==="ld"?LDCOL:null; return (m&&m[val])||""; }
+  function selHTML(id,param,key,opts,cur){
+    var c=selColor(key,cur);
+    var trig = cur
+      ? '<button type="button" class="dpv" style="color:'+c+';background:'+c+'1f;border-color:'+c+'55" onclick="dtoggle(this)">'+esc(cur)+'</button>'
+      : '<button type="button" class="dpv dpv-empty" onclick="dtoggle(this)">Set '+esc(PLH[key]||key)+'</button>';
+    var items='<div class="dmi dmi-empty" data-val="" onclick="dpick(this,\''+id+'\',\''+param+'\',\''+key+'\')">— none —</div>';
+    items+=opts.map(function(o){ var oc2=selColor(key,o); var st=oc2?('color:'+oc2+';background:'+oc2+'1f;border-color:'+oc2+'55'):''; return '<div class="dmi" style="'+st+'" data-val="'+esc(o)+'" onclick="dpick(this,\''+id+'\',\''+param+'\',\''+key+'\')">'+esc(o)+'</div>'; }).join("");
+    return '<div class="dsel" onclick="event.stopPropagation()">'+trig+'<div class="dmenu" style="display:none">'+items+'</div></div>';
+  }
+  function dtoggle(btn){ var menu=btn.parentNode.querySelector(".dmenu"); if(!menu) return; var isOpen=menu.style.display==="block"; var all=document.querySelectorAll(".deal-drawer .dmenu"); for(var i=0;i<all.length;i++) all[i].style.display="none"; menu.style.display=isOpen?"none":"block"; if(window.event&&window.event.stopPropagation) window.event.stopPropagation(); }
+  function dpick(el,id,param,key){ var wrap=el.closest?el.closest(".dsel"):null; if(!wrap) return; var val=el.getAttribute("data-val")||""; var btn=wrap.querySelector(".dpv"); var c=selColor(key,val); if(val){ btn.className="dpv"; btn.setAttribute("style","color:"+c+";background:"+c+"1f;border-color:"+c+"55"); btn.textContent=val; } else { btn.className="dpv dpv-empty"; btn.removeAttribute("style"); btn.textContent="Set "+(PLH[key]||key); } var mn=wrap.querySelector(".dmenu"); if(mn) mn.style.display="none"; dsave(id,param,val); }
+  document.addEventListener("click", function(){ var all=document.querySelectorAll(".deal-drawer .dmenu"); for(var i=0;i<all.length;i++) all[i].style.display="none"; });
   function fieldHTML(id,f,v){
     var label=f[1],type=f[2],opts=f[3],param=f[4],col=f[5], raw=v[col], oc='onclick="event.stopPropagation()"', inner="";
-    if(type==="sel"){ var cur=(raw==null?"":String(raw)); inner='<select class="dfin" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)"><option value=""></option>'+opts.map(function(o){return '<option'+(o===cur?" selected":"")+'>'+esc(o)+'</option>';}).join("")+'</select>'; }
+    if(type==="sel"){ var cur=(raw==null?"":String(raw)); inner=selHTML(id,param,f[0],opts,cur); }
     else if(type==="date"){ inner='<input class="dfin" type="date" value="'+isoDate(raw)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
     else if(type==="num"){ var nv=(raw===""||raw==null)?"":pMoney(raw); inner='<input class="dfin r" type="number" step="0.01" value="'+nv+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
     else if(type==="numtx"){ var tv=(raw===""||raw==null)?"":raw; inner='<input class="dfin r" type="number" step="1" value="'+esc(tv)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
