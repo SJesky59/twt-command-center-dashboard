@@ -78,6 +78,8 @@
   .b-card.today { border-left:3px solid #1c5cab; }
   .t-row { display:flex; align-items:flex-start; gap:10px; padding:10px 13px; border-bottom:0.5px solid var(--border); cursor:pointer; }
   .t-row:last-child { border-bottom:none; }
+  .yf-more { display:block; width:100%; text-align:center; padding:9px 10px; font-size:12.5px; font-weight:600; color:#0a5b6b; background:#e4eef0; border:none; border-top:0.5px solid var(--border); cursor:pointer; border-radius:0 0 11px 11px; }
+  .yf-more:hover { background:#d8e7ea; }
   .ckbox { width:20px; height:20px; border-radius:50%; border:1.5px solid #b9b7ae; flex-shrink:0; background:#fff; cursor:pointer; margin-top:1px; }
   .ckbox.late { border-color:#d98a89; }
   .ckbox:hover { border-color:#1c5cab; }
@@ -704,9 +706,13 @@ function renderChecklistOrder(rows){
   groups.sort(function(a,b){if(!a.earliest&&!b.earliest)return a.deal<b.deal?-1:1;if(!a.earliest)return 1;if(!b.earliest)return -1;return a.earliest-b.earliest;});
   return groups.map(function(g){
     var flag=g.late?'<span class="dg-flag flag-late">'+g.late+' late</span>':"";
-    return '<div class="dg"><div class="dg-h"><span class="dg-a">'+esc(_titleAddr(g.deal))+'</span>'+flag+'</div><div class="b-card">'+g.rows.map(taskRow).join("")+'</div></div>';
+    var W=8, vis=g.rows.slice(0,W), extra=g.rows.slice(W);
+    var extraHtml = extra.length ? '<div class="yf-extra" style="display:none">'+extra.map(taskRow).join("")+'</div><button type="button" class="yf-more" onclick="yfMore(this)">+ '+extra.length+' more</button>' : "";
+    return '<div class="dg"><div class="dg-h"><span class="dg-a">'+esc(_titleAddr(g.deal))+'</span>'+flag+'</div><div class="b-card">'+vis.map(taskRow).join("")+extraHtml+'</div></div>';
   }).join("");
 }
+function yfMore(btn){ var card=btn.closest(".b-card"); if(!card) return; var ex=card.querySelector(".yf-extra"); if(ex) ex.style.display=""; if(btn.parentNode) btn.parentNode.removeChild(btn); }
+function yfSlide(row){ var card=row&&row.closest?row.closest(".b-card"):null; if(!card) return; var ex=card.querySelector(".yf-extra"); var btn=card.querySelector(".yf-more"); if(!ex||!btn) return; var next=ex.firstElementChild; if(next){ ex.parentNode.insertBefore(next, ex); } var rem=ex.children.length; if(rem<=0){ if(btn.parentNode) btn.parentNode.removeChild(btn); if(ex.parentNode) ex.parentNode.removeChild(ex); } else { btn.textContent="+ "+rem+" more"; } }
 document.addEventListener("click",function(ev){
   var b=ev.target && ev.target.closest ? ev.target.closest(".ftg") : null;
   if(!b) return;
@@ -737,6 +743,7 @@ document.addEventListener("click",function(ev){
             showToast("Task marked done", true);
             var row = document.querySelector('.t-row[data-id="' + rowId + '"]');
             if (row) row.style.display = "none";
+            if (row) yfSlide(row);
             expandedId = null;
           } else {
             showToast("Restored \u2014 back on the list", false);
@@ -979,7 +986,7 @@ document.addEventListener("click",function(ev){
   var EXPANDED = null;
   var cstate = {};
   var STAGE_OPTS = ["Coming Soon","Active","Under Contract","Closed","Potential","Withdrawn"];
-  var LEADS_OPTS = ["Past Client","Referral","Realtor.com","Circle Prospecting","Sign Call","Open House","Personal","Door Knocking","Lsting Call","Met","72Sold","Deallanders","TigerLead","Cole Information","Zillow Rentals","House Hunt Inc","Internet Lead","Dave Ramsey","Social Media"];
+  var LEADS_OPTS = ["Past Client","Referral","Realtor.com","Circle Prospecting","Sign Call","Open House","Personal","Door Knocking","Listing Call","Met","72Sold","Deallanders","TigerLead","Cole Information","Zillow Rentals","House Hunt Inc","Internet Lead","Dave Ramsey","Social Media"];
   var LDOC_OPTS = ["To Do","Prepared","Pending","Signed"];
   var DGROUPS = [
     ["Basics", [["stage","Stage","sel",STAGE_OPTS,"stage","Stage"],["type","Deal Type","sel",["Buyer","Listing","Lease"],"dealtype","Deal Type"],["agent","Agent","sel",["Luke","Steve"],"agent","Agent"],["lead","Lead Source","sel",LEADS_OPTS,"leadsource","Lead Source"],["client","Client","text",null,"client","Client"],["city","City","text",null,"city","City"]]],
