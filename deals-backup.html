@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TWT · Deals Editor — Hybrid</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{--bg:#f5f7fa;--card:#fff;--line:#e4e9f0;--line2:#eef2f7;--text:#1f2733;--muted:#7c899b;--accent:#2f6bff;--green:#12a06a;--hover:#f0f5ff;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);padding:22px;}
+  .apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+  .apptitle{font-size:20px;font-weight:680;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;}
+  .apptitle .hicon{display:inline-block;vertical-align:-4px;}
+  .apptitle .appsub{font-size:12.5px;font-weight:500;color:var(--muted);}
+  .appmeta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+  .livedot{width:8px;height:8px;border-radius:50%;background:#12a06a;box-shadow:0 0 0 3px #12a06a22;display:inline-block;}
+  .lead{color:var(--muted);font-size:12.5px;margin-bottom:12px;}
+  .hdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:9px;vertical-align:middle;}
+  .hdot.red{background:#e5484d;}.hdot.amber{background:#e8871e;}.hdot.green{background:#12a06a;}
+  .hdot.done{background:#c2cad6;}.hdot.none{background:transparent;box-shadow:inset 0 0 0 1px #dde3ec;}
+  .key{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(20,30,60,.04);}
+  .keyrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:9px;}
+  .keyrow:last-child{margin-bottom:0;}
+  .keylabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;width:92px;flex-shrink:0;}
+  .viewbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden;box-shadow:0 1px 3px rgba(20,30,60,.04);}
+  .seg button{border:none;background:transparent;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;}
+  .seg button.on{background:var(--accent);color:#fff;}
+  .viewhint{font-size:11.5px;color:var(--muted);}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;background:#fff;border:1px solid var(--line);padding:6px;border-radius:12px;box-shadow:0 1px 3px rgba(20,30,60,.04);}
+  .tab{padding:8px 14px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.3px;}
+  .ttl{text-transform:uppercase;letter-spacing:.3px;}
+  .stagesel{text-transform:uppercase;}
+  .tab:hover{background:var(--hover);}
+  .tab.on{color:#fff;}
+  .tab .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .tab .cnt{font-size:10.5px;background:#00000012;border-radius:20px;padding:0 7px;font-weight:700;}
+  .tab.on .cnt{background:#ffffff33;color:#fff;}
+  .grp{margin-bottom:12px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(20,30,60,.04);position:relative;}
+  .picker{position:absolute;top:44px;right:12px;z-index:30;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(20,30,60,.18);padding:12px 14px;width:300px;}
+  .picker .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;}
+  .picker label{font-size:11.5px;display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text);white-space:nowrap;}
+  .picker label input{cursor:pointer;}
+  .picker .pactions{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:9px;margin-top:9px;}
+  .picker .pactions button{font-size:11px;font-weight:600;border:1px solid var(--line);background:#fafbfd;border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--text);}
+  .picker .pttl{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;margin-bottom:9px;}
+  .ghead{display:flex;align-items:center;gap:10px;padding:11px 14px;font-weight:650;font-size:13.5px;}
+  .ghead .ttl{display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .gbar{width:4px;height:17px;border-radius:3px;}
+  .gcount{font-size:11px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;}
+  .chev{color:var(--muted);font-size:12px;transition:.15s;}
+  .grp.closed .chev{transform:rotate(-90deg);}
+  .grp.closed .gbody{display:none;}
+  .colbtn{margin-left:auto;font-size:11px;color:var(--accent);background:#eef4ff;border:1px solid #d5e2ff;border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:600;}
+  .scroll{overflow-x:auto;}
+  table{border-collapse:collapse;width:100%;font-size:12px;table-layout:fixed;}
+  th{text-align:left;font-size:9.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd;position:relative;}
+  td{padding:7px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;}
+  td,th{overflow:hidden;text-overflow:ellipsis;}
+  th .rz{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;user-select:none;z-index:3;}
+  th .rz:hover{background:var(--accent);opacity:.35;}
+  .totrow{display:flex;flex-wrap:wrap;gap:8px 24px;padding:11px 16px 12px;border-bottom:1px solid var(--line);background:#fbfcff;}
+  .tot-tile .tl{font-size:9px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;}
+  .tot-tile .tv{font-size:14.5px;font-weight:700;color:var(--text);margin-top:1px;}
+  .drow{cursor:pointer;}
+  .drow:hover td{background:var(--hover);}
+  .exp{color:var(--muted);font-size:11px;transition:.15s;display:inline-block;width:12px;}
+  .drow.open .exp{transform:rotate(90deg);color:var(--accent);}
+  .addr{font-weight:600;position:sticky;left:0;background:#fff;}
+  .drow:hover .addr{background:var(--hover);}
+  .r{text-align:right;}
+  .tot{font-weight:700;color:var(--green);text-align:right;}
+  .tot.lease{color:#8a5cf0;}
+  .fmls{color:var(--muted);text-align:right;}
+  input.cin.tot{color:var(--green);font-weight:700;} input.cin.tot.lease{color:#8a5cf0;} input.cin.fmls{color:var(--muted);}
+  input.cin.man{border-color:#8a5cf0!important;background:#f8f5ff;} input.cin.man:hover{background:#f8f5ff;}
+  .pill{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+  .lnk{color:var(--accent);font-weight:600;font-size:11.5px;text-decoration:none;cursor:pointer;}
+  .stagesel,.ldsel{font-size:11px;font-weight:600;border:1px solid var(--line);border-radius:20px;padding:3px 8px;cursor:pointer;background:#fff;}
+  .cin{border:1px solid transparent;background:transparent;border-radius:6px;padding:5px 7px;font-size:12px;width:100%;min-width:0;font-family:inherit;color:var(--text);}
+  .cin:hover{background:#fff;border-color:var(--line);}
+  .cin:focus{outline:none;background:#fff;border-color:var(--accent);box-shadow:0 0 0 2px rgba(47,107,255,.12);}
+  .cin.r{text-align:right;}
+  .psel{border:1px solid transparent;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;cursor:pointer;-webkit-appearance:none;appearance:none;}
+  .psel:focus{outline:none;box-shadow:0 0 0 2px rgba(47,107,255,.18);}
+  .dfield .cin,.dfield .psel,.dfield .ldsel{border:1px solid var(--line);}
+  .dfield .cin:hover{background:#fff;}
+  .detail td{background:#fafcff;border-bottom:2px solid var(--line);padding:0;}
+  .dwrap{padding:14px 18px 16px 30px;}
+  .dtitle{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;margin-bottom:10px;}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px 20px;}
+  .dfield{display:flex;flex-direction:column;gap:3px;}
+  .dfield .k{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+  .dfield .v{font-size:13px;font-weight:500;}
+  .dfield.empty .v{color:#c2cad6;}
+  .toolbar{display:flex;gap:8px;margin-bottom:14px;align-items:center;}
+  .expand{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;background:none;border:none;}
+  .synced{margin-left:auto;font-size:12px;color:var(--muted);}
+  .synced b{color:var(--green);}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1f2733;color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.2);}
+  #toast.show{opacity:1;}
+  .addbtn{margin-left:auto;background:#eef1f6;color:#1f2733;border:1px solid #e2e7ef;border-radius:9px;padding:7px 30px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .addbtn:hover{background:#e5e9f1;}
+  .ckbtn{margin-top:12px;background:#fff;border:1px solid var(--line);color:var(--accent);border-radius:8px;padding:6px 14px;font-size:11.5px;font-weight:600;cursor:pointer;}
+  .ckbtn:hover{background:var(--hover);}
+  .overlay{position:fixed;inset:0;background:rgba(20,26,40,.45);display:none;align-items:center;justify-content:center;z-index:50;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:14px;width:min(580px,92vw);padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .modal h3{font-size:16px;font-weight:650;margin-bottom:16px;}
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px 16px;}
+  .mfield{display:flex;flex-direction:column;gap:5px;}
+  .mfield.full{grid-column:1/-1;}
+  .mfield label{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;}
+  .mfield input,.mfield select{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13.5px;color:var(--text);background:#fff;font-family:inherit;}
+  .mfield input:focus,.mfield select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,107,255,.12);}
+  .mauto{background:#f3f8f4;border:1px dashed var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;color:#12a06a;font-weight:600;}
+  .mfoot{display:flex;gap:10px;margin-top:20px;align-items:center;}
+  .msave{background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13.5px;font-weight:650;cursor:pointer;}
+  .mcancel{background:transparent;border:1px solid var(--line);border-radius:9px;padding:10px 18px;font-size:13.5px;cursor:pointer;color:var(--muted);}
+</style>
+</head>
+<body>
+  <div class="apphead">
+    <div class="apptitle"><svg class="hicon" width="22" height="22" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="tagg" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#d76a43"/><stop offset="1" stop-color="#b8462b"/></linearGradient></defs><path d="M11.5 3.2 3.2 11.5a1.6 1.6 0 0 0 0 2.3l7 7a1.6 1.6 0 0 0 2.3 0l8.3-8.3V3.2z" fill="url(#tagg)"/><circle cx="17" cy="7" r="1.7" fill="#fff"/></svg> Deals <span class="appsub">live from Command Center</span></div>
+    <div class="appmeta"><span class="livedot"></span> <span id="dealcount">—</span> · synced</div>
+  </div>
+  <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity. Drag a column edge to resize.</div>
+
+  <div class="viewbar">
+    <span class="viewhint" id="viewhint">Tip: ⚙ Columns on any stage picks exactly what shows. Drag column edges to set widths (they stick).</span>
+    <button class="addbtn" onclick="openAdd()">+ Add Deal</button>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Add a deal</h3>
+      <div class="mgrid">
+        <div class="mfield full"><label>Property Address</label><input id="mAddr" placeholder="123 Example St"></div>
+        <div class="mfield"><label>Stage</label><select id="mStage"></select></div>
+        <div class="mfield"><label>Deal Type</label><select id="mType" onchange="mRecalc()"><option>Buyer</option><option>Listing</option><option>Lease</option></select></div>
+        <div class="mfield"><label>Agent</label><select id="mAgent"><option>Luke</option><option>Steve</option></select></div>
+        <div class="mfield"><label>Client</label><input id="mClient" placeholder="Client name"></div>
+        <div class="mfield"><label>City</label><input id="mCity" placeholder="City"></div>
+        <div class="mfield"><label>Lead Source</label><select id="mLead"></select></div>
+        <div class="mfield"><label id="mPriceLbl">Sales Price</label><input id="mPrice" type="number" oninput="mRecalc()" placeholder="0"></div>
+        <div class="mfield"><label id="mCommLbl">Commission %</label><input id="mComm" type="number" step="0.1" value="3" oninput="mRecalc()"></div>
+        <div class="mfield"><label>Total Commission (auto)</label><div class="mauto" id="mTot">$0</div></div>
+        <div class="mfield"><label>FMLS Fee (auto)</label><div class="mauto" id="mFmls">$0</div></div>
+      </div>
+      <div class="mfoot">
+        <button class="msave" onclick="saveAdd()">Add deal</button>
+        <button class="mcancel" onclick="closeAdd()">Cancel</button>
+        <span class="viewhint" style="margin-left:auto">Saves to Command Center + Tasks page</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="toolbar" id="toolbar" style="display:none">
+    <button class="expand" onclick="setAll(true)">Expand all</button>
+    <button class="expand" onclick="setAll(false)">Collapse all</button>
+    <span class="synced">Every edit syncs to: <b>Command Center</b> + <b>Tasks page</b></span>
+  </div>
+  <div id="content"></div>
+  <div id="toast"></div>
+
+<script>
+// LIVE — reads from and writes to Command Center through the doorway.
+const PROXY="https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
+const KEY="9c19ce6f06fda04692552dc6ea0e0c4f";
+let deals=[];
+function _num(v){ if(v==null||v==="")return""; if(typeof v==="object")return v.scalar!=null?v.scalar:""; var n=+String(v).replace(/[$,%\s]/g,""); return isNaN(n)?"":n; }
+function _pct(v){ var n=_num(v); if(n===""||n==null)return""; return n<=1? Math.round(n*10000)/100 : n; }
+function _md(v){ if(v==null||v==="")return""; if(typeof v==="object"&&v.input)v=v.input; var m=String(v).match(/(\d{4})-(\d{1,2})-(\d{1,2})/); return m?(+m[2])+"/"+(+m[3]):String(v); }
+function _mdy(v){ if(v==null||v==="")return""; if(typeof v==="object"&&v.input)v=v.input; var m=String(v).match(/(\d{4})-(\d{1,2})-(\d{1,2})/); return m?(+m[2])+"/"+(+m[3])+"/"+m[1]:String(v); }
+function mapDeal(r){ var v=r.values||{}; return {
+  rowId:r.id, a:v["Property Address"]||"", t:v["Deal Type"]||"Buyer", s:v["Stage"]||"Coming Soon", ag:v["Agent"]||"",
+  client:v["Client"]||"", city:v["City"]||"", lead:v["Lead Source"]||"",
+  p:_num(v["Price"]), c:_pct(v["Commission %"]), tot:_num(v["Total Commission"]), fmls:_num(v["FMLS Fee"]),
+  listPrice:_num(v["Listing Price"]), ref:_num(v["Referral Fee"]), numTx:_num(v["# of Transactions"]),
+  lockbox:v["Coded Lockbox"]||"", serial:v["Serial #"]||"", cbs:v["CBS"]||"", coop:v["Cooperating Agent / License #"]||"",
+  ld:v["Listing Docs"]||"To Do", drive:(v["Drive Folder"]?1:0), driveUrl:v["Drive Folder"]||"",
+  list:_md(v["List Date"]), exp:_md(v["Expiration Date"]), close:_mdy(v["Closing Date"]), photos:_md(v["Photos"]),
+  oh:v["Open House"]||"", notes:v["Notes"]||""
+};}
+async function loadDeals(){
+  try{
+    var dc=document.getElementById("dealcount"); if(dc)dc.textContent="loading…";
+    var r=await fetch(PROXY+"?k="+KEY+"&action=dealsonly",{cache:"no-store"});
+    var d=await r.json();
+    if(d.error){ toast("Load error: "+d.error); return; }
+    deals=(d.deals||[]).map(mapDeal).filter(function(x){return x.a;});
+    deals.forEach(detectManual);
+    draw();
+    toast("Loaded "+deals.length+" deals");
+  }catch(e){ toast("Load failed — check connection"); }
+}
+async function callDoor(params){
+  var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(params[k]);}).join("&");
+  var r=await fetch(PROXY+"?k="+KEY+"&"+qs,{cache:"no-store"});
+  return r.json();
+}
+function _toISO(v){ var m=String(v||"").match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/); if(!m)return""; var y=m[3]||"2026"; return y+"-"+("0"+m[1]).slice(-2)+"-"+("0"+m[2]).slice(-2); }
+function fieldToParam(d,k){ switch(k){
+  case"s": return {stage:d.s};
+  case"ag": return {agent:d.ag};
+  case"t": return {dealtype:d.t};
+  case"lead": return {leadsource:d.lead};
+  case"ld": return {listingdocs:d.ld};
+  case"city": return {city:d.city};
+  case"client": return {client:d.client};
+  case"notes": return {notes:d.notes};
+  case"salesPrice": return {price:d.p, totalcommission: effTot(d), fmls: effFmls(d)};
+  case"comm": return {commission:d.c, totalcommission: effTot(d)};
+  case"tot": return {totalcommission: effTot(d)};
+  case"fmls": return {fmls: effFmls(d)};
+  case"listPrice": return {listprice:d.listPrice};
+  case"ref": return {referralfee:d.ref};
+  case"numTx": return {numtx:d.numTx};
+  case"lockbox": return {lockbox:d.lockbox};
+  case"serial": return {serial:d.serial};
+  case"cbs": return {cbs:d.cbs};
+  case"coop": return {coop:d.coop};
+  case"oh": return {openhouse:d.oh};
+  case"list": return {listdate:_toISO(d.list)};
+  case"exp": return {expiration:_toISO(d.exp)};
+  case"close": return {closingdate:_toISO(d.close)};
+  case"photos": return {photos:_toISO(d.photos)};
+  default: return null;
+}}
+async function saveField(i,k){ var d=deals[i]; if(!d||!d.rowId) return; var fp=fieldToParam(d,k); if(!fp) return;
+  var p=Object.assign({action:"editdeal", row:d.rowId}, fp); toast("Saving…");
+  try{ var r=await callDoor(p); toast(r&&r.ok?"Saved ✓":("Save error: "+((r&&r.error)||"?"))); }
+  catch(e){ toast("Save failed"); }
+}
+const STAGES=["Potential","Coming Soon","Active","Under Contract","Closed","Withdrawn"];
+const sColor=s=>({"Coming Soon":"#2563eb","Active":"#12a06a","Under Contract":"#f59e0b","Closed":"#fb7185","Potential":"#8a5cf0","Withdrawn":"#7a5230"}[s]||"#9aa6b8");
+const tColor=t=>({"Buyer":"#2f6bff","Listing":"#e5484d","Lease":"#12a06a"}[t]||"#9aa6b8");
+const agColor=a=>({"Luke":"#86198f","Steve":"#365314"}[a]||"#64748b");
+const LEADS={"Past Client":"#0b5cad","Referral":"#1a7f37","Realtor.com":"#e36209","Circle Prospecting":"#6f42c1","Sign Call":"#0f766e","Open House":"#cf222e","Personal":"#bf3989","Door Knocking":"#7d4e00","Lsting Call":"#1098ad","Met":"#66a80f","72Sold":"#a40e26","Deallanders":"#9333ea","TigerLead":"#57606a","Cole Information":"#3b247a","Zillow Rentals":"#087f5b","House Hunt Inc":"#99286e","Internet Lead":"#0a3069","Dave Ramsey":"#9a6700","Social Media":"#ae3ec9"};
+const leadColor=l=>LEADS[l]||"#64748b";
+const LDOC={"To Do":"#e5484d","Prepared":"#eab308","Pending":"#2f6bff","Signed":"#12a06a"};
+function pill(text,color){return `<span class="pill" style="color:${color};background:${color}1f">${text}</span>`;}
+const money=n=>(n||n===0)&&n!==""?"$"+Math.round(n).toLocaleString():"—";
+function fmlsFee(t,p){if(t==="Lease"){if(p<=1499)return 15;if(p<=2499)return 25;if(p<=4999)return 50;if(p<=9999)return 100;if(p<=20000)return 150;return 200;}return Math.round(p*0.0012);}
+// Total Commission: auto = Price×Comm% for sales, blank for leases (type a flat amount). Overridable.
+function defTot(d){return d.t==="Lease"?"":Math.round((d.p||0)*(d.c||0)/100);}
+function effTot(d){return (d.totManual&&d.tot!==""&&d.tot!=null)?d.tot:defTot(d);}
+// FMLS Fee: auto = tiered lease / Price×0.12%. Overridable.
+function defFmls(d){return fmlsFee(d.t,(d.t==="Lease")?(d.p||d.lease||0):(d.p||0));}
+function effFmls(d){return (d.fmlsManual&&d.fmls!==""&&d.fmls!=null)?d.fmls:defFmls(d);}
+function total(d){return effTot(d);} // effective total commission
+// On load, decide if a stored value is a manual override (differs from the auto default)
+function detectManual(d){
+  var dt=defTot(d); d.totManual=(d.tot!==""&&d.tot!=null)&&((d.t==="Lease")||Math.abs((+d.tot||0)-(+dt||0))>0.5);
+  var df=defFmls(d); d.fmlsManual=(d.fmls!==""&&d.fmls!=null)&&Math.abs((+d.fmls||0)-(+df||0))>0.5;
+}
+function txVal(d){return d.numTx?d.numTx:1;} // default 1
+function health(d){
+ if(d.s==="Closed"||d.s==="Withdrawn")return"done";
+ var ref=d.close||""; if(!ref)return"none";
+ var p=ref.split("/"); if(p.length<2)return"none";
+ var y=+p[2]||2026; var dt=new Date(y,(+p[0])-1,+p[1]); var t=new Date(); t.setHours(0,0,0,0);
+ var diff=Math.round((dt-t)/86400000);
+ if(diff<=3)return"red"; if(diff<=7)return"amber"; return"green";
+}
+
+function renderKey(){
+ const stage=STAGES.map(s=>pill(s,sColor(s))).join(" ");
+ const type=["Buyer","Listing","Lease"].map(t=>pill(t,tColor(t))).join(" ");
+ const agent=["Luke","Steve"].map(a=>pill(a,agColor(a))).join(" ");
+ const leads=Object.keys(LEADS).map(l=>pill(l,leadColor(l))).join(" ");
+ const ld=Object.keys(LDOC).map(l=>pill(l,LDOC[l])).join(" ");
+ document.getElementById("key").innerHTML=`
+  <div class="keyrow"><span class="keylabel">Stages</span>${stage}</div>
+  <div class="keyrow"><span class="keylabel">Deal Type</span>${type}</div>
+  <div class="keyrow"><span class="keylabel">Agent</span>${agent}</div>
+  <div class="keyrow"><span class="keylabel">Lead Source</span>${leads}</div>
+  <div class="keyrow"><span class="keylabel">Listing Docs</span>${ld}</div>`;
+}
+const COLS={
+ "Potential":["type","agent","client","city","list","listPrice","photos","oh","notes","ld"],
+ "Coming Soon":["type","agent","client","city","list","listPrice","photos","oh","notes","ld","cbs","lockbox"],
+ "Active":["type","agent","client","city","list","exp","listPrice","numTx","notes","serial","cbs","lockbox"],
+ "Under Contract":["type","agent","lead","client","city","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes","coop"],
+ "Closed":["type","agent","lead","client","city","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes"],
+ "Withdrawn":["type","agent","client","city","list","exp","listPrice","numTx","notes","serial","cbs","lockbox"],
+};
+const COLS_TRIM={
+ "Potential":["type","agent","client","city","listPrice","ld"],
+ "Coming Soon":["type","agent","client","city","listPrice","ld"],
+ "Active":["type","agent","client","listPrice","exp","ld"],
+ "Under Contract":["type","agent","client","close","salesPrice","tot"],
+ "Closed":["type","agent","client","close","salesPrice","tot"],
+ "Withdrawn":["type","agent","client","listPrice","exp"],
+};
+const MASTER=["type","agent","lead","client","city","list","exp","listPrice","salesPrice","close","comm","ref","tot","fmls","numTx","drive","coop","serial","cbs","lockbox","photos","oh","ld","notes"];
+const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
+const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
+const AUTO=["tot","fmls","numTx"];
+// ---- Resizable columns (widths persist across sessions via localStorage) ----
+const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
+let colW={};
+try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v1")||"{}")||{};}catch(e){colW={};}
+function cw(k){return colW[k]||DEFAULTW[k]||100;}
+let _rz=null;
+function startResize(e,key){e.preventDefault();e.stopPropagation();_rz={key:key,x:e.clientX,w:cw(key)};document.addEventListener("mousemove",_rzMove);document.addEventListener("mouseup",_rzUp);document.body.style.cursor="col-resize";}
+function _rzMove(e){if(!_rz)return;var nw=Math.max(40,_rz.w+(e.clientX-_rz.x));colW[_rz.key]=nw;document.querySelectorAll('col[data-k="'+_rz.key+'"]').forEach(function(c){c.style.width=nw+"px";});}
+function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove",_rzMove);document.removeEventListener("mouseup",_rzUp);document.body.style.cursor="";try{localStorage.setItem("twt-deals-colw-v1",JSON.stringify(colW));}catch(e){}}
+// ---- Stage totals (Under Contract / Closed) — board's Sum/Average formulas over Coda data ----
+function _sum(list,f){return list.reduce((a,d)=>a+(+f(d)||0),0);}
+function stageTotals(s){
+ const list=deals.filter(d=>d.s===s); if(!list.length) return "";
+ const n=list.length;
+ const vol=_sum(list,d=>d.p), gci=_sum(list,d=>effTot(d)), fm=_sum(list,d=>effFmls(d)), rf=_sum(list,d=>d.ref);
+ const priced=list.filter(d=>+d.p>0); const avgP=priced.length?vol/priced.length:0;
+ const cl=list.filter(d=>d.t!=="Lease"&&+d.c>0); const avgC=cl.length?_sum(cl,d=>d.c)/cl.length:0;
+ const tx=_sum(list,d=>(d.numTx!==""&&d.numTx!=null)?d.numTx:0);
+ const tiles=[["Deals",n],["Sales Volume",money(vol)],["Total Comm",money(gci)],["Avg Price",money(avgP)],["Avg Comm %",avgC?avgC.toFixed(2)+"%":"—"],["FMLS Fees",money(fm)],["Referral",money(rf)],["Transactions",tx]];
+ return `<div class="totrow">${tiles.map(t=>`<div class="tot-tile"><div class="tl">${t[0]}</div><div class="tv">${t[1]}</div></div>`).join("")}</div>`;
+}
+function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
+function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
+const MDK=["photos","oh","list","exp"],MDYK=["close"];
+function fmtMD(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;return `${+p[0]}/${+p[1]}`;}
+function fmtMDY(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;let y=p[2]||"2026";if(y.length===2)y="20"+y;return `${+p[0]}/${+p[1]}/${y}`;}
+function fmtDate(k,v){return MDK.includes(k)?fmtMD(v):(MDYK.includes(k)?fmtMDY(v):v);}
+function inp(gi,k,val,num){
+ const isDate=MDK.includes(k)||MDYK.includes(k);
+ if(isDate)val=fmtDate(k,val);
+ const ph=MDK.includes(k)?"M/D":(MDYK.includes(k)?"M/D/YYYY":"");
+ return `<input class="cin${num?' r':''}" ${num?'type="number"':''} value="${esc(val)}" placeholder="${ph}" onclick="event.stopPropagation()" ${['salesPrice','comm','listPrice'].includes(k)?`oninput="updLive(${gi},'${k}',this.value)"`:''} onchange="updField(${gi},'${k}',this.value)">`;
+}
+function pillSel(gi,val,opts,color,onchg){return `<select class="psel" style="color:${color};background:${color}1f" onclick="event.stopPropagation()" onchange="${onchg}">${opts.map(o=>`<option ${o===val?"selected":""} value="${esc(o)}">${o}</option>`).join("")}</select>`;}
+function cell(d,k){const gi=deals.indexOf(d);switch(k){
+ case"type":return pillSel(gi,d.t,["Buyer","Listing","Lease"],tColor(d.t),`upd(${gi},'t',this.value)`);
+ case"agent":return pillSel(gi,d.ag,["Luke","Steve"],agColor(d.ag),`upd(${gi},'ag',this.value)`);
+ case"lead":return pillSel(gi,d.lead||"",Object.keys(LEADS),leadColor(d.lead),`upd(${gi},'lead',this.value)`);
+ case"client":return inp(gi,'client',d.client); case"city":return inp(gi,'city',d.city);
+ case"list":return inp(gi,'list',d.list); case"exp":return inp(gi,'exp',d.exp); case"close":return inp(gi,'close',d.close);
+ case"listPrice":return inp(gi,'listPrice',d.listPrice,1); case"salesPrice":return inp(gi,'salesPrice',d.p,1);
+ case"comm":return d.flat?'<span style="color:#8a5cf0;font-weight:600">flat</span>':(d.t==="Lease"?'<span class="fmls" style="display:block;text-align:right">—</span>':inp(gi,'comm',d.c,1));
+ case"ref":return inp(gi,'ref',d.ref,1);
+ case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
+ case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
+ case"numTx":return inp(gi,'numTx',txVal(d),1);
+ case"drive":return d.drive?`<a class="lnk" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
+ case"ld":return ldSelect(gi,d.ld||"To Do");
+ case"coop":return inp(gi,'coop',d.coop); case"serial":return inp(gi,'serial',d.serial); case"cbs":return inp(gi,'cbs',d.cbs); case"lockbox":return inp(gi,'lockbox',d.lockbox);
+ case"photos":return inp(gi,'photos',d.photos); case"oh":return inp(gi,'oh',d.oh);
+ case"notes":return inp(gi,'notes',d.notes);
+}}
+function editField(gi,k){const d=deals[gi];
+ if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
+ if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
+ if(k==="drive")return d.drive?'<a class="lnk">Open ↗</a>':'<a class="lnk" style="color:#9aa6b8">+ link</a>';
+ return cell(d,k);
+}
+function dval(d,k){
+ if(k==="salesPrice")return money(d.p); if(k==="listPrice")return money(d.listPrice);
+ if(k==="comm")return d.t==="Lease"?"—":d.c+"%";
+ if(k==="tot")return money(total(d)); if(k==="fmls")return money(fmlsFee(d.t,d.p||d.lease||0));
+ if(k==="numTx")return txVal(d);
+ if(k==="ref")return d.ref?money(d.ref):"";
+ if(k==="lead")return d.lead?pill(d.lead,leadColor(d.lead)):"";
+ if(k==="type")return pill(d.t,tColor(d.t)); if(k==="agent")return pill(d.ag,agColor(d.ag));
+ if(k==="ld")return d.ld?pill(d.ld,LDOC[d.ld]):"";
+ if(k==="drive")return d.drive?'<a class="lnk">Open ↗</a>':"";
+ return d[k]||"";
+}
+let viewMode="full";
+const colOverride={full:{},trim:{}}; // per-view, per-stage custom column arrays
+let openPickerStage=null;
+function stageSelect(d,gi){return `<select class="stagesel" style="color:${sColor(d.s)}" onclick="event.stopPropagation()" onchange="moveStage(${gi},this.value)">${STAGES.map(s=>`<option ${s===d.s?"selected":""}>${s}</option>`).join("")}</select>`;}
+function presetFor(s){return viewMode==="trim"?COLS_TRIM[s]:COLS[s];}
+function colsFor(s){return colOverride[viewMode][s]||presetFor(s);}
+function pickerPanel(s){
+ const eff=colsFor(s);
+ return `<div class="picker" onclick="event.stopPropagation()">
+   <div class="pttl">${s} · visible columns</div>
+   <div class="pgrid">${MASTER.map(k=>`<label><input type="checkbox" ${eff.includes(k)?"checked":""} onchange="toggleCol('${s}','${k}',this.checked)">${HEAD[k]}</label>`).join("")}</div>
+   <div class="pactions"><button onclick="colPreset('${s}')">Reset</button><button onclick="colAll('${s}')">All</button><button onclick="colNone('${s}')">None</button><button onclick="closePicker()" style="margin-left:auto">Done</button></div>
+ </div>`;
+}
+function tableFor(list,s){
+ const cols=colsFor(s);
+ const colg=`<colgroup><col style="width:24px"><col data-k="stage" style="width:${cw('stage')}px"><col data-k="addr" style="width:${cw('addr')}px">${cols.map(k=>`<col data-k="${k}" style="width:${cw(k)}px">`).join("")}</colgroup>`;
+ let h=`<div class="scroll"><table>${colg}<thead><tr><th style="width:24px"></th><th>Stage<div class="rz" onmousedown="startResize(event,'stage')"></div></th><th class="addr">Address<div class="rz" onmousedown="startResize(event,'addr')"></div></th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<div class="rz" onmousedown="startResize(event,'${k}')"></div></th>`).join("")}</tr></thead><tbody>`;
+ list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
+   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td>${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}</td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
+   h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
+ });
+ return h+"</tbody></table></div>";
+}
+function dnum(v){if(!v)return Infinity;const p=String(v).split("/").map(Number);const m=p[0]||0,d=p[1]||0,y=p[2]||2026;return y*10000+m*100+d;}
+function sortList(list,s){
+ if(s==="Under Contract"||s==="Closed")return list.slice().sort((a,b)=>dnum(a.close)-dnum(b.close));
+ if(s==="Active")return list.slice().sort((a,b)=>dnum(a.list)-dnum(b.list));
+ return list;
+}
+function group(s,openable){
+ const list=sortList(deals.filter(d=>d.s===s),s);
+ const body=list.length?tableFor(list,s):`<div style="padding:14px;color:var(--muted);font-size:12px">No deals in this stage.</div>`;
+ const custom=colOverride[viewMode][s]?" ✎":"";
+ const totals=(s==="Under Contract"||s==="Closed")?stageTotals(s):"";
+ return `<div class="grp"><div class="ghead"><span class="ttl" ${openable?`onclick="toggle(this)"`:""}><span class="gbar" style="background:${sColor(s)}"></span>${s}<span class="gcount">${list.length} deal${list.length===1?"":"s"}</span>${openable?'<span class="chev">▾</span>':''}</span><button class="colbtn" onclick="event.stopPropagation();togglePicker('${s}')">⚙ Columns${custom}</button></div>${openPickerStage===s?pickerPanel(s):""}<div class="gbody">${totals}${body}</div></div>`;
+}
+let cur="All";
+function renderTabs(){
+ const tabs=[{k:"All",n:deals.length,col:"#1f2733"}].concat(STAGES.map(s=>({k:s,n:deals.filter(d=>d.s===s).length,col:sColor(s)})));
+ document.getElementById("tabs").innerHTML=tabs.map(t=>`<div class="tab ${t.k===cur?'on':''}" style="${t.k===cur?`background:${t.col}`:''}" onclick="cur='${t.k}';draw()">${t.k==="All"?'':`<span class="dot" style="background:${t.col}"></span>`}${t.k}<span class="cnt">${t.n}</span></div>`).join("");
+}
+function draw(){
+ renderTabs();
+ var dc=document.getElementById("dealcount"); if(dc)dc.textContent=deals.length+" deals";
+ const c=document.getElementById("content"),tb=document.getElementById("toolbar");
+ if(cur==="All"){tb.style.display="flex";c.innerHTML=STAGES.map(s=>group(s,true)).join("");}
+ else{tb.style.display="none";c.innerHTML=group(cur,false);}
+}
+function setView(m){viewMode=m;document.getElementById("vFull").classList.toggle("on",m==="full");document.getElementById("vTrim").classList.toggle("on",m==="trim");draw();}
+function toggle(el){el.closest(".grp").classList.toggle("closed");}
+function setAll(open){document.querySelectorAll(".grp").forEach(g=>g.classList.toggle("closed",!open));}
+function togglePicker(s){openPickerStage=openPickerStage===s?null:s;draw();}
+function closePicker(){openPickerStage=null;draw();}
+function toggleCol(s,k,on){
+ let cur=(colOverride[viewMode][s]||presetFor(s)).slice();
+ if(on){if(!cur.includes(k))cur.push(k);}else{cur=cur.filter(x=>x!==k);}
+ // keep MASTER order
+ colOverride[viewMode][s]=MASTER.filter(x=>cur.includes(x));
+ draw();
+}
+function colPreset(s){delete colOverride[viewMode][s];draw();}
+function colAll(s){colOverride[viewMode][s]=MASTER.slice();draw();}
+function colNone(s){colOverride[viewMode][s]=[];draw();}
+const openDrawers=new Set();
+function toggleRow(gi){if(openDrawers.has(gi))openDrawers.delete(gi);else openDrawers.add(gi);draw();}
+function moveStage(i,newStage){const d=deals[i];const old=d.s;d.s=newStage;draw();toast(`${d.a}: ${old} → ${newStage}`);saveField(i,'s');}
+function setLd(i,v){deals[i].ld=v;draw();saveField(i,'ld');}
+async function buildChecklist(i){const d=deals[i];
+ if(!confirm("Build the full checklist for "+d.a+"? This creates ~89 tasks."))return;
+ toast("Building checklist…");
+ var params={action:"buildchecklist",address:d.a,dealtype:d.t,client:d.client||""};
+ if(d.list)params.listdate=_toISO(d.list);
+ if(d.close)params.closingdate=_toISO(d.close);
+ try{var r=await callDoor(params);
+   if(r&&r.ok){var ck=r.checklist||{};toast(ck.skipped?("Skipped: "+(ck.reason||"already exists")):("Checklist built ✓ ("+(ck.tasksCreated!=null?ck.tasksCreated:"?")+" tasks)"));}
+   else toast("Error: "+((r&&r.error)||"?"));
+ }catch(e){toast("Checklist failed");}
+}
+// editing — each change updates local state, redraws, then pushes one field to the doorway
+function upd(i,k,v){const d=deals[i];d[k]=v;if(k==='t'&&v==='Lease'&&!d.lease)d.lease=d.p;draw();saveField(i,k);
+ if(k==='t'){ if(!d.totManual)saveField(i,'tot'); if(!d.fmlsManual)saveField(i,'fmls'); }
+}
+// Total Commission / FMLS Fee: type a value to override, clear the field to revert to auto
+function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true;} draw(); saveField(i,'tot');}
+function updFmls(i,v){const d=deals[i]; if(v===""||v==null){d.fmlsManual=false;d.fmls="";}else{d.fmls=+v||0;d.fmlsManual=true;} draw(); saveField(i,'fmls');}
+function updField(i,k,v){const d=deals[i];
+ if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
+ else if(['listPrice','ref','numTx'].includes(k))d[k]=+v||0;
+ else if(k==='comm')d.c=+v||0;
+ else if(MDK.includes(k))d[k]=fmtMD(v);
+ else if(MDYK.includes(k))d[k]=fmtMDY(v);
+ else d[k]=v;
+ if(MDK.includes(k)||MDYK.includes(k))draw();
+ saveField(i,k);
+}
+function updLive(i,k,v){const d=deals[i];
+ if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
+ else if(k==='comm')d.c=+v||0;
+ else if(k==='listPrice')d.listPrice=+v||0;
+ const ts=document.getElementById('tot-'+i);if(ts&&!d.totManual){var tv=effTot(d);ts.value=(tv===""||tv==null)?"":tv;}
+ const fs=document.getElementById('fmls-'+i);if(fs&&!d.fmlsManual){var fv=effFmls(d);fs.value=(fv===""||fv==null)?"":fv;}
+}
+let tt;function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),1900);}
+
+// ---- Add Deal ----
+function openAdd(){
+ document.getElementById("mStage").innerHTML=STAGES.map(s=>`<option>${s}</option>`).join("");
+ document.getElementById("mLead").innerHTML=Object.keys(LEADS).map(l=>`<option>${l}</option>`).join("");
+ ["mAddr","mClient","mCity"].forEach(id=>document.getElementById(id).value="");
+ document.getElementById("mPrice").value="";document.getElementById("mComm").value="3";
+ document.getElementById("mType").value="Buyer";document.getElementById("mAgent").value="Luke";
+ mRecalc();
+ document.getElementById("overlay").classList.add("show");
+}
+function closeAdd(){document.getElementById("overlay").classList.remove("show");}
+function mRecalc(){
+ const t=document.getElementById("mType").value,p=+document.getElementById("mPrice").value||0,c=+document.getElementById("mComm").value||0;
+ const isLease=t==="Lease";
+ document.getElementById("mPriceLbl").textContent=isLease?"Monthly Rent":"Sales Price";
+ document.getElementById("mCommLbl").textContent=isLease?"Flat Commission ($)":"Commission %";
+ document.getElementById("mComm").disabled=false;
+ document.getElementById("mTot").textContent=money(isLease?c:Math.round(p*c/100));
+ document.getElementById("mFmls").textContent=money(fmlsFee(t,p));
+}
+async function saveAdd(){
+ const t=document.getElementById("mType").value;
+ const p=+document.getElementById("mPrice").value||0;
+ const c=+document.getElementById("mComm").value||0;
+ const addr=document.getElementById("mAddr").value.trim();
+ if(!addr){toast("Enter a property address");return;}
+ const stage=document.getElementById("mStage").value;
+ // build the doorway param set (names match editdeal / fieldToParam)
+ const isLease=t==="Lease";
+ const totVal=isLease?(c||0):Math.round(p*c/100); // lease: c field holds the flat commission
+ const fmlsVal=fmlsFee(t,p);
+ const params={action:"adddeal",address:addr,stage,dealtype:t,
+   agent:document.getElementById("mAgent").value,
+   client:document.getElementById("mClient").value.trim(),
+   city:document.getElementById("mCity").value.trim(),
+   leadsource:document.getElementById("mLead").value,
+   price:p, commission:isLease?0:c, totalcommission:totVal, fmls:fmlsVal};
+ if(t!=="Buyer")params.listprice=p;
+ // doorway auto-builds checklist for Active / Under Contract; others skip unless overridden
+ const btn=document.querySelector(".msave"); if(btn){btn.disabled=true;btn.textContent="Adding…";}
+ try{
+   const r=await callDoor(params);
+   if(r&&r.ok){toast("Added: "+addr);closeAdd();await loadDeals();}
+   else{toast("Add error: "+((r&&r.error)||"?"));}
+ }catch(e){toast("Add failed — check connection");}
+ finally{if(btn){btn.disabled=false;btn.textContent="Add deal";}}
+}
+loadDeals();
+</script>
+</body>
+</html>
