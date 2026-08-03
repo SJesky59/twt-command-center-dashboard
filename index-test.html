@@ -258,6 +258,7 @@
   #sync-ic{display:inline-block;line-height:1;font-size:14px;}
   #sync-ic.spin{animation:twtspin .8s linear infinite;}
   @keyframes twtspin{to{transform:rotate(360deg);}}
+  .ddrive{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;border-radius:8px;padding:9px 10px;font-size:12.5px;font-weight:700;color:#fff;background:#0a5b6b;text-decoration:none;}
 </style>
 </head>
 <body>
@@ -1005,8 +1006,9 @@ document.addEventListener("click",function(ev){
   var DGROUPS = [
     ["Basics", [["stage","Stage","sel",STAGE_OPTS,"stage","Stage"],["type","Deal Type","sel",["Buyer","Listing","Lease"],"dealtype","Deal Type"],["agent","Agent","sel",["Luke","Steve"],"agent","Agent"],["lead","Lead Source","sel",LEADS_OPTS,"leadsource","Lead Source"],["client","Client","text",null,"client","Client"],["city","City","text",null,"city","City"]]],
     ["Dates", [["list","List Date","date",null,"listdate","List Date"],["exp","Expiration","date",null,"expiration","Expiration Date"],["binding","Binding Date","date",null,"bindingdate","Binding Date"],["ddend","DD End","date",null,"ddenddate","DD End Date"],["close","Closing","date",null,"closingdate","Closing Date"],["ld","Listing Docs","sel",LDOC_OPTS,"listingdocs","Listing Docs"]]],
+    ["Listing", [["photos","Photos","date",null,"photos","Photos"],["oh","Open House","date",null,"openhouse","Open House"]]],
     ["Money", [["listPrice","Listing Price","num",null,"listprice","Listing Price"],["price","Sales Price","price",null,"price","Price"],["comm","Comm %","comm",null,"commission","Commission %"],["tot","Total Comm","tot",null,"totalcommission","Total Commission"],["ref","Referral Fee","num",null,"referralfee","Referral Fee"],["fmls","FMLS Fee","num",null,"fmls","FMLS Fee"],["numtx","# Tx","numtx",null,"numtx","# of Transactions"]]],
-    ["Access & Docs", [["coop","Coop Agent / Lic #","text",null,"coop","Cooperating Agent / License #"],["serial","Serial #","text",null,"serial","Serial #"],["cbs","CBS","text",null,"cbs","CBS"],["lockbox","Lockbox","text",null,"lockbox","Coded Lockbox"]]],
+    ["Access & Docs", [["coop","Coop Agent / Lic #","text",null,"coop","Cooperating Agent / License #"],["serial","Serial #","text",null,"serial","Serial #"],["cbs","CBS","text",null,"cbs","CBS"],["lockbox","Lockbox","text",null,"lockbox","Coded Lockbox"],["drive","Drive Folder","drive",null,"drivefolder","Drive Folder"]]],
     ["Notes", [["notes","Notes","text",null,"notes","Notes"]]]
   ];
   function pMoney(s){ if(s==null) return 0; var n=parseFloat(String(s).replace(/[^0-9.\-]/g,"")); return isNaN(n)?0:n; }
@@ -1031,6 +1033,7 @@ document.addEventListener("click",function(ev){
   function dtoggle(btn){ var menu=btn.parentNode.querySelector(".dmenu"); if(!menu) return; var isOpen=menu.style.display==="block"; var all=document.querySelectorAll(".deal-drawer .dmenu"); for(var i=0;i<all.length;i++) all[i].style.display="none"; menu.style.display=isOpen?"none":"block"; if(window.event&&window.event.stopPropagation) window.event.stopPropagation(); }
   function dpick(el,id,param,key){ var wrap=el.closest?el.closest(".dsel"):null; if(!wrap) return; var val=el.getAttribute("data-val")||""; var btn=wrap.querySelector(".dpv"); var c=selColor(key,val); if(val){ btn.className="dpv"; btn.setAttribute("style","color:"+c+";background:"+c+"1f;border-color:"+c+"55"); btn.textContent=val; } else { btn.className="dpv dpv-empty"; btn.removeAttribute("style"); btn.textContent="Set "+(PLH[key]||key); } var mn=wrap.querySelector(".dmenu"); if(mn) mn.style.display="none"; dsave(id,param,val); }
   document.addEventListener("click", function(){ var all=document.querySelectorAll(".deal-drawer .dmenu"); for(var i=0;i<all.length;i++) all[i].style.display="none"; });
+  function driveBtnHTML(url){ if(!url) return '<div class="dfin" style="color:var(--text-muted)">No folder yet</div>'; var u=esc(url); return '<a class="ddrive" href="'+u+'" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> Open Folder ↗</a>'; }
   function fieldHTML(id,f,v){
     var label=f[1],type=f[2],opts=f[3],param=f[4],col=f[5], raw=v[col], oc='onclick="event.stopPropagation()"', inner="";
     if(type==="sel"){ var cur=(raw==null?"":String(raw)); inner=selHTML(id,param,f[0],opts,cur); }
@@ -1040,7 +1043,9 @@ document.addEventListener("click",function(ev){
     else if(type==="price"){ inner='<input class="dfin r" type="number" step="1000" value="'+(cstate[id].price||"")+'" '+oc+' onchange="dprice(\''+id+'\',this.value)">'; }
     else if(type==="comm"){ inner='<input class="dfin r" id="fcomm_'+id+'" type="number" step="0.01" value="'+(cstate[id].pct||cstate[id].pct===0?cstate[id].pct:"")+'" '+oc+' onchange="dcomm(\''+id+'\',this.value)">'; }
     else if(type==="tot"){ inner='<input class="dfin r'+(cstate[id].totManual?" man":"")+'" id="ftot_'+id+'" type="number" value="'+(cstate[id].tot||"")+'" '+oc+' onchange="dtot(\''+id+'\',this.value)">'; }
+    else if(type==="drive"){ inner=driveBtnHTML(raw==null?"":String(raw)); }
     else { inner='<input class="dfin" type="text" value="'+esc(raw==null?"":raw)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
+    if(type==="drive") return '<div class="dfield" style="grid-column:1/-1"><label>'+esc(label)+'</label>'+inner+'</div>';
     return '<div class="dfield"><label>'+esc(label)+'</label>'+inner+'</div>';
   }
   function renderDrawer(id){
