@@ -117,6 +117,34 @@
   .mfoot{display:flex;gap:10px;margin-top:20px;align-items:center;}
   .msave{background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13.5px;font-weight:650;cursor:pointer;}
   .mcancel{background:transparent;border:1px solid var(--line);border-radius:9px;padding:10px 18px;font-size:13.5px;cursor:pointer;color:var(--muted);}
+  /* ---- mobile card view (phone only; desktop untouched) ---- */
+  .mmeta{display:none;}
+  #mtabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:55;background:#fff;border-top:1px solid var(--line);}
+  #mtabbar .mtab{flex:1;text-align:center;padding:8px 0 9px;color:var(--muted);text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:1px;}
+  #mtabbar .mtab .ic{font-size:19px;line-height:1;}
+  #mtabbar .mtab span{font-size:10px;font-weight:600;}
+  #mtabbar .mtab.on{color:var(--accent);}
+  @media (max-width:640px){
+    body{padding:14px 12px 78px;}
+    .viewbar .viewhint{display:none;}
+    .toolbar{display:none!important;}
+    .colbtn{display:none!important;}
+    .mmeta{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:4px;line-height:1.4;}
+    .scroll{overflow:visible;}
+    #content table{display:block;width:100%;}
+    #content colgroup,#content thead{display:none;}
+    #content tbody{display:block;}
+    #content tr.drow{display:block;border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin:0 0 10px;background:#fff;box-shadow:0 1px 4px rgba(20,30,60,.06);}
+    #content tr.drow td{display:none;border:none;padding:0;white-space:normal;overflow:visible;text-overflow:clip;}
+    #content tr.drow td.stagecell{display:block;margin-bottom:7px;}
+    #content tr.drow td.addr{display:block;position:static;background:transparent;font-size:15.5px;font-weight:650;}
+    #content tr.detail td{display:block;padding:0;background:transparent;border:none;}
+    #content .dwrap{padding:12px 2px 4px;}
+    #content .dgrid{grid-template-columns:1fr 1fr;}
+    .addbtn{position:fixed;right:16px;bottom:80px;z-index:60;width:54px;height:54px;border-radius:50%;padding:0;font-size:0;box-shadow:0 6px 18px rgba(47,107,255,.4);display:flex;align-items:center;justify-content:center;}
+    .addbtn::after{content:"+";font-size:30px;line-height:1;}
+    #mtabbar{display:flex;}
+  }
 </style>
 </head>
 <body>
@@ -393,7 +421,7 @@ function tableFor(list,s){
  const colg=`<colgroup><col style="width:24px"><col data-k="stage" style="width:${cw('stage')}px"><col data-k="addr" style="width:${cw('addr')}px">${cols.map(k=>`<col data-k="${k}" style="width:${cw(k)}px">`).join("")}</colgroup>`;
  let h=`<div class="scroll"><table>${colg}<thead><tr><th style="width:24px"></th><th>Stage<div class="rz" onmousedown="startResize(event,'stage')"></div></th><th class="addr">Address<div class="rz" onmousedown="startResize(event,'addr')"></div></th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<div class="rz" onmousedown="startResize(event,'${k}')"></div></th>`).join("")}</tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
-   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td>${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}</td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
+   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · $'+Math.round(d.tot).toLocaleString():''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
  });
  return h+"</tbody></table></div>";
@@ -551,5 +579,11 @@ function _openDeepLink_(){
 }
 loadDeals();
 </script>
+<nav id="mtabbar">
+  <a class="mtab" data-p="index.html"><span class="ic">⌂</span><span>Home</span></a>
+  <a class="mtab on" data-p="deals.html"><span class="ic">▤</span><span>Deals</span></a>
+  <a class="mtab" data-p="tasks.html"><span class="ic">☑</span><span>Tasks</span></a>
+</nav>
+<script>(function(){var k=new URLSearchParams(location.search).get("k")||"";document.querySelectorAll("#mtabbar .mtab").forEach(function(a){a.href=a.getAttribute("data-p")+"?k="+encodeURIComponent(k);});})();</script>
 </body>
 </html>
