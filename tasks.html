@@ -398,9 +398,10 @@ function markSelectedDone(){
 }
 
 function setSync(txt, stale){ document.getElementById("synctext").textContent=txt; document.getElementById("sync").classList.toggle("stale",!!stale); }
-var CACHE_KEY="twt_tasks_feed_v1";var hasShown=false;
+var CACHE_KEY="twt_tasks_feed_v1";var hasShown=false;var lastLoad=0;
 function renderFromCache(){try{var c=localStorage.getItem(CACHE_KEY);if(c){transform(JSON.parse(c));render();hasShown=true;var n=DATA.tasks.filter(function(t){return !t.done;}).length;setSync(n+" open - refreshing");return true;}}catch(e){}return false;}
 function load(){
+  lastLoad=Date.now();
   if(!hasShown) setSync("Refreshing…");
   fetch(PROXY+"?k="+encodeURIComponent(KEY)+"&action=alltasks",{cache:"no-store"})
     .then(function(r){return r.json();})
@@ -416,6 +417,9 @@ function load(){
 }
 if(!KEY){ document.getElementById("tbl").innerHTML="<div class='state'>Missing access key in the URL (?k=…).</div>"; setSync("No key", true); }
 else { renderFromCache(); load(); }
+function maybeRefresh(){ if(document.visibilityState==="visible" && (Date.now()-lastLoad)>30000) load(); }
+document.addEventListener("visibilitychange", maybeRefresh);
+window.addEventListener("focus", maybeRefresh);
 </script>
 </body>
 </html>
