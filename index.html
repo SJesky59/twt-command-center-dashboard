@@ -1050,7 +1050,7 @@ document.addEventListener("click",function(ev){
     else if(type==="price"){ inner='<input class="dfin r" type="number" step="1000" value="'+(cstate[id].price||"")+'" '+oc+' onchange="dprice(\''+id+'\',this.value)">'; }
     else if(type==="comm"){ inner='<input class="dfin r" id="fcomm_'+id+'" type="number" step="0.01" value="'+(cstate[id].pct||cstate[id].pct===0?cstate[id].pct:"")+'" '+oc+' onchange="dcomm(\''+id+'\',this.value)">'; }
     else if(type==="tot"){ inner='<input class="dfin r'+(cstate[id].totManual?" man":"")+'" id="ftot_'+id+'" type="number" value="'+(cstate[id].tot||"")+'" '+oc+' onchange="dtot(\''+id+'\',this.value)">'; }
-    else if(type==="drive"){ inner=driveBtnHTML(raw==null?"":String(raw)); }
+    else if(type==="drive"){ var _du=(raw&&typeof raw==="object")?(raw.url||""):(raw==null?"":String(raw)); inner=driveBtnHTML(_du); }
     else { inner='<input class="dfin" type="text" value="'+esc(raw==null?"":raw)+'" '+oc+' onchange="dsave(\''+id+'\',\''+param+'\',this.value)">'; }
     if(type==="drive") return '<div class="dfield" style="grid-column:1/-1"><label>'+esc(label)+'</label>'+inner+'</div>';
     return '<div class="dfield"><label>'+esc(label)+'</label>'+inner+'</div>';
