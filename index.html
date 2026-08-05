@@ -259,6 +259,32 @@
   #sync-ic.spin{animation:twtspin .8s linear infinite;}
   @keyframes twtspin{to{transform:rotate(360deg);}}
   .ddrive{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;border-radius:8px;padding:9px 10px;font-size:12.5px;font-weight:700;color:#fff;background:#0a5b6b;text-decoration:none;}
+  /* ---- mobile: bottom tab bar + More menu (phone only; desktop untouched) ---- */
+  #mtabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:200;height:64px;background:#fff;border-top:1px solid var(--border);}
+  #mtabbar .mtab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text-muted);text-decoration:none;cursor:pointer;}
+  #mtabbar .mtab .ic{font-size:19px;line-height:1;}
+  #mtabbar .mtab .lb{font-size:10px;font-weight:600;}
+  #mtabbar .mtab.on{color:var(--text-accent);}
+  #mscrim{display:none;position:fixed;inset:0;background:rgba(15,20,35,.34);z-index:201;}
+  #msheet{display:none;position:fixed;left:0;right:0;bottom:64px;z-index:202;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(20,30,60,.18);padding:8px 12px 16px;}
+  #msheet .grab{width:38px;height:4px;border-radius:2px;background:#d8dde6;margin:6px auto 8px;}
+  #msheet .mh{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);margin:2px 8px 6px;}
+  #msheet .mopt{display:flex;align-items:center;gap:13px;padding:13px 10px;border-radius:12px;cursor:pointer;}
+  #msheet .mopt .mi{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto;}
+  #msheet .mopt .ml{font-size:15px;font-weight:640;color:var(--text-primary);}
+  #mscrim.open,#msheet.open{display:block;}
+  @media (max-width:600px){
+    html{zoom:1!important;}
+    .wrap{padding-bottom:82px!important;}
+    .nav{display:none!important;}
+    #greet{font-size:18px!important;} #subline{font-size:12.5px!important;}
+    #btn-syncnow{width:44px!important;height:44px!important;border-radius:50%!important;padding:0!important;justify-content:center!important;}
+    #btn-syncnow #sync-lbl{display:none!important;} #btn-syncnow #sync-ic{font-size:20px;}
+    #btn-editdeal,#btn-adddeal{display:none!important;}
+    .kpi-grid{grid-template-columns:1fr 1fr!important;gap:10px!important;}
+    .kpi{padding:14px!important;} .kpi .num{font-size:26px!important;}
+    #mtabbar{display:flex;}
+  }
 </style>
 </head>
 <body>
@@ -283,7 +309,7 @@
 
   <div id="page-home">
   <div class="v-mark"><svg class="v-mk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8h10" stroke-linecap="round"/></svg><div class="v-txt" id="verse-txt"></div><div class="v-ref" id="verse-ref"></div></div>
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
+  <div class="kpi-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px; margin-bottom:1.5rem;">
     <div class="kpi"><div class="lbl">Coming soon</div><div class="num" id="kpi-coming">&ndash;</div></div>
     <div class="kpi"><div class="lbl">On market</div><div class="num" id="kpi-active">&ndash;</div></div>
     <div class="kpi"><div class="lbl">Under contract</div><div class="num" id="kpi-uc">&ndash;</div></div>
@@ -1319,5 +1345,30 @@ function renderTrend(trend){
 (function(){var V=[["The faithful love of the Lord never ends! His mercies never cease. Great is his faithfulness; his mercies begin afresh each morning.", "Lamentations 3:22-23"], ["Commit your actions to the Lord, and your plans will succeed.", "Proverbs 16:3"], ["This is my command\u2014be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.", "Joshua 1:9"], ["Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.", "Philippians 4:6"], ["Work willingly at whatever you do, as though you were working for the Lord rather than for people.", "Colossians 3:23"], ["But those who trust in the Lord will find new strength. They will soar high on wings like eagles.", "Isaiah 40:31"], ["Come to me, all of you who are weary and carry heavy burdens, and I will give you rest.", "Matthew 11:28"], ["Trust in the Lord with all your heart; do not depend on your own understanding.", "Proverbs 3:5"], ["Be still, and know that I am God!", "Psalm 46:10"], ["Don't be afraid, for I am with you. Don't be discouraged, for I am your God. I will strengthen you and help you.", "Isaiah 41:10"]];var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);var v=V[doy%V.length];var t=document.getElementById("verse-txt"),r=document.getElementById("verse-ref");if(t){t.textContent="\u201c"+v[0]+"\u201d";r.textContent=v[1];}})();
 
 </script>
+<div id="mscrim"></div>
+<div id="msheet">
+  <div class="grab"></div>
+  <div class="mh">More</div>
+  <div class="mopt" id="mopt-people"><span class="mi" style="background:#2f6bff14;color:#2f6bff">&#128101;</span><span class="ml">People</span></div>
+  <div class="mopt" id="mopt-vendors"><span class="mi" style="background:#8a5cf015;color:#8a5cf0">&#128295;</span><span class="ml">Vendors</span></div>
+  <div class="mopt" id="mopt-refresh"><span class="mi" style="background:#12a06a15;color:#12a06a">&#8635;</span><span class="ml">Refresh</span></div>
+</div>
+<nav id="mtabbar">
+  <a class="mtab on"><span class="ic">&#8962;</span><span class="lb">Home</span></a>
+  <a class="mtab" data-p="deals.html"><span class="ic">&#9636;</span><span class="lb">Deals</span></a>
+  <a class="mtab" data-p="tasks.html"><span class="ic">&#9745;</span><span class="lb">Tasks</span></a>
+  <a class="mtab" id="tab-more" href="#"><span class="ic">&#8943;</span><span class="lb">More</span></a>
+</nav>
+<script>(function(){
+  var k=new URLSearchParams(location.search).get("k")||"";
+  document.querySelectorAll('#mtabbar .mtab[data-p]').forEach(function(a){a.href=a.getAttribute('data-p')+'?k='+encodeURIComponent(k);});
+  function more(o){document.getElementById('msheet').classList.toggle('open',o);document.getElementById('mscrim').classList.toggle('open',o);}
+  var tm=document.getElementById('tab-more'); if(tm) tm.addEventListener('click',function(e){e.preventDefault();more(true);});
+  var sc=document.getElementById('mscrim'); if(sc) sc.addEventListener('click',function(){more(false);});
+  function wire(id,fn){var el=document.getElementById(id); if(el) el.addEventListener('click',function(){more(false);fn();});}
+  wire('mopt-people',function(){var n=document.getElementById('nav-people'); if(n) n.click();});
+  wire('mopt-vendors',function(){var n=document.getElementById('nav-vendors'); if(n) n.click();});
+  wire('mopt-refresh',function(){var b=document.getElementById('btn-syncnow'); if(b) b.click();});
+})();</script>
 </body>
 </html>
