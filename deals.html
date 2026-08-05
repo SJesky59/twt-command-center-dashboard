@@ -154,8 +154,18 @@
     #content tr.drow td.stagecell{display:block;margin-bottom:7px;}
     #content tr.drow td.addr{display:block;position:static;background:transparent;font-size:15.5px;font-weight:650;}
     #content tr.detail td{display:block;padding:0;background:transparent;border:none;}
-    #content .dwrap{padding:12px 2px 4px;}
-    #content .dgrid{grid-template-columns:1fr 1fr;}
+    /* ---- drawer polish (phone) ---- */
+    #content .dwrap{padding:14px 14px 16px;background:#f6f9fe;border:1px solid var(--line);border-radius:14px;margin:2px 0 4px;}
+    #content .dtitle{font-size:12px;margin-bottom:12px;}
+    #content .dgrid{grid-template-columns:1fr;gap:14px 0;}
+    #content .dfield{gap:5px;}
+    #content .dfield .k{font-size:11px;}
+    #content .dfield .cin,#content .dfield .psel,#content .dfield .ldsel,#content .dfield .stagesel,#content .dfield select{font-size:16px;min-height:46px;padding:11px 13px;width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;}
+    #content .dfield .psel,#content .dfield .stagesel,#content .dfield .ldsel{border-radius:24px;}
+    #content tr.drow td.stagecell .stagesel{font-size:13px;padding:9px 15px;border-radius:24px;min-height:40px;}
+    .drivelnk{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;width:100%;padding:11px 14px;border-radius:11px;background:#eef4ff;border:1px solid #d5e2ff;color:var(--accent);font-weight:700;font-size:14px;text-decoration:none;}
+    .drivelnk:active{background:#dfeaff;}
+    .ckbtn{width:100%;min-height:48px;margin-top:16px;font-size:14.5px;font-weight:700;border-radius:11px;}
     .addbtn{position:fixed;right:16px;bottom:80px;z-index:60;width:54px;height:54px;border-radius:50%;padding:0;font-size:0;box-shadow:0 6px 18px rgba(47,107,255,.4);display:flex;align-items:center;justify-content:center;}
     .addbtn::after{content:"+";font-size:30px;line-height:1;}
     #mtabbar{display:flex;}
@@ -369,6 +379,7 @@ function stageTotals(s){
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 function dfu(x){return x&&typeof x==="object"?(x.url||""):(x||"");}
+function openDrive(e){var a=e.currentTarget;var u=a&&a.getAttribute("href");if(e.preventDefault)e.preventDefault();if(e.stopPropagation)e.stopPropagation();if(!u||u==="#")return false;var w=null;try{w=window.open(u,"_blank","noopener");}catch(_){w=null;}if(!w){try{(window.top||window).location.href=u;}catch(__){try{window.location.href=u;}catch(___){}}}return false;}
 const MDK=["photos","oh","list","exp","binding","ddend"],MDYK=["close"];
 function fmtMD(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;return `${+p[0]}/${+p[1]}`;}
 function fmtMDY(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;let y=p[2]||"2026";if(y.length===2)y="20"+y;return `${+p[0]}/${+p[1]}/${y}`;}
@@ -393,7 +404,7 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
  case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
  case"numTx":return inp(gi,'numTx',txVal(d),1);
- case"drive":return d.drive?`<a class="lnk" href="${d.driveUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
+ case"drive":return d.drive?`<a class="lnk drivelnk" href="${d.driveUrl}" rel="noopener" onclick="return openDrive(event)">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
  case"ld":return ldSelect(gi,d.ld||"To Do");
  case"coop":return inp(gi,'coop',d.coop); case"serial":return inp(gi,'serial',d.serial); case"cbs":return inp(gi,'cbs',d.cbs); case"lockbox":return inp(gi,'lockbox',d.lockbox);
  case"photos":return inp(gi,'photos',d.photos); case"oh":return inp(gi,'oh',d.oh);
@@ -402,7 +413,7 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
 function editField(gi,k){const d=deals[gi];
  if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
  if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
- if(k==="drive")return d.drive?`<a class="lnk" href="${d.driveUrl}" target="_blank" rel="noopener">Open ↗</a>`:'<a class="lnk" style="color:#9aa6b8">+ link</a>';
+ if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${d.driveUrl}" rel="noopener" onclick="return openDrive(event)">Open ↗</a>`:'<a class="lnk" style="color:#9aa6b8">+ link</a>';
  return cell(d,k);
 }
 function dval(d,k){
@@ -414,7 +425,7 @@ function dval(d,k){
  if(k==="lead")return d.lead?pill(d.lead,leadColor(d.lead)):"";
  if(k==="type")return pill(d.t,tColor(d.t)); if(k==="agent")return pill(d.ag,agColor(d.ag));
  if(k==="ld")return d.ld?pill(d.ld,LDOC[d.ld]):"";
- if(k==="drive")return d.drive?`<a class="lnk" href="${d.driveUrl}" target="_blank" rel="noopener">Open ↗</a>`:"";
+ if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${d.driveUrl}" rel="noopener" onclick="return openDrive(event)">Open ↗</a>`:"";
  return d[k]||"";
 }
 let viewMode="full";
