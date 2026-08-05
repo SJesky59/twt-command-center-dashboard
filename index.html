@@ -1377,6 +1377,8 @@ function renderTrend(trend){
   wire('mopt-people',function(){var n=document.getElementById('nav-people'); if(n) n.click();});
   wire('mopt-vendors',function(){var n=document.getElementById('nav-vendors'); if(n) n.click();});
   wire('mopt-refresh',function(){var b=document.getElementById('btn-syncnow'); if(b) b.click();});
+  var _hh=(location.hash||"").replace('#','');
+  if(_hh){var _m={people:'nav-people',vendors:'nav-vendors',deals:'nav-deals'};var _t=_m[_hh];if(_t){var _e=document.getElementById(_t);if(_e)setTimeout(function(){_e.click();},80);}}
 })();</script>
 </body>
 </html>
