@@ -179,7 +179,7 @@ function mapDeal(r){ var v=r.values||{}; return {
   p:_num(v["Price"]), c:_pct(v["Commission %"]), tot:_num(v["Total Commission"]), fmls:_num(v["FMLS Fee"]),
   listPrice:_num(v["Listing Price"]), ref:_num(v["Referral Fee"]), numTx:_num(v["# of Transactions"]),
   lockbox:v["Coded Lockbox"]||"", serial:v["Serial #"]||"", cbs:v["CBS"]||"", coop:v["Cooperating Agent / License #"]||"",
-  ld:v["Listing Docs"]||"To Do", drive:(v["Drive Folder"]?1:0), driveUrl:v["Drive Folder"]||"",
+  ld:v["Listing Docs"]||"To Do", drive:(dfu(v["Drive Folder"])?1:0), driveUrl:dfu(v["Drive Folder"]),
   list:_md(v["List Date"]), exp:_md(v["Expiration Date"]), close:_mdy(v["Closing Date"]), photos:_md(v["Photos"]),
   binding:_md(v["Binding Date"]), ddend:_md(v["DD End Date"]),
   oh:_md(v["Open House"]), notes:v["Notes"]||""
@@ -325,6 +325,7 @@ function stageTotals(s){
 }
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
+function dfu(x){return x&&typeof x==="object"?(x.url||""):(x||"");}
 const MDK=["photos","oh","list","exp","binding","ddend"],MDYK=["close"];
 function fmtMD(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;return `${+p[0]}/${+p[1]}`;}
 function fmtMDY(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;let y=p[2]||"2026";if(y.length===2)y="20"+y;return `${+p[0]}/${+p[1]}/${y}`;}
