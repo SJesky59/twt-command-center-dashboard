@@ -578,7 +578,11 @@
       }).join("");
     }
 
-    var open_t = tasks.filter(function (t) { return !t["Complete"]; });
+    // reconcile optimistic completions: drop ids the server now confirms done/gone
+    var _stillOpen = {};
+    tasks.forEach(function (t) { if (t.__id && !t["Complete"]) _stillOpen[t.__id] = 1; });
+    Object.keys(completedIds).forEach(function (cid) { if (!_stillOpen[cid]) delete completedIds[cid]; });
+    var open_t = tasks.filter(function (t) { return !t["Complete"] && !completedIds[t.__id]; });
     tasksById = {};
     open_t.forEach(function (t) { if (t.__id) tasksById[t.__id] = t; });
     open_t.sort(function (a, b) {
@@ -631,6 +635,7 @@
 
   var expandedId = null;
   var undoRow = null;
+  var completedIds = {};
   var toastTimer = null;
   var tasksById = {};
   var bucketOpen = {};
@@ -755,12 +760,14 @@ document.addEventListener("click",function(ev){
         if (res.ok) {
           if (val === "1") {
             undoRow = rowId;
+            completedIds[rowId] = 1;
             showToast("Task marked done", true);
             var row = document.querySelector('.t-row[data-id="' + rowId + '"]');
             if (row) row.style.display = "none";
             if (row) yfSlide(row);
             expandedId = null;
           } else {
+            delete completedIds[rowId];
             showToast("Restored \u2014 back on the list", false);
           }
           setTimeout(load, 2500);
