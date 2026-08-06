@@ -379,7 +379,7 @@ function stageTotals(s){
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 function dfu(x){return x&&typeof x==="object"?(x.url||""):(x||"");}
-function openDrive(e){var a=e.currentTarget;var u=a&&a.getAttribute("href");if(e.preventDefault)e.preventDefault();if(e.stopPropagation)e.stopPropagation();if(!u||u==="#")return false;try{window.open(u,"_blank","noopener");}catch(_){}return false;}
+function openDrive(e){var a=e.currentTarget;var u=a&&a.getAttribute("href");if(e.preventDefault)e.preventDefault();if(e.stopPropagation)e.stopPropagation();if(!u||u==="#")return false;if(u.indexOf("drive.google.com")>-1&&u.indexOf("authuser=")<0){u+=(u.indexOf("?")>-1?"&":"?")+"authuser=ClientCare@theweathersteam.com";}try{window.open(u,"_blank","noopener");}catch(_){}return false;}
 const MDK=["photos","oh","list","exp","binding","ddend"],MDYK=["close"];
 function fmtMD(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;return `${+p[0]}/${+p[1]}`;}
 function fmtMDY(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;let y=p[2]||"2026";if(y.length===2)y="20"+y;return `${+p[0]}/${+p[1]}/${y}`;}
