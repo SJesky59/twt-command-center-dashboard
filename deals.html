@@ -3,11 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){function sys(){try{return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}catch(e){return 'light';}}var o=null;try{o=localStorage.getItem('twt-theme');}catch(e){}var r=(o==='dark'||o==='light')?o:sys();document.documentElement.setAttribute('data-theme',r);})();</script>
 <title>TWT · Deals Editor — Hybrid</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  :root{--bg:#f5f7fa;--card:#fff;--line:#e4e9f0;--line2:#eef2f7;--text:#1f2733;--muted:#7c899b;--accent:#2f6bff;--green:#12a06a;--hover:#f0f5ff;}
+  :root{--bg:#f5f7fa;--card:#fff;--line:#e4e9f0;--line2:#eef2f7;--text:#1f2733;--muted:#7c899b;--accent:#2f6bff;--green:#12a06a;--hover:#f0f5ff;--divider:#cdd5e0;}
+  html[data-theme="dark"]{--bg:#000000;--card:#1c1c1e;--line:#2a2a2d;--line2:#242426;--text:#f2f2f4;--muted:#9a9aa0;--accent:#6fa8ff;--green:#34d17f;--hover:#242428;--divider:#2a2a2d;}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);padding:22px;}
+  /* ===== Dark mode overrides for hardcoded light surfaces ===== */
+  html[data-theme="dark"] .key,html[data-theme="dark"] .seg,html[data-theme="dark"] .tabs,html[data-theme="dark"] .grp,html[data-theme="dark"] .picker,html[data-theme="dark"] .stagesel,html[data-theme="dark"] .ldsel,html[data-theme="dark"] .ckbtn,html[data-theme="dark"] .modal,html[data-theme="dark"] .mfield input,html[data-theme="dark"] .mfield select{background:var(--card);}
+  html[data-theme="dark"] .addr{background:var(--card);}
+  html[data-theme="dark"] .drow:hover .addr,html[data-theme="dark"] .drow:hover td{background:var(--hover);}
+  html[data-theme="dark"] th{background:#161618;}
+  html[data-theme="dark"] .totrow{background:#141416;}
+  html[data-theme="dark"] .detail td{background:#151517;}
+  html[data-theme="dark"] .cin:hover,html[data-theme="dark"] .cin:focus,html[data-theme="dark"] .dfield .cin:hover{background:var(--card);}
+  html[data-theme="dark"] input.cin.man{background:rgba(138,92,240,0.16)!important;border-color:#8a5cf0!important;}
+  html[data-theme="dark"] .picker .pactions button{background:#141416;}
+  html[data-theme="dark"] .colbtn,html[data-theme="dark"] .drivelnk{background:rgba(111,168,255,0.14);border-color:rgba(111,168,255,0.30);color:#8fbaff;}
+  html[data-theme="dark"] .addbtn{background:#242428;border-color:#33333a;color:var(--text);}
+  html[data-theme="dark"] .addbtn:hover{background:#2c2c31;}
+  html[data-theme="dark"] .mauto{background:rgba(52,209,127,0.14);color:#4fd18a;}
+  html[data-theme="dark"] #mtabbar{background:#0c0c0d;border-top-color:var(--line);}
+  html[data-theme="dark"] #msheet{background:#1c1c1e;box-shadow:0 -10px 30px rgba(0,0,0,.6);}
+  html[data-theme="dark"] #msheet .grab{background:#3a3a3e;}
+  html[data-theme="dark"] #msheet .mopt:active{background:#242426;}
+  html[data-theme="dark"] #msheet .msep{background:#2a2a2d;}
+  html[data-theme="dark"] #msheet .mopt .lbl .a{color:var(--text);}
+  html[data-theme="dark"] #msheet .mopt .chev{color:#5a5a60;}
+  html[data-theme="dark"] #content tr.drow{background:var(--card);}
+  html[data-theme="dark"] #content .dwrap{background:#141416;}
+  html[data-theme="dark"] #content .dfield .cin,html[data-theme="dark"] #content .dfield .psel,html[data-theme="dark"] #content .dfield .ldsel,html[data-theme="dark"] #content .dfield .stagesel,html[data-theme="dark"] #content .dfield select{background:var(--card);}
+  html[data-theme="dark"] .dfield.empty .v{color:#5a5a60;}
+  html[data-theme="dark"] .hdot.done{background:#4a4a4e;}
+  /* ===== header refresh + appearance ===== */
+  .apphead{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--divider);}
+  .lead{margin-top:2px;}
+  .hdr-refresh{width:36px;height:36px;border-radius:50%;border:none;background:#e4eef0;color:#0a5b6b;font-size:18px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+  html[data-theme="dark"] .hdr-refresh{background:rgba(75,192,208,0.16);color:#63d0e0;}
+  .theme-tgl{background:none;border:none;padding:4px 6px;color:var(--muted);font-size:15px;line-height:1;opacity:.5;cursor:pointer;transition:opacity .15s;}
+  .theme-tgl:hover{opacity:1;}
+  .theme-tgl .tgl-moon{display:none;}
+  html[data-theme="dark"] .theme-tgl .tgl-sun{display:none;}
+  html[data-theme="dark"] .theme-tgl .tgl-moon{display:inline;}
+  @media (max-width:640px){ .theme-tgl{display:none!important;} .apptitle .appsub{display:none;} }
+  .set-sec{margin-top:6px;padding:10px 4px 4px;border-top:1px solid var(--line);}
+  .set-h{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:2px 8px 4px;}
+  .set-row-l{font-size:13px;color:var(--muted);font-weight:600;padding:4px 8px 7px;}
+  .seg-appear{display:flex;background:var(--line2);border-radius:10px;padding:3px;gap:3px;}
+  html[data-theme="dark"] .seg-appear{background:#141416;}
+  .seg-appear button{flex:1;border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 0;border-radius:8px;cursor:pointer;}
+  .seg-appear button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(20,30,60,.12);}
+  html[data-theme="dark"] .seg-appear button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   .apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
   .apptitle{font-size:20px;font-weight:680;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;}
   .apptitle .hicon{display:inline-block;vertical-align:-4px;}
@@ -175,7 +222,7 @@
 <body>
   <div class="apphead">
     <div class="apptitle"><svg class="hicon" width="22" height="22" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="tagg" x1="0" y1="0" x2="24" y2="24"><stop offset="0" stop-color="#d76a43"/><stop offset="1" stop-color="#b8462b"/></linearGradient></defs><path d="M11.5 3.2 3.2 11.5a1.6 1.6 0 0 0 0 2.3l7 7a1.6 1.6 0 0 0 2.3 0l8.3-8.3V3.2z" fill="url(#tagg)"/><circle cx="17" cy="7" r="1.7" fill="#fff"/></svg> Deals <span class="appsub">live from Command Center</span></div>
-    <div class="appmeta"><span class="livedot"></span> <span id="dealcount">—</span> · synced</div>
+    <div style="display:flex;align-items:center;gap:12px;"><div class="appmeta"><span class="livedot"></span> <span id="dealcount">—</span></div><button id="themeToggle" class="theme-tgl" title="Appearance" aria-label="Toggle appearance"><span class="tgl-sun">☾</span><span class="tgl-moon">☀</span></button><button class="hdr-refresh" id="hdrRefresh" title="Refresh">&#8635;</button></div>
   </div>
   <div class="lead">Row ▸ opens full record · Stage pill moves a deal board-to-board · health dot = closing proximity. Drag a column edge to resize.</div>
 
@@ -619,8 +666,7 @@ loadDeals();
   <div class="mopt" id="mopt-people"><span class="mi" style="background:#2f6bff14;color:#2f6bff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div class="lbl"><div class="a">People</div><div class="s">Contacts &amp; clients</div></div><span class="chev">&#8250;</span></div>
   <div class="msep"></div>
   <div class="mopt" id="mopt-vendors"><span class="mi" style="background:#8a5cf015;color:#8a5cf0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><div class="lbl"><div class="a">Vendors</div><div class="s">Your service pros</div></div><span class="chev">&#8250;</span></div>
-  <div class="msep"></div>
-  <div class="mopt" id="mopt-refresh"><span class="mi" style="background:#12a06a15;color:#12a06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span><div class="lbl"><div class="a">Refresh</div><div class="s">Pull the latest now</div></div></div>
+  <div class="set-sec"><div class="set-h">Settings</div><div class="set-row-l">Appearance</div><div style="padding:0 4px;"><div class="seg-appear" id="segAppear"><button data-appear="auto">Auto</button><button data-appear="light">Light</button><button data-appear="dark">Dark</button></div></div></div>
 </div>
 <nav id="mtabbar">
   <a class="mtab" data-p="index.html"><span class="ic">⌂</span><span>Home</span></a>
@@ -638,7 +684,24 @@ loadDeals();
   var kq=k?("?k="+encodeURIComponent(k)):"";
   wire("mopt-people",function(){location.href="index.html"+kq+"#people";});
   wire("mopt-vendors",function(){location.href="index.html"+kq+"#vendors";});
-  wire("mopt-refresh",function(){location.reload();});
+  var hr=document.getElementById("hdrRefresh"); if(hr) hr.addEventListener("click",function(){location.reload();});
+})();
+(function(){
+  function save(v){try{localStorage.setItem('twt-theme',v);}catch(e){}}
+  function clr(){try{localStorage.removeItem('twt-theme');}catch(e){}}
+  function ovr(){try{var o=localStorage.getItem('twt-theme');return (o==='dark'||o==='light')?o:null;}catch(e){return null;}}
+  function sys(){try{return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}catch(e){return 'light';}}
+  function cur(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';}
+  function apply(){document.documentElement.setAttribute('data-theme', ovr()||sys());}
+  function syncSeg(){var mode=ovr()||'auto';var seg=document.getElementById('segAppear');if(!seg)return;var bs=seg.querySelectorAll('button');for(var i=0;i<bs.length;i++){bs[i].classList.toggle('on', bs[i].getAttribute('data-appear')===mode);}}
+  syncSeg();
+  document.addEventListener('click',function(e){
+    var g=e.target&&e.target.closest?e.target.closest('#themeToggle'):null;
+    if(g){var nx=cur()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);save(nx);syncSeg();return;}
+    var s=e.target&&e.target.closest?e.target.closest('#segAppear button'):null;
+    if(s){var m=s.getAttribute('data-appear');if(m==='auto'){clr();}else{save(m);}apply();syncSeg();return;}
+  });
+  try{var mq=window.matchMedia('(prefers-color-scheme:dark)');if(mq&&mq.addEventListener){mq.addEventListener('change',function(){if(!ovr()){document.documentElement.setAttribute('data-theme',sys());}});}}catch(e){}
 })();</script>
 </body>
 </html>
