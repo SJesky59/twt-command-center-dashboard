@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(function(){function sys(){try{return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}catch(e){return 'light';}}var o=null;try{o=localStorage.getItem('twt-theme');}catch(e){}var r=(o==='dark'||o==='light')?o:sys();document.documentElement.setAttribute('data-theme',r);})();</script>
 <title>TWT | Command Center</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="apple-touch-icon.png">
@@ -33,9 +34,64 @@
     --bg-warning: #fbf1d9;
     --text-danger: #b8302f;
     --bg-danger: #fcebea;
+    --app-bg: #fcfcfb;
   }
+  html[data-theme="dark"] {
+    --border: #2a2a2d;
+    --surface-1: #141416;
+    --surface-2: #1c1c1e;
+    --text-primary: #f2f2f4;
+    --text-secondary: #adadb2;
+    --text-muted: #7c7c82;
+    --text-accent: #6fa8ff;
+    --bg-accent: rgba(47,107,255,0.20);
+    --text-warning: #f5c451;
+    --bg-warning: rgba(245,166,11,0.18);
+    --text-danger: #ff6b6b;
+    --bg-danger: rgba(224,72,77,0.20);
+    --app-bg: #000000;
+  }
+  /* ---- Dark mode overrides for hardcoded light surfaces ---- */
+  html[data-theme="dark"] .yf-more { background:rgba(111,168,255,0.14); color:#8fbaff; }
+  html[data-theme="dark"] .yf-more:hover { background:rgba(111,168,255,0.22); }
+  html[data-theme="dark"] .ckbox { background:var(--surface-2); border-color:#4a4a4e; }
+  html[data-theme="dark"] .ckbox.late { border-color:#a05452; }
+  html[data-theme="dark"] .be { background:var(--surface-2); }
+  html[data-theme="dark"] #em, html[data-theme="dark"] #dm,
+  html[data-theme="dark"] #ed-ov > div, html[data-theme="dark"] #at-ov > div,
+  html[data-theme="dark"] #ap-ov > div { background:var(--surface-2) !important; box-shadow:0 10px 40px rgba(0,0,0,.6) !important; }
+  html[data-theme="dark"] #btn-syncnow { background:rgba(75,192,208,0.16) !important; color:#63d0e0 !important; }
+  html[data-theme="dark"] .v-mark { background:#141416; border-color:#2a2a2d; }
+  html[data-theme="dark"] #mtabbar { background:#0c0c0d; border-top-color:var(--border); }
+  html[data-theme="dark"] #msheet { background:#1c1c1e; box-shadow:0 -10px 30px rgba(0,0,0,.6); }
+  html[data-theme="dark"] #msheet .grab { background:#3a3a3e; }
+  html[data-theme="dark"] #msheet .mopt:active { background:#242426; }
+  html[data-theme="dark"] #msheet .msep { background:#2a2a2d; }
+  html[data-theme="dark"] .cap .ico { background:rgba(75,192,208,0.16); color:#63d0e0; }
+  html[data-theme="dark"] .deal-chip { background:rgba(255,255,255,0.09) !important; }
+  html[data-theme="dark"] .sp-closing { background:rgba(18,160,106,0.20); color:#4fd18a; }
+  html[data-theme="dark"] .dfin.man { background:rgba(138,92,240,0.16); border-color:#8a5cf0; }
+  html[data-theme="dark"] .b-card.late { border-left-color:#ff6b6b; }
+  html[data-theme="dark"] .b-card.today { border-left-color:#6fa8ff; }
+  html[data-theme="dark"] #diag { background:rgba(10,10,11,0.96); }
+  html[data-theme="dark"] #diag .dot2 { background:#4a4a4e; }
+  html[data-theme="dark"] .vchip:hover { border-color:#3a3a3e; }
+  /* theme toggle button */
+  .theme-tgl { background:none; border:none; padding:4px 6px; margin-right:2px; color:var(--text-muted);
+    font-size:15px; line-height:1; opacity:.5; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity .15s; }
+  .theme-tgl:hover { opacity:1; }
+  .theme-tgl .tgl-moon { display:none; }
+  html[data-theme="dark"] .theme-tgl .tgl-sun { display:none; }
+  html[data-theme="dark"] .theme-tgl .tgl-moon { display:inline; }
+  @media (max-width:520px) { .theme-tgl { display:none !important; } }
+  .set-sec { margin-top:6px; padding:10px 4px 4px; border-top:0.5px solid var(--border); }
+  .set-h { font-size:10px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-muted); padding:2px 8px 4px; }
+  .set-row-l { font-size:13px; color:var(--text-secondary); font-weight:600; padding:4px 8px 7px; }
+  .seg-appear { display:flex; background:var(--surface-1); border-radius:10px; padding:3px; gap:3px; }
+  .seg-appear button { flex:1; border:none; background:none; font:inherit; font-size:13px; font-weight:600; color:var(--text-secondary); padding:8px 0; border-radius:8px; cursor:pointer; }
+  .seg-appear button.on { background:var(--surface-2); color:var(--text-primary); box-shadow:0 1px 3px rgba(0,0,0,.35); }
   * { box-sizing: border-box; margin: 0; }
-  html, body { background: #fcfcfb; }
+  html, body { background: var(--app-bg); }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     color: var(--text-primary);
@@ -310,7 +366,7 @@
       <div id="greet" style="font-size:16px; font-weight:500; color:var(--text-primary);">Good morning, Steven</div>
       <div id="subline" style="font-size:12px; color:var(--text-muted);">Loading your pipeline&hellip;</div>
     </div>
-    <div style="display:flex; gap:8px;"><button id="btn-syncnow" style="background:#e4eef0; color:#0a5b6b;"><span id="sync-ic">&#8635;</span> <span id="sync-lbl">Sync now</span></button><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
+    <div style="display:flex; gap:8px; align-items:center;"><button id="themeToggle" class="theme-tgl" title="Appearance" aria-label="Toggle appearance"><span class="tgl-sun">☾</span><span class="tgl-moon">☀</span></button><button id="btn-syncnow" style="background:#e4eef0; color:#0a5b6b;"><span id="sync-ic">&#8635;</span> <span id="sync-lbl">Sync now</span></button><button id="btn-editdeal" style="background:var(--surface-1); color:var(--text-primary);">&#9998; Edit deal</button><button id="btn-adddeal" style="display:flex; align-items:center; gap:6px;"><i class="ti ti-plus" style="font-size:15px;" aria-hidden="true"></i> Add deal</button></div>
   </div>
 
   <div id="page-home">
@@ -1360,7 +1416,7 @@ function renderTrend(trend){
   <div class="msep"></div>
   <div class="mopt" id="mopt-vendors"><span class="mi" style="background:#8a5cf015;color:#8a5cf0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><div class="lbl"><div class="a">Vendors</div><div class="s">Your service pros</div></div><span class="chev">&#8250;</span></div>
   <div class="msep"></div>
-  <div class="mopt" id="mopt-refresh"><span class="mi" style="background:#12a06a15;color:#12a06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span><div class="lbl"><div class="a">Refresh</div><div class="s">Pull the latest now</div></div></div>
+  <div class="set-sec"><div class="set-h">Settings</div><div class="set-row-l">Appearance</div><div style="padding:0 4px;"><div class="seg-appear" id="segAppear"><button data-appear="auto">Auto</button><button data-appear="light">Light</button><button data-appear="dark">Dark</button></div></div></div>
 </div>
 <nav id="mtabbar">
   <a class="mtab on" id="tab-home" href="#"><span class="ic">&#8962;</span><span class="lb">Home</span></a>
@@ -1381,6 +1437,26 @@ function renderTrend(trend){
   wire('mopt-refresh',function(){var b=document.getElementById('btn-syncnow'); if(b) b.click();});
   var _hh=(location.hash||"").replace('#','');
   if(_hh){var _m={people:'nav-people',vendors:'nav-vendors',deals:'nav-deals'};var _t=_m[_hh];if(_t){var _e=document.getElementById(_t);if(_e)setTimeout(function(){_e.click();},80);}}
+})();</script>
+<script>(function(){
+  function save(v){try{localStorage.setItem('twt-theme',v);}catch(e){}}
+  function clr(){try{localStorage.removeItem('twt-theme');}catch(e){}}
+  function ovr(){try{var o=localStorage.getItem('twt-theme');return (o==='dark'||o==='light')?o:null;}catch(e){return null;}}
+  function sys(){try{return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}catch(e){return 'light';}}
+  function cur(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';}
+  function apply(){document.documentElement.setAttribute('data-theme', ovr()||sys());}
+  function syncSeg(){var mode=ovr()||'auto';var seg=document.getElementById('segAppear');if(!seg)return;var bs=seg.querySelectorAll('button');for(var i=0;i<bs.length;i++){bs[i].classList.toggle('on', bs[i].getAttribute('data-appear')===mode);}}
+  syncSeg();
+  document.addEventListener('click',function(e){
+    var g=e.target&&e.target.closest?e.target.closest('#themeToggle'):null;
+    if(g){var nx=cur()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);save(nx);syncSeg();return;}
+    var s=e.target&&e.target.closest?e.target.closest('#segAppear button'):null;
+    if(s){var m=s.getAttribute('data-appear');if(m==='auto'){clr();}else{save(m);}apply();syncSeg();return;}
+  });
+  try{
+    var mq=window.matchMedia('(prefers-color-scheme:dark)');
+    if(mq&&mq.addEventListener){mq.addEventListener('change',function(){if(!ovr()){document.documentElement.setAttribute('data-theme',sys());}});}
+  }catch(e){}
 })();</script>
 </body>
 </html>
