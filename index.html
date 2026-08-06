@@ -1237,7 +1237,7 @@ document.addEventListener("click",function(ev){
       var k = DM_FIELDS[i][0];
       if (v[k]) {
         var shown = v[k];
-        if (k === "price") shown = "$" + parseFloat(v[k]).toLocaleString("en-US");
+        if (k === "price") shown = "$" + parseFloat(v[k]).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
         if (k === "commission") shown = v[k] + "%";
         html += '<div class="dm-kv"><span class="k">' + esc(DM_FIELDS[i][2]) + '</span><span>' + esc(shown) + '</span></div>';
       }
@@ -1246,7 +1246,7 @@ document.addEventListener("click",function(ev){
     if (v.price && v.commission) {
       var gci = parseFloat(v.price) * parseFloat(v.commission) / 100;
       $("dm-gci").style.display = "";
-      $("dm-gci").textContent = "GCI will compute to $" + Math.round(gci).toLocaleString("en-US") + " \u00b7 Health & Next Deadline compute automatically";
+      $("dm-gci").textContent = "GCI will compute to $" + Number(gci).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) + " \u00b7 Health & Next Deadline compute automatically";
     } else { $("dm-gci").style.display = "none"; }
     $("dm-form").style.display = "none"; $("dm-rev").style.display = "";
     $("dm-title").textContent = "Review \u2014 nothing saved yet";
@@ -1363,7 +1363,7 @@ function renderTrend(trend){
   <div class="mopt" id="mopt-refresh"><span class="mi" style="background:#12a06a15;color:#12a06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span><div class="lbl"><div class="a">Refresh</div><div class="s">Pull the latest now</div></div></div>
 </div>
 <nav id="mtabbar">
-  <a class="mtab on"><span class="ic">&#8962;</span><span class="lb">Home</span></a>
+  <a class="mtab on" id="tab-home" href="#"><span class="ic">&#8962;</span><span class="lb">Home</span></a>
   <a class="mtab" data-p="deals.html"><span class="ic">&#9636;</span><span class="lb">Deals</span></a>
   <a class="mtab" data-p="tasks.html"><span class="ic">&#9745;</span><span class="lb">Tasks</span></a>
   <a class="mtab" id="tab-more" href="#"><span class="ic">&#8943;</span><span class="lb">More</span></a>
@@ -1373,6 +1373,7 @@ function renderTrend(trend){
   document.querySelectorAll('#mtabbar .mtab[data-p]').forEach(function(a){a.href=a.getAttribute('data-p')+'?k='+encodeURIComponent(k);});
   function more(o){document.getElementById('msheet').classList.toggle('open',o);document.getElementById('mscrim').classList.toggle('open',o);}
   var tm=document.getElementById('tab-more'); if(tm) tm.addEventListener('click',function(e){e.preventDefault();more(true);});
+  var th=document.getElementById('tab-home'); if(th) th.addEventListener('click',function(e){e.preventDefault();var nh=document.getElementById('nav-home'); if(nh) nh.click();});
   var sc=document.getElementById('mscrim'); if(sc) sc.addEventListener('click',function(){more(false);});
   function wire(id,fn){var el=document.getElementById(id); if(el) el.addEventListener('click',function(){more(false);fn();});}
   wire('mopt-people',function(){var n=document.getElementById('nav-people'); if(n) n.click();});
