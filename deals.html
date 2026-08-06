@@ -379,7 +379,7 @@ function stageTotals(s){
 function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldsel" style="color:${c};background:${c}1f;border-color:${c}66" onclick="event.stopPropagation()" onchange="setLd(${gi},this.value)">${Object.keys(LDOC).map(o=>`<option ${o===st?"selected":""}>${o}</option>`).join("")}</select>`;}
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 function dfu(x){return x&&typeof x==="object"?(x.url||""):(x||"");}
-function openDrive(e){var a=e.currentTarget;var u=a&&a.getAttribute("href");if(e.preventDefault)e.preventDefault();if(e.stopPropagation)e.stopPropagation();if(!u||u==="#")return false;if(u.indexOf("drive.google.com")>-1&&u.indexOf("authuser=")<0){u+=(u.indexOf("?")>-1?"&":"?")+"authuser=ClientCare@theweathersteam.com";}try{window.open(u,"_blank","noopener");}catch(_){}return false;}
+function dhref(u){if(!u)return u;return (u.indexOf("drive.google.com")>-1&&u.indexOf("authuser=")<0)?u+(u.indexOf("?")>-1?"&":"?")+"authuser=ClientCare@theweathersteam.com":u;}
 const MDK=["photos","oh","list","exp","binding","ddend"],MDYK=["close"];
 function fmtMD(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;return `${+p[0]}/${+p[1]}`;}
 function fmtMDY(v){if(!v)return"";const p=String(v).split("/");if(p.length<2)return v;let y=p[2]||"2026";if(y.length===2)y="20"+y;return `${+p[0]}/${+p[1]}/${y}`;}
@@ -404,7 +404,7 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
  case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
  case"numTx":return inp(gi,'numTx',txVal(d),1);
- case"drive":return d.drive?`<a class="lnk drivelnk" href="${d.driveUrl}" rel="noopener" onclick="return openDrive(event)">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
+ case"drive":return d.drive?`<a class="lnk drivelnk" href="${dhref(d.driveUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
  case"ld":return ldSelect(gi,d.ld||"To Do");
  case"coop":return inp(gi,'coop',d.coop); case"serial":return inp(gi,'serial',d.serial); case"cbs":return inp(gi,'cbs',d.cbs); case"lockbox":return inp(gi,'lockbox',d.lockbox);
  case"photos":return inp(gi,'photos',d.photos); case"oh":return inp(gi,'oh',d.oh);
@@ -413,7 +413,7 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
 function editField(gi,k){const d=deals[gi];
  if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
  if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
- if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${d.driveUrl}" rel="noopener" onclick="return openDrive(event)">Open ↗</a>`:'<a class="lnk" style="color:#9aa6b8">+ link</a>';
+ if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${dhref(d.driveUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:'<a class="lnk" style="color:#9aa6b8">+ link</a>';
  return cell(d,k);
 }
 function dval(d,k){
@@ -425,7 +425,7 @@ function dval(d,k){
  if(k==="lead")return d.lead?pill(d.lead,leadColor(d.lead)):"";
  if(k==="type")return pill(d.t,tColor(d.t)); if(k==="agent")return pill(d.ag,agColor(d.ag));
  if(k==="ld")return d.ld?pill(d.ld,LDOC[d.ld]):"";
- if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${d.driveUrl}" rel="noopener" onclick="return openDrive(event)">Open ↗</a>`:"";
+ if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${dhref(d.driveUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:"";
  return d[k]||"";
 }
 let viewMode="full";
