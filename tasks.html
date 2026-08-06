@@ -3,12 +3,78 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>(function(){function sys(){try{return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}catch(e){return 'light';}}var o=null;try{o=localStorage.getItem('twt-theme');}catch(e){}var r=(o==='dark'||o==='light')?o:sys();document.documentElement.setAttribute('data-theme',r);})();</script>
 <title>TWT | Tasks</title>
 <link rel="apple-touch-icon" href="tasks-icon.png">
 <link rel="icon" type="image/png" href="tasks-icon.png">
 <style>
   * { box-sizing:border-box; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:#fff; color:#1a1a1a; -webkit-text-size-adjust:100%; }
+  /* ===== Dark mode ===== */
+  html[data-theme="dark"] body{background:#000;color:#f2f2f4;}
+  html[data-theme="dark"] .coda-bar{border-bottom-color:#2a2a2d;}
+  html[data-theme="dark"] .coda-bar .tname .ic{background:rgba(75,192,208,0.16);color:#63d0e0;}
+  html[data-theme="dark"] .coda-bar .tname .sub{color:#8a8a90;}
+  html[data-theme="dark"] .coda-toolbar{border-bottom-color:#2a2a2d;color:#9a9aa0;}
+  html[data-theme="dark"] .ftabs{border-bottom-color:#2a2a2d;}
+  html[data-theme="dark"] .ftab{background:#1c1c1e;color:#c8c8cc;border-color:#2a2a2d;}
+  html[data-theme="dark"] .ftab.on{background:#3a6b86;color:#fff;border-color:#3a6b86;}
+  html[data-theme="dark"] .ftsep{background:#2a2a2d;}
+  html[data-theme="dark"] table.coda thead th{background:#161618;color:#9a9aa0;border-bottom-color:#2a2a2d;border-right-color:#242426;}
+  html[data-theme="dark"] .grp td{background:#161618;color:#cfe0ea;border-bottom-color:#242426;}
+  html[data-theme="dark"] tr.grp:hover td{background:#1e1e20;}
+  html[data-theme="dark"] .grp .cnt,html[data-theme="dark"] .grp .chev,html[data-theme="dark"] .mgrp .chev,html[data-theme="dark"] .mgrp .mcnt{color:#8a97a0;}
+  html[data-theme="dark"] table.coda tbody td{border-bottom-color:#242426;border-right-color:#1e1e20;}
+  html[data-theme="dark"] tr.taskrow:hover td{background:#1a1a1c;}
+  html[data-theme="dark"] tr.taskrow.sel td{background:#17252b;}
+  html[data-theme="dark"] .exp{color:#5a5a60;}
+  html[data-theme="dark"] .coda-detail td{background:#151517;border-bottom-color:#242426;}
+  html[data-theme="dark"] .cd-inner .kv .k,html[data-theme="dark"] .mdetail .kv .k{color:#8a97a0;}
+  html[data-theme="dark"] .cd-inner .kv a,html[data-theme="dark"] .mdetail .kv a{color:#6fa8ff;}
+  html[data-theme="dark"] .cd-inner .details,html[data-theme="dark"] .mdetail .details{color:#c8c8cc;}
+  html[data-theme="dark"] .task-cell.struck{color:#6a6a70;}
+  html[data-theme="dark"] .selbox{border-color:#4a4a4e;}
+  html[data-theme="dark"] .selbox.on{background:#3a6b86;border-color:#3a6b86;}
+  html[data-theme="dark"] .pill.listing{background:rgba(192,69,63,.24);color:#f3908b;}
+  html[data-theme="dark"] .pill.buyer{background:rgba(47,110,168,.30);color:#8fbdf0;}
+  html[data-theme="dark"] .pill.lease{background:rgba(63,138,87,.26);color:#6fce90;}
+  html[data-theme="dark"] .pill.other{background:rgba(255,255,255,.10);color:#b0b0b6;}
+  html[data-theme="dark"] .u.green{background:rgba(63,138,87,.24);color:#6fce90;}
+  html[data-theme="dark"] .u.yellow{background:rgba(165,130,42,.28);color:#e0b64e;}
+  html[data-theme="dark"] .u.red{background:rgba(192,69,63,.24);color:#f3908b;}
+  html[data-theme="dark"] .u.none{background:rgba(255,255,255,.08);color:#9a9aa0;}
+  html[data-theme="dark"] .tw{background:rgba(255,255,255,.08);color:#a0a6b0;}
+  html[data-theme="dark"] .state{color:#8a8a90;}
+  html[data-theme="dark"] .mdue{color:#8a8a90;}
+  html[data-theme="dark"] .mgrp{background:#161618;color:#cfe0ea;border-bottom-color:#242426;}
+  html[data-theme="dark"] .mcard{border-bottom-color:#242426;}
+  html[data-theme="dark"] .mcard.sel{background:#17252b;}
+  html[data-theme="dark"] #mtabbar{background:#0c0c0d;border-top-color:#2a2a2d;}
+  html[data-theme="dark"] #mtabbar .mtab{color:#8a8a90;}
+  html[data-theme="dark"] #msheet{background:#1c1c1e;box-shadow:0 -10px 30px rgba(0,0,0,.6);}
+  html[data-theme="dark"] #msheet .grab{background:#3a3a3e;}
+  html[data-theme="dark"] #msheet .mopt:active{background:#242426;}
+  html[data-theme="dark"] #msheet .msep{background:#2a2a2d;}
+  html[data-theme="dark"] #msheet .mopt .lbl .a{color:#f2f2f4;}
+  html[data-theme="dark"] #msheet .mopt .chev{color:#5a5a60;}
+  /* header refresh + appearance */
+  .hdr-refresh{width:36px;height:36px;border-radius:50%;border:none;background:#eef4f7;color:#2f6ea8;font-size:18px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+  html[data-theme="dark"] .hdr-refresh{background:rgba(75,192,208,0.16);color:#63d0e0;}
+  .theme-tgl{background:none;border:none;padding:4px 6px;color:#9a9a92;font-size:15px;line-height:1;opacity:.5;cursor:pointer;transition:opacity .15s;}
+  .theme-tgl:hover{opacity:1;}
+  .theme-tgl .tgl-moon{display:none;}
+  html[data-theme="dark"] .theme-tgl .tgl-sun{display:none;}
+  html[data-theme="dark"] .theme-tgl .tgl-moon{display:inline;}
+  @media (max-width:640px){ .theme-tgl{display:none!important;} }
+  .set-sec{margin-top:6px;padding:10px 4px 4px;border-top:1px solid #ededea;}
+  html[data-theme="dark"] .set-sec{border-top-color:#2a2a2d;}
+  .set-h{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#8a8a82;padding:2px 8px 4px;}
+  .set-row-l{font-size:13px;color:#8a8a82;font-weight:600;padding:4px 8px 7px;}
+  .seg-appear{display:flex;background:#f0f0ed;border-radius:10px;padding:3px;gap:3px;}
+  html[data-theme="dark"] .seg-appear{background:#141416;}
+  .seg-appear button{flex:1;border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:#8a8a82;padding:8px 0;border-radius:8px;cursor:pointer;}
+  .seg-appear button.on{background:#fff;color:#1a1a1a;box-shadow:0 1px 3px rgba(20,30,60,.12);}
+  html[data-theme="dark"] .seg-appear button.on{background:#1c1c1e;color:#f2f2f4;box-shadow:0 1px 3px rgba(0,0,0,.4);}
   .wrap { max-width:1400px; margin:0 auto; }
   .coda-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #ededea; }
   .coda-bar .tname { font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; }
@@ -139,7 +205,7 @@
 <div class="wrap">
   <div class="coda-bar">
     <div class="tname"><span class="ic">✓</span> Tasks <span class="sub">live from Transaction Checklists</span></div>
-    <div class="sync" id="sync" onclick="load()"><span class="d"></span> <span id="synctext">Loading…</span></div>
+    <div style="display:flex;align-items:center;gap:12px;"><div class="sync" id="sync"><span class="d"></span> <span id="synctext">Loading…</span></div><button id="themeToggle" class="theme-tgl" title="Appearance" aria-label="Toggle appearance"><span class="tgl-sun">☾</span><span class="tgl-moon">☀</span></button><button class="hdr-refresh" id="hdrRefresh" title="Refresh">&#8635;</button></div>
   </div>
   <div class="coda-toolbar"><span>⚏ Grouped by Deal</span><span>⛃ Incomplete · full checklist</span><span>↕ Checklist order</span></div>
   <div class="ftabs" id="ftabs"></div>
@@ -452,8 +518,7 @@ window.addEventListener("focus", maybeRefresh);
   <div class="mopt" id="mopt-people"><span class="mi" style="background:#2f6bff14;color:#2f6bff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div class="lbl"><div class="a">People</div><div class="s">Contacts &amp; clients</div></div><span class="chev">&#8250;</span></div>
   <div class="msep"></div>
   <div class="mopt" id="mopt-vendors"><span class="mi" style="background:#8a5cf015;color:#8a5cf0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><div class="lbl"><div class="a">Vendors</div><div class="s">Your service pros</div></div><span class="chev">&#8250;</span></div>
-  <div class="msep"></div>
-  <div class="mopt" id="mopt-refresh"><span class="mi" style="background:#12a06a15;color:#12a06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span><div class="lbl"><div class="a">Refresh</div><div class="s">Pull the latest now</div></div></div>
+  <div class="set-sec"><div class="set-h">Settings</div><div class="set-row-l">Appearance</div><div style="padding:0 4px;"><div class="seg-appear" id="segAppear"><button data-appear="auto">Auto</button><button data-appear="light">Light</button><button data-appear="dark">Dark</button></div></div></div>
 </div>
 <nav id="mtabbar">
   <a class="mtab" data-p="index.html"><span class="ic">⌂</span><span>Home</span></a>
@@ -471,7 +536,24 @@ window.addEventListener("focus", maybeRefresh);
   var kq=k?("?k="+encodeURIComponent(k)):"";
   wire("mopt-people",function(){location.href="index.html"+kq+"#people";});
   wire("mopt-vendors",function(){location.href="index.html"+kq+"#vendors";});
-  wire("mopt-refresh",function(){location.reload();});
+  var hr=document.getElementById("hdrRefresh"); if(hr) hr.addEventListener("click",function(){ if(typeof load==='function') load(); });
+})();
+(function(){
+  function save(v){try{localStorage.setItem('twt-theme',v);}catch(e){}}
+  function clr(){try{localStorage.removeItem('twt-theme');}catch(e){}}
+  function ovr(){try{var o=localStorage.getItem('twt-theme');return (o==='dark'||o==='light')?o:null;}catch(e){return null;}}
+  function sys(){try{return (window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light';}catch(e){return 'light';}}
+  function cur(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';}
+  function apply(){document.documentElement.setAttribute('data-theme', ovr()||sys());}
+  function syncSeg(){var mode=ovr()||'auto';var seg=document.getElementById('segAppear');if(!seg)return;var bs=seg.querySelectorAll('button');for(var i=0;i<bs.length;i++){bs[i].classList.toggle('on', bs[i].getAttribute('data-appear')===mode);}}
+  syncSeg();
+  document.addEventListener('click',function(e){
+    var g=e.target&&e.target.closest?e.target.closest('#themeToggle'):null;
+    if(g){var nx=cur()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',nx);save(nx);syncSeg();return;}
+    var s=e.target&&e.target.closest?e.target.closest('#segAppear button'):null;
+    if(s){var m=s.getAttribute('data-appear');if(m==='auto'){clr();}else{save(m);}apply();syncSeg();return;}
+  });
+  try{var mq=window.matchMedia('(prefers-color-scheme:dark)');if(mq&&mq.addEventListener){mq.addEventListener('change',function(){if(!ovr()){document.documentElement.setAttribute('data-theme',sys());}});}}catch(e){}
 })();</script>
 </body>
 </html>
