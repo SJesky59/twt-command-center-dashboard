@@ -299,6 +299,9 @@ const leadColor=l=>LEADS[l]||"#64748b";
 const LDOC={"To Do":"#e5484d","Prepared":"#eab308","Pending":"#2f6bff","Signed":"#12a06a"};
 function pill(text,color){return `<span class="pill" style="color:${color};background:${color}1f">${text}</span>`;}
 const money=n=>(n||n===0)&&n!==""?"$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
+function numv(v){var n=parseFloat(String(v==null?"":v).replace(/[^0-9.\-]/g,""));return isNaN(n)?0:n;}
+function uraw(v){return String(v==null?"":v).replace(/[^0-9.\-]/g,"");}
+function cfmt(v){var s=uraw(v);if(s===""||s==="-"||s===".")return"";var n=parseFloat(s);if(isNaN(n)||n===0)return"";return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmlsFee(t,p){if(t==="Lease"){if(p<=1499)return 15;if(p<=2499)return 25;if(p<=4999)return 50;if(p<=9999)return 100;if(p<=20000)return 150;return 200;}return Math.round(p*0.0012);}
 // Total Commission: auto = Price×Comm% for sales, blank for leases (type a flat amount). Overridable.
 function defTot(d){return d.t==="Lease"?"":Math.round((d.p||0)*(d.c||0)/100);}
@@ -387,7 +390,11 @@ function fmtDate(k,v){return MDK.includes(k)?fmtMD(v):(MDYK.includes(k)?fmtMDY(v
 function inp(gi,k,val,num){
  const isDate=MDK.includes(k)||MDYK.includes(k);
  if(isDate)val=fmtDate(k,val);
+ const isCur=['salesPrice','listPrice','ref'].includes(k);
  const ph=MDK.includes(k)?"M/D":(MDYK.includes(k)?"M/D/YYYY":"");
+ if(isCur){
+  return `<input class="cin r" type="text" inputmode="decimal" value="${cfmt(val)}" placeholder="$0.00" onclick="event.stopPropagation()" onfocus="try{this.select()}catch(e){}" onblur="this.value=cfmt(this.value)" ${['salesPrice','listPrice'].includes(k)?`oninput="updLive(${gi},'${k}',this.value)"`:''} onchange="updField(${gi},'${k}',this.value)">`;
+ }
  return `<input class="cin${num?' r':''}" ${num?'type="number"':''} value="${esc(val)}" placeholder="${ph}" onclick="event.stopPropagation()" ${['salesPrice','comm','listPrice'].includes(k)?`oninput="updLive(${gi},'${k}',this.value)"`:''} onchange="updField(${gi},'${k}',this.value)">`;
 }
 function pillSel(gi,val,opts,color,onchg){return `<select class="psel" style="color:${color};background:${color}1f" onclick="event.stopPropagation()" onchange="${onchg}">${opts.map(o=>`<option ${o===val?"selected":""} value="${esc(o)}">${o}</option>`).join("")}</select>`;}
@@ -401,8 +408,8 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"listPrice":return inp(gi,'listPrice',d.listPrice,1); case"salesPrice":return inp(gi,'salesPrice',d.p,1);
  case"comm":return d.flat?'<span style="color:#8a5cf0;font-weight:600">flat</span>':(d.t==="Lease"?'<span class="fmls" style="display:block;text-align:right">—</span>':inp(gi,'comm',d.c,1));
  case"ref":return inp(gi,'ref',d.ref,1);
- case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
- case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
+ case"tot":{var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" id="tot-${gi}" type="text" inputmode="decimal" value="${cfmt(tv)}" placeholder="${d.t==="Lease"?"flat $":"auto"}" title="${d.totManual?'Manually set — clear to revert to auto':'Auto = Price × Comm %'}" onclick="event.stopPropagation()" onfocus="try{this.select()}catch(e){}" onblur="this.value=cfmt(this.value)" onchange="updTot(${gi},this.value)">`;}
+ case"fmls":{var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" id="fmls-${gi}" type="text" inputmode="decimal" value="${cfmt(fv)}" placeholder="auto" title="${d.fmlsManual?'Manually set — clear to revert to auto':'Auto = tiered lease / Price × 0.12%'}" onclick="event.stopPropagation()" onfocus="try{this.select()}catch(e){}" onblur="this.value=cfmt(this.value)" onchange="updFmls(${gi},this.value)">`;}
  case"numTx":return inp(gi,'numTx',txVal(d),1);
  case"drive":return d.drive?`<a class="lnk drivelnk" href="${dhref(d.driveUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:`<a class="lnk" style="color:#9aa6b8" onclick="event.stopPropagation()">+ link</a>`;
  case"ld":return ldSelect(gi,d.ld||"To Do");
@@ -411,8 +418,8 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"notes":return inp(gi,'notes',d.notes);
 }}
 function editField(gi,k){const d=deals[gi];
- if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="number" value="${tv===""||tv==null?"":tv}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onchange="updTot(${gi},this.value)">`;}
- if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="number" value="${fv===""||fv==null?"":fv}" placeholder="auto" onclick="event.stopPropagation()" onchange="updFmls(${gi},this.value)">`;}
+ if(k==="tot"){var tv=effTot(d);return `<input class="cin r tot ${d.t==="Lease"?"lease":""}${d.totManual?' man':''}" type="text" inputmode="decimal" value="${cfmt(tv)}" placeholder="${d.t==="Lease"?"flat $":"auto"}" onclick="event.stopPropagation()" onfocus="try{this.select()}catch(e){}" onblur="this.value=cfmt(this.value)" onchange="updTot(${gi},this.value)">`;}
+ if(k==="fmls"){var fv=effFmls(d);return `<input class="cin r fmls${d.fmlsManual?' man':''}" type="text" inputmode="decimal" value="${cfmt(fv)}" placeholder="auto" onclick="event.stopPropagation()" onfocus="try{this.select()}catch(e){}" onblur="this.value=cfmt(this.value)" onchange="updFmls(${gi},this.value)">`;}
  if(k==="drive")return d.drive?`<a class="lnk drivelnk" href="${dhref(d.driveUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open ↗</a>`:'<a class="lnk" style="color:#9aa6b8">+ link</a>';
  return cell(d,k);
 }
@@ -512,12 +519,12 @@ function upd(i,k,v){const d=deals[i];d[k]=v;if(k==='t'&&v==='Lease'&&!d.lease)d.
  if(k==='t'){ if(!d.totManual)saveField(i,'tot'); if(!d.fmlsManual)saveField(i,'fmls'); }
 }
 // Total Commission / FMLS Fee: type a value to override, clear the field to revert to auto
-function updTot(i,v){const d=deals[i]; if(v===""||v==null){d.totManual=false;d.tot="";}else{d.tot=+v||0;d.totManual=true; if(d.t!=="Lease"&&(+d.p)>0){d.c=Math.round((d.tot/(+d.p)*100)*100)/100;}} draw(); saveField(i,'tot'); if(d.t!=="Lease"&&d.totManual&&(+d.p)>0)saveField(i,'comm');}
-function updFmls(i,v){const d=deals[i]; if(v===""||v==null){d.fmlsManual=false;d.fmls="";}else{d.fmls=+v||0;d.fmlsManual=true;} draw(); saveField(i,'fmls');}
+function updTot(i,v){const d=deals[i]; if(uraw(v)===""){d.totManual=false;d.tot="";}else{d.tot=numv(v);d.totManual=true; if(d.t!=="Lease"&&(+d.p)>0){d.c=Math.round((d.tot/(+d.p)*100)*100)/100;}} draw(); saveField(i,'tot'); if(d.t!=="Lease"&&d.totManual&&(+d.p)>0)saveField(i,'comm');}
+function updFmls(i,v){const d=deals[i]; if(uraw(v)===""){d.fmlsManual=false;d.fmls="";}else{d.fmls=numv(v);d.fmlsManual=true;} draw(); saveField(i,'fmls');}
 function updField(i,k,v){const d=deals[i];
- if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
- else if(['listPrice','ref','numTx'].includes(k))d[k]=+v||0;
- else if(k==='comm'){d.c=+v||0;d.totManual=false;d.tot="";draw();saveField(i,'tot');}
+ if(k==='salesPrice'){d.p=numv(v);if(d.t==='Lease')d.lease=d.p;}
+ else if(['listPrice','ref','numTx'].includes(k))d[k]=numv(v);
+ else if(k==='comm'){d.c=numv(v);d.totManual=false;d.tot="";draw();saveField(i,'tot');}
  else if(MDK.includes(k))d[k]=fmtMD(v);
  else if(MDYK.includes(k))d[k]=fmtMDY(v);
  else d[k]=v;
@@ -525,11 +532,11 @@ function updField(i,k,v){const d=deals[i];
  saveField(i,k);
 }
 function updLive(i,k,v){const d=deals[i];
- if(k==='salesPrice'){d.p=+v||0;if(d.t==='Lease')d.lease=d.p;}
- else if(k==='comm'){d.c=+v||0;d.totManual=false;d.tot="";}
- else if(k==='listPrice')d.listPrice=+v||0;
- const ts=document.getElementById('tot-'+i);if(ts&&!d.totManual){var tv=effTot(d);ts.value=(tv===""||tv==null)?"":tv;}
- const fs=document.getElementById('fmls-'+i);if(fs&&!d.fmlsManual){var fv=effFmls(d);fs.value=(fv===""||fv==null)?"":fv;}
+ if(k==='salesPrice'){d.p=numv(v);if(d.t==='Lease')d.lease=d.p;}
+ else if(k==='comm'){d.c=numv(v);d.totManual=false;d.tot="";}
+ else if(k==='listPrice')d.listPrice=numv(v);
+ const ts=document.getElementById('tot-'+i);if(ts&&!d.totManual){var tv=effTot(d);ts.value=cfmt(tv);}
+ const fs=document.getElementById('fmls-'+i);if(fs&&!d.fmlsManual){var fv=effFmls(d);fs.value=cfmt(fv);}
 }
 let tt;function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),1900);}
 
