@@ -298,7 +298,7 @@ const LEADS={"Past Client":"#0b5cad","Referral":"#1a7f37","Realtor.com":"#e36209
 const leadColor=l=>LEADS[l]||"#64748b";
 const LDOC={"To Do":"#e5484d","Prepared":"#eab308","Pending":"#2f6bff","Signed":"#12a06a"};
 function pill(text,color){return `<span class="pill" style="color:${color};background:${color}1f">${text}</span>`;}
-const money=n=>(n||n===0)&&n!==""?"$"+Math.round(n).toLocaleString():"—";
+const money=n=>(n||n===0)&&n!==""?"$"+Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):"—";
 function fmlsFee(t,p){if(t==="Lease"){if(p<=1499)return 15;if(p<=2499)return 25;if(p<=4999)return 50;if(p<=9999)return 100;if(p<=20000)return 150;return 200;}return Math.round(p*0.0012);}
 // Total Commission: auto = Price×Comm% for sales, blank for leases (type a flat amount). Overridable.
 function defTot(d){return d.t==="Lease"?"":Math.round((d.p||0)*(d.c||0)/100);}
@@ -447,7 +447,7 @@ function tableFor(list,s){
  const colg=`<colgroup><col style="width:24px"><col data-k="stage" style="width:${cw('stage')}px"><col data-k="addr" style="width:${cw('addr')}px">${cols.map(k=>`<col data-k="${k}" style="width:${cw(k)}px">`).join("")}</colgroup>`;
  let h=`<div class="scroll"><table>${colg}<thead><tr><th style="width:24px"></th><th>Stage<div class="rz" onmousedown="startResize(event,'stage')"></div></th><th class="addr">Address<div class="rz" onmousedown="startResize(event,'addr')"></div></th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<div class="rz" onmousedown="startResize(event,'${k}')"></div></th>`).join("")}</tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
-   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · $'+Math.round(d.tot).toLocaleString():''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
+   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
  });
  return h+"</tbody></table></div>";
