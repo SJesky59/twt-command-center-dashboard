@@ -53,10 +53,10 @@
   .grp.closed .gbody{display:none;}
   .colbtn{margin-left:auto;font-size:11px;color:var(--accent);background:#eef4ff;border:1px solid #d5e2ff;border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:600;}
   .scroll{overflow-x:auto;}
-  table{border-collapse:collapse;width:100%;font-size:12px;table-layout:fixed;}
+  table{border-collapse:collapse;font-size:12px;table-layout:auto;}
   th{text-align:left;font-size:9.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbfd;position:relative;}
   td{padding:7px 10px;border-bottom:1px solid var(--line2);white-space:nowrap;}
-  td,th{overflow:hidden;text-overflow:ellipsis;}
+  td,th{overflow:visible;}
   th .rz{position:absolute;top:0;right:0;width:8px;height:100%;cursor:col-resize;user-select:none;z-index:3;}
   th .rz:hover{background:var(--accent);opacity:.35;}
   .totrow{display:flex;flex-wrap:wrap;gap:8px 24px;padding:11px 16px 12px;border-bottom:1px solid var(--line);background:#fbfcff;}
@@ -451,8 +451,8 @@ function pickerPanel(s){
 }
 function tableFor(list,s){
  const cols=colsFor(s);
- const colg=`<colgroup><col style="width:24px"><col data-k="stage" style="width:${cw('stage')}px"><col data-k="addr" style="width:${cw('addr')}px">${cols.map(k=>`<col data-k="${k}" style="width:${cw(k)}px">`).join("")}</colgroup>`;
- let h=`<div class="scroll"><table>${colg}<thead><tr><th style="width:24px"></th><th>Stage<div class="rz" onmousedown="startResize(event,'stage')"></div></th><th class="addr">Address<div class="rz" onmousedown="startResize(event,'addr')"></div></th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<div class="rz" onmousedown="startResize(event,'${k}')"></div></th>`).join("")}</tr></thead><tbody>`;
+ const colg="";
+ let h=`<div class="scroll"><table>${colg}<thead><tr><th></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}</th>`).join("")}</tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
    h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
