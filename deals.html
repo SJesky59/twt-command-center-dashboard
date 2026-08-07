@@ -55,10 +55,11 @@
   .seg-appear button{flex:1;border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 0;border-radius:8px;cursor:pointer;}
   .seg-appear button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(20,30,60,.12);}
   html[data-theme="dark"] .seg-appear button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
-  #content table{width:max-content;}
+  #content table{width:100%;}
   #content td{padding:4px 7px;}
   #content th{padding:5px 7px;}
   #content .cin{padding:3px 5px;}
+  #content th.fill,#content td.fill{width:100%;padding:0;}
   .apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
   .apptitle{font-size:20px;font-weight:680;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;}
   .apptitle .hicon{display:inline-block;vertical-align:-4px;}
@@ -503,9 +504,9 @@ function pickerPanel(s){
 function tableFor(list,s){
  const cols=colsFor(s);
  const colg="";
- let h=`<div class="scroll"><table>${colg}<thead><tr><th></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}</th>`).join("")}</tr></thead><tbody>`;
+ let h=`<div class="scroll"><table>${colg}<thead><tr><th></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}</th>`).join("")}<th class="fill"></th></tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
-   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}</tr>`;
+   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}">${cell(d,k)}</td>`).join("")}<td class="fill"></td></tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
  });
  return h+"</tbody></table></div>";
