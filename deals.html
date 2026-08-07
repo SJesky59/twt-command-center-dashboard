@@ -60,6 +60,8 @@
   #content th{padding:5px 7px;}
   #content .cin{padding:3px 5px;}
   #content th.fill,#content td.fill{width:100%;padding:0;}
+  #content input[type=number]::-webkit-inner-spin-button,#content input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+  #content input[type=number]{-moz-appearance:textfield;}
   .apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
   .apptitle{font-size:20px;font-weight:680;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;}
   .apptitle .hicon{display:inline-block;vertical-align:-4px;}
@@ -538,7 +540,7 @@ function autoFit(){
    var t=(el.value&&el.value.length)?el.value:(el.placeholder||"");
    var w=Math.ceil(_mw(t,el))+14;
    var isDate=el.getAttribute("inputmode")==="numeric";
-   var min=isDate?28:(el.classList.contains("r")?32:24);
+   var min=isDate?28:(el.classList.contains("r")?44:24);
    el.style.width=Math.min(300,Math.max(min,w))+"px";
  });
  root.querySelectorAll("tr.drow select.psel").forEach(function(el){
