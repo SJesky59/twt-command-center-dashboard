@@ -55,6 +55,10 @@
   .seg-appear button{flex:1;border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 0;border-radius:8px;cursor:pointer;}
   .seg-appear button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(20,30,60,.12);}
   html[data-theme="dark"] .seg-appear button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
+  #content table{width:max-content;}
+  #content td{padding:4px 7px;}
+  #content th{padding:5px 7px;}
+  #content .cin{padding:3px 5px;}
   .apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
   .apptitle{font-size:20px;font-weight:680;letter-spacing:-.2px;display:flex;align-items:center;gap:9px;}
   .apptitle .hicon{display:inline-block;vertical-align:-4px;}
@@ -277,7 +281,7 @@ function mapDeal(r){ var v=r.values||{}; return {
   rowId:r.id, a:v["Property Address"]||"", t:v["Deal Type"]||"Buyer", s:v["Stage"]||"Coming Soon", ag:v["Agent"]||"",
   client:v["Client"]||"", city:v["City"]||"", lead:v["Lead Source"]||"",
   p:_num(v["Price"]), c:_pct(v["Commission %"]), tot:_num(v["Total Commission"]), fmls:_num(v["FMLS Fee"]),
-  listPrice:_num(v["Listing Price"]), ref:_num(v["Referral Fee"]), numTx:_num(v["# of Transactions"]),
+  listPrice:(_num(v["Listing Price"])||_num(v["Price"])), ref:_num(v["Referral Fee"]), numTx:_num(v["# of Transactions"]),
   lockbox:v["Coded Lockbox"]||"", serial:v["Serial #"]||"", cbs:v["CBS"]||"", coop:v["Cooperating Agent / License #"]||"",
   ld:v["Listing Docs"]||"To Do", drive:(dfu(v["Drive Folder"])?1:0), driveUrl:dfu(v["Drive Folder"]),
   list:_md(v["List Date"]), exp:_md(v["Expiration Date"]), close:_mdy(v["Closing Date"]), photos:_md(v["Photos"]),
@@ -444,11 +448,11 @@ function inp(gi,k,val,num){
  }
  return `<input class="cin${num?' r':''}" ${num?'type="number"':''}${isDate?' inputmode="numeric"':''} value="${esc(val)}" placeholder="${ph}" onclick="event.stopPropagation()" ${['salesPrice','comm','listPrice'].includes(k)?`oninput="updLive(${gi},'${k}',this.value)"`:''} onchange="updField(${gi},'${k}',this.value)">`;
 }
-function pillSel(gi,val,opts,color,onchg){return `<select class="psel" style="color:${color};background:${color}1f" onclick="event.stopPropagation()" onchange="${onchg}">${opts.map(o=>`<option ${o===val?"selected":""} value="${esc(o)}">${o}</option>`).join("")}</select>`;}
+function pillSel(gi,val,opts,color,onchg,cls){return `<select class="psel ${cls||''}" style="color:${color};background:${color}1f" onclick="event.stopPropagation()" onchange="${onchg}">${opts.map(o=>`<option ${o===val?"selected":""} value="${esc(o)}">${o}</option>`).join("")}</select>`;}
 function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"type":return pillSel(gi,d.t,["Buyer","Listing","Lease"],tColor(d.t),`upd(${gi},'t',this.value)`);
  case"agent":return pillSel(gi,d.ag,["Luke","Steve"],agColor(d.ag),`upd(${gi},'ag',this.value)`);
- case"lead":return pillSel(gi,d.lead||"",Object.keys(LEADS),leadColor(d.lead),`upd(${gi},'lead',this.value)`);
+ case"lead":return pillSel(gi,d.lead||"",Object.keys(LEADS),leadColor(d.lead),`upd(${gi},'lead',this.value)`,'leadpill');
  case"client":return inp(gi,'client',d.client); case"city":return inp(gi,'city',d.city);
  case"list":return inp(gi,'list',d.list); case"exp":return inp(gi,'exp',d.exp); case"close":return inp(gi,'close',d.close);
  case"binding":return inp(gi,'binding',d.binding); case"ddend":return inp(gi,'ddend',d.ddend);
@@ -524,12 +528,38 @@ function renderTabs(){
  const tabs=[{k:"All",n:deals.length,col:"#1f2733"}].concat(STAGES.map(s=>({k:s,n:deals.filter(d=>d.s===s).length,col:sColor(s)})));
  document.getElementById("tabs").innerHTML=tabs.map(t=>`<div class="tab ${t.k===cur?'on':''}" style="${t.k===cur?`background:${t.col}`:''}" onclick="cur='${t.k}';draw()">${t.k==="All"?'':`<span class="dot" style="background:${t.col}"></span>`}${t.k}<span class="cnt">${t.n}</span></div>`).join("");
 }
+function _fitFont(el){var s=getComputedStyle(el);return s.fontWeight+" "+s.fontSize+" "+s.fontFamily;}
+function _mw(txt,el){var c=_mw._c||(_mw._c=document.createElement("canvas"));var x=c.getContext("2d");x.font=_fitFont(el);return x.measureText(txt).width;}
+function autoFit(){
+ if(window.innerWidth<=640)return;
+ var root=document.getElementById("content"); if(!root)return;
+ root.querySelectorAll("tr.drow input.cin").forEach(function(el){
+   var t=(el.value&&el.value.length)?el.value:(el.placeholder||"");
+   var w=Math.ceil(_mw(t,el))+14;
+   var isDate=el.getAttribute("inputmode")==="numeric";
+   var min=isDate?28:(el.classList.contains("r")?32:24);
+   el.style.width=Math.min(300,Math.max(min,w))+"px";
+ });
+ root.querySelectorAll("tr.drow select.psel").forEach(function(el){
+   var o=el.options[el.selectedIndex]; el.style.width=(Math.ceil(_mw(o?o.text:"",el))+18)+"px";
+ });
+ root.querySelectorAll("tr.drow select.stagesel,tr.drow select.ldsel").forEach(function(el){
+   var o=el.options[el.selectedIndex]; var t=o?o.text:""; if(el.classList.contains("stagesel"))t=t.toUpperCase();
+   el.style.width=(Math.ceil(_mw(t,el))+44)+"px";
+ });
+ root.querySelectorAll("table").forEach(function(tb){
+   var leads=tb.querySelectorAll("tr.drow select.leadpill"); var mx=0;
+   leads.forEach(function(el){var w=parseFloat(el.style.width)||0; if(w>mx)mx=w;});
+   if(mx>0) leads.forEach(function(el){ el.style.width=mx+"px"; });
+ });
+}
 function draw(){
  renderTabs();
  var dc=document.getElementById("dealcount"); if(dc)dc.textContent=deals.length+" deals";
  const c=document.getElementById("content"),tb=document.getElementById("toolbar");
  if(cur==="All"){tb.style.display="flex";c.innerHTML=STAGES.map(s=>group(s,true)).join("");}
  else{tb.style.display="none";c.innerHTML=group(cur,false);}
+ autoFit();
 }
 function setView(m){viewMode=m;document.getElementById("vFull").classList.toggle("on",m==="full");document.getElementById("vTrim").classList.toggle("on",m==="trim");draw();}
 function toggle(el){el.closest(".grp").classList.toggle("closed");}
