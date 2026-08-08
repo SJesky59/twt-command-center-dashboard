@@ -515,7 +515,7 @@ function pickerPanel(s){
 function tableFor(list,s){
  let cols=colsFor(s).slice(); var _ni=cols.indexOf("notes"); if(_ni>-1){cols.splice(_ni,1);cols.push("notes");}
  const hasNotes=cols.includes("notes");
- const colg=`<colgroup><col style="width:30px"><col style="width:${cwK(s+'|stage')}px"><col style="width:${cwK(s+'|addr')}px">${cols.map(k=>`<col data-k="${s}|${k}" style="width:${cwK(s+'|'+k)}px">`).join("")}<col></colgroup>`;
+ const colg=`<colgroup><col style="width:30px"><col data-k="${s}|stage" style="width:${cwK(s+'|stage')}px"><col style="width:${cwK(s+'|addr')}px">${cols.map(k=>`<col data-k="${s}|${k}" style="width:${cwK(s+'|'+k)}px">`).join("")}<col></colgroup>`;
  let h=`<div class="scroll"><table>${colg}<thead><tr><th></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}${k==='notes'?' notescell':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<span class="rz" onmousedown="startResize(event,'${s}|${k}')"></span></th>`).join("")}<th class="fill"></th></tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
    h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}${k==='notes'?' notescell':''}">${cell(d,k)}</td>`).join("")}<td class="fill"></td></tr>`;
@@ -543,7 +543,7 @@ function renderTabs(){
 }
 function _fitFont(el){var s=getComputedStyle(el);return s.fontWeight+" "+s.fontSize+" "+s.fontFamily;}
 function _mw(txt,el){var c=_mw._c||(_mw._c=document.createElement("canvas"));var x=c.getContext("2d");x.font=_fitFont(el);return x.measureText(txt).width;}
-function autoFit(){return;
+function autoFit(){var _ct=document.getElementById("content"); if(_ct&&window.innerWidth>640){_ct.querySelectorAll(".scroll>table").forEach(function(tb){var col=tb.querySelector('col[data-k$="|stage"]'); if(!col)return; tb.querySelectorAll("tr.drow select.stagesel").forEach(function(el){el.style.width="100%";}); if(colW[col.getAttribute("data-k")]!=null)return; var sc=tb.querySelector("tr.drow select.stagesel"); if(!sc)return; var o=sc.options[sc.selectedIndex]; var t=(o?o.text:"").toUpperCase(); col.style.width=(Math.ceil(_mw(t,sc))+44)+"px";});} return;
  if(window.innerWidth<=640)return;
  var root=document.getElementById("content"); if(!root)return;
  root.querySelectorAll("tr.drow input.cin").forEach(function(el){
