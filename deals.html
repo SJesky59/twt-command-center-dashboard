@@ -558,7 +558,7 @@ function autoFit(){
  });
  root.querySelectorAll("tr.drow select.stagesel,tr.drow select.ldsel").forEach(function(el){
    var o=el.options[el.selectedIndex]; var t=o?o.text:""; if(el.classList.contains("stagesel"))t=t.toUpperCase();
-   el.style.width=(Math.ceil(_mw(t,el))+44)+"px";
+   el.style.width=(Math.ceil(_mw(t,el))+38)+"px";
  });
  root.querySelectorAll("table").forEach(function(tb){
    var leads=tb.querySelectorAll("tr.drow select.leadpill"); var mx=0;
