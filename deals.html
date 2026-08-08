@@ -414,7 +414,7 @@ const COLS_TRIM={
  "Withdrawn":["type","agent","client","listPrice","exp"],
 };
 const MASTER=["type","agent","lead","client","city","list","exp","listPrice","salesPrice","close","binding","ddend","apprcont","fincont","comm","ref","tot","fmls","numTx","drive","coop","serial","cbs","lockbox","photos","oh","ld","notes"];
-const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",binding:"Binding",ddend:"DD End",apprcont:"Appraisal Cont.",fincont:"Financing Cont.",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
+const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",binding:"Binding",ddend:"DD End",apprcont:"Appr Cont",fincont:"Fin Cont",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
 const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
 const AUTO=["tot","fmls","numTx"];
 // ---- Resizable columns (widths persist across sessions via localStorage) ----
@@ -496,7 +496,9 @@ function dval(d,k){
  return d[k]||"";
 }
 let viewMode="full";
-const colOverride={full:{},trim:{}}; // per-view, per-stage custom column arrays
+let colOverride={full:{},trim:{}}; // per-view, per-stage custom column arrays
+try{var _coSaved=JSON.parse(localStorage.getItem("twt-deals-colov-v1")||"null"); if(_coSaved&&_coSaved.full&&_coSaved.trim)colOverride=_coSaved;}catch(e){}
+function saveColOv(){try{localStorage.setItem("twt-deals-colov-v1",JSON.stringify(colOverride));}catch(e){}}
 let openPickerStage=null;
 function stageSelect(d,gi){return `<select class="stagesel" style="color:${sColor(d.s)}" onclick="event.stopPropagation()" onchange="moveStage(${gi},this.value)">${STAGES.map(s=>`<option ${s===d.s?"selected":""}>${s}</option>`).join("")}</select>`;}
 function presetFor(s){return viewMode==="trim"?COLS_TRIM[s]:COLS[s];}
@@ -581,12 +583,12 @@ function toggleCol(s,k,on){
  let cur=(colOverride[viewMode][s]||presetFor(s)).slice();
  if(on){if(!cur.includes(k))cur.push(k);}else{cur=cur.filter(x=>x!==k);}
  // keep MASTER order
- colOverride[viewMode][s]=MASTER.filter(x=>cur.includes(x));
+ colOverride[viewMode][s]=MASTER.filter(x=>cur.includes(x));saveColOv();
  draw();
 }
-function colPreset(s){delete colOverride[viewMode][s];draw();}
-function colAll(s){colOverride[viewMode][s]=MASTER.slice();draw();}
-function colNone(s){colOverride[viewMode][s]=[];draw();}
+function colPreset(s){delete colOverride[viewMode][s];saveColOv();draw();}
+function colAll(s){colOverride[viewMode][s]=MASTER.slice();saveColOv();draw();}
+function colNone(s){colOverride[viewMode][s]=[];saveColOv();draw();}
 const openDrawers=new Set();
 function toggleRow(gi){if(openDrawers.has(gi))openDrawers.delete(gi);else openDrawers.add(gi);draw();}
 function moveStage(i,newStage){const d=deals[i];const old=d.s;d.s=newStage;draw();toast(`${d.a}: ${old} → ${newStage}`);saveField(i,'s');}
