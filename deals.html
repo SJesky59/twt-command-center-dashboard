@@ -590,7 +590,7 @@ function colPreset(s){delete colOverride[viewMode][s];saveColOv();draw();}
 function colAll(s){colOverride[viewMode][s]=MASTER.slice();saveColOv();draw();}
 function colNone(s){colOverride[viewMode][s]=[];saveColOv();draw();}
 const openDrawers=new Set();
-function toggleRow(gi){if(openDrawers.has(gi))openDrawers.delete(gi);else openDrawers.add(gi);draw();}
+function toggleRow(gi){var was=openDrawers.has(gi);openDrawers.clear();if(!was)openDrawers.add(gi);draw();}
 function moveStage(i,newStage){const d=deals[i];const old=d.s;d.s=newStage;draw();toast(`${d.a}: ${old} → ${newStage}`);saveField(i,'s');}
 function setLd(i,v){deals[i].ld=v;draw();saveField(i,'ld');}
 async function buildChecklist(i){const d=deals[i];
