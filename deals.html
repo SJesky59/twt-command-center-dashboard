@@ -55,7 +55,7 @@
   .seg-appear button{flex:1;border:none;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--muted);padding:8px 0;border-radius:8px;cursor:pointer;}
   .seg-appear button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(20,30,60,.12);}
   html[data-theme="dark"] .seg-appear button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
-  #content table{width:100%;table-layout:fixed;}
+  #content table{width:100%;}
   #content td{padding:4px 7px;}
   #content th{padding:5px 7px;}
   #content .cin{padding:3px 5px;}
@@ -418,15 +418,14 @@ const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"C
 const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
 const AUTO=["tot","fmls","numTx"];
 // ---- Resizable columns (widths persist across sessions via localStorage) ----
-const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,binding:88,ddend:88,apprcont:80,fincont:80,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
+const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,binding:88,ddend:88,apprcont:120,fincont:120,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
 let colW={};
-try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v2")||"{}")||{};}catch(e){colW={};}
+try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v1")||"{}")||{};}catch(e){colW={};}
 function cw(k){return colW[k]||DEFAULTW[k]||100;}
-function cwK(ck){if(colW[ck]!=null)return colW[ck];var bk=ck.indexOf("|")>=0?ck.split("|")[1]:ck;return DEFAULTW[bk]||100;}
 let _rz=null;
-function startResize(e,key){e.preventDefault();e.stopPropagation();_rz={key:key,x:e.clientX,w:cwK(key)};document.addEventListener("mousemove",_rzMove);document.addEventListener("mouseup",_rzUp);document.body.style.cursor="col-resize";}
+function startResize(e,key){e.preventDefault();e.stopPropagation();_rz={key:key,x:e.clientX,w:cw(key)};document.addEventListener("mousemove",_rzMove);document.addEventListener("mouseup",_rzUp);document.body.style.cursor="col-resize";}
 function _rzMove(e){if(!_rz)return;var nw=Math.max(40,_rz.w+(e.clientX-_rz.x));colW[_rz.key]=nw;document.querySelectorAll('col[data-k="'+_rz.key+'"]').forEach(function(c){c.style.width=nw+"px";});}
-function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove",_rzMove);document.removeEventListener("mouseup",_rzUp);document.body.style.cursor="";try{localStorage.setItem("twt-deals-colw-v2",JSON.stringify(colW));}catch(e){}}
+function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove",_rzMove);document.removeEventListener("mouseup",_rzUp);document.body.style.cursor="";try{localStorage.setItem("twt-deals-colw-v1",JSON.stringify(colW));}catch(e){}}
 // ---- Stage totals (Under Contract / Closed) — board's Sum/Average formulas over Coda data ----
 function _sum(list,f){return list.reduce((a,d)=>a+(+f(d)||0),0);}
 function stageTotals(s){
@@ -515,10 +514,10 @@ function pickerPanel(s){
 function tableFor(list,s){
  let cols=colsFor(s).slice(); var _ni=cols.indexOf("notes"); if(_ni>-1){cols.splice(_ni,1);cols.push("notes");}
  const hasNotes=cols.includes("notes");
- const colg=`<colgroup><col style="width:30px"><col data-k="${s}|stage" style="width:${cwK(s+'|stage')}px"><col style="width:${cwK(s+'|addr')}px">${cols.map(k=>`<col data-k="${s}|${k}" style="width:${cwK(s+'|'+k)}px">`).join("")}<col></colgroup>`;
- let h=`<div class="scroll"><table>${colg}<thead><tr><th></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}${k==='notes'?' notescell':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}<span class="rz" onmousedown="startResize(event,'${s}|${k}')"></span></th>`).join("")}<th class="fill"></th></tr></thead><tbody>`;
+ const colg="";
+ let h=`<div class="scroll"><table>${colg}<thead><tr><th></th><th>Stage</th><th class="addr">Address</th>${cols.map(k=>`<th class="${rightish.includes(k)?'r':''}${k==='notes'?' notescell':''}">${HEAD[k]}${AUTO.includes(k)?' •':''}</th>`).join("")}${hasNotes?"":'<th class="fill"></th>'}</tr></thead><tbody>`;
  list.forEach(d=>{const gi=deals.indexOf(d);const open=openDrawers.has(gi);
-   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}${k==='notes'?' notescell':''}">${cell(d,k)}</td>`).join("")}<td class="fill"></td></tr>`;
+   h+=`<tr class="drow ${open?'open':''}" onclick="toggleRow(${gi})"><td><span class="exp">▸</span></td><td class="stagecell">${stageSelect(d,gi)}</td><td class="addr"><span class="hdot ${health(d)}" title="Health"></span>${d.a}<div class="mmeta">${esc(d.t)}${d.client?' · '+esc(d.client):''}${d.ag?' · '+esc(d.ag):''}${d.tot?' · '+money(d.tot):''}${d.close?' · '+d.close:''}</div></td>${cols.map(k=>`<td class="${rightish.includes(k)?'r':''}${k==='notes'?' notescell':''}">${cell(d,k)}</td>`).join("")}${hasNotes?"":'<td class="fill"></td>'}</tr>`;
    h+=`<tr class="detail" style="display:${open?'':'none'}"><td colspan="99"><div class="dwrap"><div class="dtitle">Edit full record — ${d.a}</div><div class="dgrid">${MASTER.map(k=>`<div class="dfield"><span class="k">${HEAD[k]}${AUTO.includes(k)?' •':''}</span>${editField(gi,k)}</div>`).join("")}</div><button class="ckbtn" onclick="event.stopPropagation();buildChecklist(${gi})">+ Build checklist for this deal</button></div></td></tr>`;
  });
  return h+"</tbody></table></div>";
@@ -543,7 +542,7 @@ function renderTabs(){
 }
 function _fitFont(el){var s=getComputedStyle(el);return s.fontWeight+" "+s.fontSize+" "+s.fontFamily;}
 function _mw(txt,el){var c=_mw._c||(_mw._c=document.createElement("canvas"));var x=c.getContext("2d");x.font=_fitFont(el);return x.measureText(txt).width;}
-function autoFit(){var _ct=document.getElementById("content"); if(_ct&&window.innerWidth>640){_ct.querySelectorAll(".scroll>table").forEach(function(tb){var col=tb.querySelector('col[data-k$="|stage"]'); if(!col)return; tb.querySelectorAll("tr.drow select.stagesel").forEach(function(el){el.style.width="100%";}); if(colW[col.getAttribute("data-k")]!=null)return; var sc=tb.querySelector("tr.drow select.stagesel"); if(!sc)return; var o=sc.options[sc.selectedIndex]; var t=(o?o.text:"").toUpperCase(); col.style.width=(Math.ceil(_mw(t,sc))+44)+"px";});} return;
+function autoFit(){
  if(window.innerWidth<=640)return;
  var root=document.getElementById("content"); if(!root)return;
  root.querySelectorAll("tr.drow input.cin").forEach(function(el){
