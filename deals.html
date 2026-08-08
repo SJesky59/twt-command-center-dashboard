@@ -291,6 +291,7 @@ function mapDeal(r){ var v=r.values||{}; return {
   ld:v["Listing Docs"]||"To Do", drive:(dfu(v["Drive Folder"])?1:0), driveUrl:dfu(v["Drive Folder"]),
   list:_md(v["List Date"]), exp:_md(v["Expiration Date"]), close:_mdy(v["Closing Date"]), photos:_md(v["Photos"]),
   binding:_md(v["Binding Date"]), ddend:_md(v["DD End Date"]),
+  apprcont:_md(v["Appraisal Contingency Date"]), fincont:_md(v["Financing Contingency"]),
   oh:_md(v["Open House"]), notes:v["Notes"]||""
 };}
 async function loadDeals(){
@@ -335,6 +336,8 @@ function fieldToParam(d,k){ switch(k){
   case"oh": return {openhouse:_toISO(d.oh)};
   case"binding": return {bindingdate:_toISO(d.binding)};
   case"ddend": return {ddenddate:_toISO(d.ddend)};
+  case"apprcont": return {appraisalcontingency:_toISO(d.apprcont)};
+  case"fincont": return {financingcontingency:_toISO(d.fincont)};
   case"list": return {listdate:_toISO(d.list)};
   case"exp": return {expiration:_toISO(d.exp)};
   case"close": return {closingdate:_toISO(d.close)};
@@ -398,7 +401,7 @@ const COLS={
  "Potential":["type","agent","client","city","list","listPrice","photos","oh","notes","ld"],
  "Coming Soon":["type","agent","client","city","list","listPrice","photos","oh","serial","cbs","lockbox","ld","notes"],
  "Active":["type","agent","client","city","list","exp","listPrice","numTx","notes","serial","cbs","lockbox"],
- "Under Contract":["type","agent","lead","client","city","binding","ddend","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes","coop"],
+ "Under Contract":["type","agent","lead","client","city","binding","ddend","apprcont","fincont","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes","coop"],
  "Closed":["type","agent","lead","client","city","close","salesPrice","comm","ref","tot","fmls","numTx","drive","notes"],
  "Withdrawn":["type","agent","client","city","list","exp","listPrice","numTx","notes","serial","cbs","lockbox"],
 };
@@ -410,12 +413,12 @@ const COLS_TRIM={
  "Closed":["type","agent","client","close","salesPrice","tot"],
  "Withdrawn":["type","agent","client","listPrice","exp"],
 };
-const MASTER=["type","agent","lead","client","city","list","exp","listPrice","salesPrice","close","binding","ddend","comm","ref","tot","fmls","numTx","drive","coop","serial","cbs","lockbox","photos","oh","ld","notes"];
-const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",binding:"Binding",ddend:"DD End",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
+const MASTER=["type","agent","lead","client","city","list","exp","listPrice","salesPrice","close","binding","ddend","apprcont","fincont","comm","ref","tot","fmls","numTx","drive","coop","serial","cbs","lockbox","photos","oh","ld","notes"];
+const HEAD={type:"Type",agent:"Agent",lead:"Lead Source",client:"Client",city:"City",list:"List Date",exp:"Expiration",listPrice:"Listing Price",salesPrice:"Sales Price",close:"Closing",binding:"Binding",ddend:"DD End",apprcont:"Appraisal Cont.",fincont:"Financing Cont.",comm:"Comm %",ref:"Referral Fee",tot:"Total Comm",fmls:"FMLS Fee",numTx:"# Tx",drive:"Drive",coop:"Coop Agent / Lic #",serial:"Serial #",cbs:"CBS",lockbox:"Lockbox",photos:"Photos",oh:"Open House",ld:"Listing Docs",notes:"Notes"};
 const rightish=["listPrice","salesPrice","comm","ref","tot","fmls","numTx"];
 const AUTO=["tot","fmls","numTx"];
 // ---- Resizable columns (widths persist across sessions via localStorage) ----
-const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,binding:88,ddend:88,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
+const DEFAULTW={stage:120,addr:190,type:90,agent:80,lead:130,client:130,city:100,list:88,exp:88,listPrice:110,salesPrice:110,close:100,binding:88,ddend:88,apprcont:120,fincont:120,comm:78,ref:100,tot:112,fmls:100,numTx:66,drive:78,coop:150,serial:100,cbs:90,lockbox:100,photos:88,oh:110,ld:112,notes:200};
 let colW={};
 try{colW=JSON.parse(localStorage.getItem("twt-deals-colw-v1")||"{}")||{};}catch(e){colW={};}
 function cw(k){return colW[k]||DEFAULTW[k]||100;}
@@ -439,7 +442,7 @@ function ldSelect(gi,st){const c=LDOC[st]||"#64748b";return `<select class="ldse
 function esc(v){return (v==null?"":String(v)).replace(/"/g,"&quot;");}
 function dfu(x){return x&&typeof x==="object"?(x.url||""):(x||"");}
 function dhref(u){if(!u)return u;return (u.indexOf("drive.google.com")>-1&&u.indexOf("authuser=")<0)?u+(u.indexOf("?")>-1?"&":"?")+"authuser=ClientCare@theweathersteam.com":u;}
-const MDK=["photos","oh","list","exp","binding","ddend"],MDYK=["close"];
+const MDK=["photos","oh","list","exp","binding","ddend","apprcont","fincont"],MDYK=["close"];
 function fmtMD(v){if(!v)return"";var s=String(v).trim();if(s.indexOf("/")>=0){var p=s.split("/");if(p.length<2)return s;return (+p[0])+"/"+(+p[1]);}var d=s.replace(/[^0-9]/g,"");if(d.length<3)return s;var mon=d.slice(0,d.length-2),day=d.slice(-2);if(+mon>=1&&+mon<=12&&+day>=1&&+day<=31)return (+mon)+"/"+(+day);return s;}
 function fmtMDY(v){if(!v)return"";var s=String(v).trim();if(s.indexOf("/")>=0){var p=s.split("/");if(p.length<2)return s;var y=p[2]||"2026";if(String(y).length===2)y="20"+y;return (+p[0])+"/"+(+p[1])+"/"+y;}var d=s.replace(/[^0-9]/g,"");var mon,day,yr;if(d.length===8){mon=d.slice(0,2);day=d.slice(2,4);yr=d.slice(4,8);}else if(d.length===6){mon=d.slice(0,2);day=d.slice(2,4);yr="20"+d.slice(4,6);}else if(d.length===5){mon=d.slice(0,1);day=d.slice(1,3);yr="20"+d.slice(3,5);}else if(d.length===3||d.length===4){mon=d.slice(0,d.length-2);day=d.slice(-2);yr="2026";}else return s;if(+mon>=1&&+mon<=12&&+day>=1&&+day<=31)return (+mon)+"/"+(+day)+"/"+yr;return s;}
 function fmtDate(k,v){return MDK.includes(k)?fmtMD(v):(MDYK.includes(k)?fmtMDY(v):v);}
@@ -461,6 +464,7 @@ function cell(d,k){const gi=deals.indexOf(d);switch(k){
  case"client":return inp(gi,'client',d.client); case"city":return inp(gi,'city',d.city);
  case"list":return inp(gi,'list',d.list); case"exp":return inp(gi,'exp',d.exp); case"close":return inp(gi,'close',d.close);
  case"binding":return inp(gi,'binding',d.binding); case"ddend":return inp(gi,'ddend',d.ddend);
+ case"apprcont":return inp(gi,'apprcont',d.apprcont); case"fincont":return inp(gi,'fincont',d.fincont);
  case"listPrice":return inp(gi,'listPrice',d.listPrice,1); case"salesPrice":return inp(gi,'salesPrice',d.p,1);
  case"comm":return d.flat?'<span style="color:#8a5cf0;font-weight:600">flat</span>':(d.t==="Lease"?'<span class="fmls" style="display:block;text-align:right">—</span>':inp(gi,'comm',d.c,1));
  case"ref":return inp(gi,'ref',d.ref,1);
