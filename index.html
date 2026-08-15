@@ -1097,8 +1097,8 @@ document.addEventListener("click",function(ev){
     // ===== #2 In-place full deal editor =====
   var EXPANDED = null;
   var cstate = {};
-  var STAGE_OPTS = ["Coming Soon","Active","Under Contract","Closed","Potential","Withdrawn"];
-  var LEADS_OPTS = ["Past Client","Referral","Realtor.com","Circle Prospecting","Sign Call","Open House","Personal","Door Knocking","Listing Call","Met","72Sold","Deallanders","TigerLead","Cole Information","Zillow Rentals","House Hunt Inc","Internet Lead","Dave Ramsey","Social Media"];
+  var STAGE_OPTS = ["Coming Soon","Active","Under Contract","Closed","Potential","Withdrawn","Terminated"];
+  var LEADS_OPTS = ["Past Client","Referral","Realtor.com","Circle Prospecting","Sign Call","Open House","Personal","Door Knocking","Listing Call","Met","72Sold","Deallanders","TigerLead","Cole Information","Zillow Rentals","House Hunt Inc","Internet Lead","Dave Ramsey","Social Media","Golden Letter"];
   var LDOC_OPTS = ["To Do","Prepared","Pending","Signed"];
   var DGROUPS = [
     ["Basics", [["stage","Stage","sel",STAGE_OPTS,"stage","Stage"],["type","Deal Type","sel",["Buyer","Listing","Lease"],"dealtype","Deal Type"],["agent","Agent","sel",["Luke","Steve"],"agent","Agent"],["lead","Lead Source","sel",LEADS_OPTS,"leadsource","Lead Source"],["client","Client","text",null,"client","Client"],["city","City","text",null,"city","City"]]],
