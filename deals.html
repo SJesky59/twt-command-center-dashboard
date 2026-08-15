@@ -597,12 +597,47 @@ const openDrawers=new Set();
 function toggleRow(gi){var was=openDrawers.has(gi);openDrawers.clear();if(!was)openDrawers.add(gi);draw();}
 function moveStage(i,newStage){const d=deals[i];const old=d.s;d.s=newStage;draw();toast(`${d.a}: ${old} → ${newStage}`);saveField(i,'s');}
 function setLd(i,v){deals[i].ld=v;draw();saveField(i,'ld');}
-async function buildChecklist(i){const d=deals[i];
- if(!confirm("Build the full checklist for "+d.a+"? This creates ~89 tasks."))return;
+// ---- Build Checklist: phase picker ----
+// Phase labels/values verified against master checklist doc ox8BYmUkgU (MASTER CHECKLISTS all tracks).
+const PHASES_BY_TRACK={
+ "Listing":[{l:"Pre-Listing",v:"PRE-LISTING",n:1},{l:"Going Live",v:"LISTING: GOING LIVE",n:2},{l:"Open House",v:"SELLER: OPEN HOUSE",n:3},{l:"Under Contract",v:"SELLER: UNDER CONTRACT",n:4},{l:"Post-Closing",v:"SELLER: POST-CLOSING",n:5}],
+ "Buyer":[{l:"Appointment",v:"BUYER: APPOINTMENT",n:1},{l:"Under Contract",v:"BUYER: UNDER CONTRACT",n:2},{l:"Post-Closing",v:"BUYER: POST-CLOSING",n:3}],
+ "Lease":[{l:"Pre-Listing",v:"LEASE: PRE-LISTING",n:1},{l:"Going Live",v:"LEASE: GOING LIVE",n:2},{l:"Live Listing",v:"LEASE: LIVE LISTING",n:3}]
+};
+let _ckPick={i:-1,mode:"all",phase:null};
+function buildChecklist(i){const d=deals[i];
+ const phases=PHASES_BY_TRACK[d.t]||PHASES_BY_TRACK["Buyer"];
+ _ckPick={i:i,mode:"all",phase:phases[phases.length-1].v};
+ let ov=document.getElementById("ckOverlay");
+ if(!ov){ov=document.createElement("div");ov.id="ckOverlay";document.body.appendChild(ov);
+  const st=document.createElement("style");st.textContent=".ckov{position:fixed;inset:0;background:rgba(10,18,26,.55);display:flex;align-items:center;justify-content:center;z-index:9999}.ckbox{background:#fff;border-radius:16px;padding:22px;width:min(440px,92vw);box-shadow:0 12px 40px rgba(0,0,0,.25);font-family:inherit}.ckh{font-size:17px;font-weight:700;margin-bottom:3px;color:#12212e}.cksub{font-size:13px;color:#5b6b7a;margin-bottom:16px}.ckopt{display:flex;gap:11px;align-items:flex-start;border:1.5px solid #e2e8ee;border-radius:11px;padding:11px 13px;margin-bottom:9px;cursor:pointer}.ckopt:hover{border-color:#1f7a4d;background:#f2fbf6}.ckopt.on{border-color:#1f7a4d;background:#eaf7f0}.ckdot{width:17px;height:17px;border-radius:50%;border:2px solid #b8c4cf;flex:none;margin-top:1px}.ckopt.on .ckdot{border-color:#1f7a4d;background:#1f7a4d;box-shadow:inset 0 0 0 3px #fff}.ckol{font-size:14px;font-weight:600;color:#1a2733}.ckoh{font-size:12px;color:#6b7a89;margin-top:1px}.ckchips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}.ckchip{font-size:12px;padding:5px 10px;border-radius:20px;background:#eef2f6;color:#6b7a89;border:1px solid #e2e8ee;cursor:pointer}.ckchip.on{background:#1f7a4d;color:#fff;border-color:#1f7a4d}.ckrow{display:flex;gap:10px;margin-top:6px}.ckbtn2{flex:1;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}.ckgo{background:#1f7a4d;color:#fff}.ckcancel{background:#eef2f6;color:#5b6b7a}";document.head.appendChild(st);}
+ ov.className="ckov";ov.innerHTML="";
+ const box=document.createElement("div");box.className="ckbox";
+ box.innerHTML='<div class="ckh">Build checklist — '+esc(d.a)+'</div><div class="cksub">'+esc(d.t)+' track. Pick what to build.</div>'+
+  '<div class="ckopt on" data-m="all"><div class="ckdot"></div><div><div class="ckol">Whole deal</div><div class="ckoh">Every phase, start to finish</div></div></div>'+
+  '<div class="ckopt" data-m="single"><div class="ckdot"></div><div><div class="ckol">Just one phase</div><div class="ckoh">Only the phase you pick below</div></div></div>'+
+  '<div class="ckopt" data-m="forward"><div class="ckdot"></div><div><div class="ckol">From a phase forward</div><div class="ckoh">The phase you pick + everything after it</div></div></div>'+
+  '<div class="ckchips" id="ckChips"></div>'+
+  '<div class="ckrow"><button class="ckbtn2 ckcancel" id="ckCancel">Cancel</button><button class="ckbtn2 ckgo" id="ckGo">Build it →</button></div>';
+ ov.appendChild(box);
+ const chips=box.querySelector("#ckChips");
+ chips.innerHTML=phases.map(p=>'<span class="ckchip'+(p.v===_ckPick.phase?' on':'')+'" data-v="'+p.v+'" data-n="'+p.n+'">'+p.l+'</span>').join("");
+ function syncChips(){chips.style.opacity=(_ckPick.mode==="all")?".35":"1";chips.style.pointerEvents=(_ckPick.mode==="all")?"none":"auto";}
+ syncChips();
+ box.querySelectorAll(".ckopt").forEach(o=>o.addEventListener("click",()=>{box.querySelectorAll(".ckopt").forEach(x=>x.classList.remove("on"));o.classList.add("on");_ckPick.mode=o.getAttribute("data-m");syncChips();}));
+ chips.querySelectorAll(".ckchip").forEach(c=>c.addEventListener("click",()=>{chips.querySelectorAll(".ckchip").forEach(x=>x.classList.remove("on"));c.classList.add("on");_ckPick.phase=c.getAttribute("data-v");}));
+ box.querySelector("#ckCancel").addEventListener("click",()=>ov.remove());
+ box.querySelector("#ckGo").addEventListener("click",()=>{ov.remove();runBuildChecklist();});
+}
+async function runBuildChecklist(){const i=_ckPick.i,d=deals[i];if(!d)return;
+ const phases=PHASES_BY_TRACK[d.t]||[];const pick=phases.find(p=>p.v===_ckPick.phase)||{};
+ let label=_ckPick.mode==="all"?"whole deal":(_ckPick.mode==="single"?("only "+(pick.l||"phase")):("from "+(pick.l||"phase")+" forward"));
+ if(!confirm("Build the checklist for "+d.a+" — "+label+"?"))return;
  toast("Building checklist…");
  var params={action:"buildchecklist",address:d.a,dealtype:d.t,client:d.client||""};
  if(d.list)params.listdate=_toISO(d.list);
  if(d.close)params.closingdate=_toISO(d.close);
+ if(_ckPick.mode!=="all"){params.phasemode=_ckPick.mode;params.phase=_ckPick.phase;if(pick.n)params.phasenum=pick.n;}
  try{var r=await callDoor(params);
    if(r&&r.ok){var ck=r.checklist||{};toast(ck.skipped?("Skipped: "+(ck.reason||"already exists")):("Checklist built ✓ ("+(ck.tasksCreated!=null?ck.tasksCreated:"?")+" tasks)"));}
    else toast("Error: "+((r&&r.error)||"?"));
