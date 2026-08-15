@@ -353,7 +353,7 @@ async function saveField(i,k){ var d=deals[i]; if(!d||!d.rowId) return; var fp=f
   try{ var r=await callDoor(p); toast(r&&r.ok?"Saved ✓":("Save error: "+((r&&r.error)||"?"))); }
   catch(e){ toast("Save failed"); }
 }
-const STAGES=["Potential","Coming Soon","Active","Under Contract","Closed","Withdrawn"];
+const STAGES=["Potential","Coming Soon","Active","Under Contract","Closed","Withdrawn","Terminated"];
 const sColor=s=>({"Coming Soon":"#2563eb","Active":"#12a06a","Under Contract":"#f59e0b","Closed":"#fb7185","Potential":"#8a5cf0","Withdrawn":"#7a5230"}[s]||"#9aa6b8");
 const tColor=t=>({"Buyer":"#2f6bff","Listing":"#e5484d","Lease":"#12a06a"}[t]||"#9aa6b8");
 const agColor=a=>({"Luke":"#86198f","Steve":"#365314"}[a]||"#64748b");

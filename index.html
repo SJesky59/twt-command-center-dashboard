@@ -471,7 +471,7 @@
     </div>
     <div class="dm-2">
       <div class="dm-row"><label>Deal Type</label><select id="dm-type"><option value=""></option><option>Buyer</option><option>Listing</option><option>Lease</option></select></div>
-      <div class="dm-row"><label>Stage</label><select id="dm-stage"><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option></select></div>
+      <div class="dm-row"><label>Stage</label><select id="dm-stage"><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option><option>Terminated</option></select></div>
     </div>
     <div class="dm-2">
       <div class="dm-row"><label>Agent</label><select id="dm-agent"><option value=""></option><option>Luke</option><option>Steve</option></select></div>
@@ -502,7 +502,7 @@
   <div class="dm-h"><span>Edit deal</span><span id="ed-x" style="cursor:pointer; color:var(--text-muted); font-size:16px; padding:4px 8px;">&#10005;</span></div>
   <div class="dm-row"><label>Which deal</label><select id="ed-deal"></select></div>
   <div class="dm-2">
-    <div class="dm-row"><label>Stage</label><select id="ed-stage"><option value=""></option><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option></select></div>
+    <div class="dm-row"><label>Stage</label><select id="ed-stage"><option value=""></option><option>Coming Soon</option><option>Active</option><option>Under Contract</option><option>Closing</option><option>Closed</option><option>Terminated</option></select></div>
     <div class="dm-row"><label>Agent</label><select id="ed-agent"><option value=""></option><option>Luke</option><option>Steve</option></select></div>
   </div>
   <div class="dm-2">
@@ -609,7 +609,7 @@
     lastData = d;
     var deals = (d.deals || []).map(function (r) { return r.values; });
     var tasks = (d.tasks || []).map(function (r) { var v = r.values; v.__id = r.id; return v; });
-    var open = deals.filter(function (v) { return v["Stage"] !== "Closed" && v["Stage"] !== "Withdrawn" && v["Stage"] !== "Potential"; });
+    var open = deals.filter(function (v) { return v["Stage"] !== "Closed" && v["Stage"] !== "Withdrawn" && v["Stage"] !== "Potential" && v["Stage"] !== "Terminated"; });
 
     var byStage = {};
     open.forEach(function (v) { var s = v["Stage"] || "?"; byStage[s] = (byStage[s] || 0) + 1; });
@@ -670,7 +670,9 @@
     var _stillOpen = {};
     tasks.forEach(function (t) { if (t.__id && !t["Complete"]) _stillOpen[t.__id] = 1; });
     Object.keys(completedIds).forEach(function (cid) { if (!_stillOpen[cid]) delete completedIds[cid]; });
-    var open_t = tasks.filter(function (t) { return !t["Complete"] && !completedIds[t.__id]; });
+    var termSet = {};
+    deals.forEach(function (v) { if ((v["Stage"] || "") === "Terminated") termSet[addrKey(v["Property Address"])] = true; });
+    var open_t = tasks.filter(function (t) { return !t["Complete"] && !completedIds[t.__id] && !termSet[addrKey(String(t["Deal"] || "").split("|")[0])]; });
     tasksById = {};
     open_t.forEach(function (t) { if (t.__id) tasksById[t.__id] = t; });
     open_t.sort(function (a, b) {
