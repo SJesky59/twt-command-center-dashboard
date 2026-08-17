@@ -322,7 +322,7 @@ function groupsForRender(){
   // Companion tweak: on All (and the per-track tabs), every active deal stays visible.
   // A deal with zero tasks in the window gets a one-line "all caught up" header
   // instead of vanishing - so "caught up" never looks like "checklist missing".
-  if(DATA.hasNextUp&&(active==="all"||active==="listing"||active==="buyer"||active==="lease")){
+  if(active==="all"||active==="listing"||active==="buyer"||active==="lease"){
     Object.keys(DATA.dealsByAddr).forEach(function(a){
       var d=DATA.dealsByAddr[a];
       if(String(d.stage||"").toLowerCase()==="closed") return;
@@ -338,7 +338,7 @@ function groupsForRender(){
       } else if(nu){
         msg="Every checklist task is done";
       } else {
-        msg="No checklist found for this deal - check the Transaction Checklists doc"; warn=true;
+        msg="No checklist built yet for this deal"; warn=true;
       }
       groups.push({addr:a, rows:[], caughtUp:{msg:msg, warn:warn}});
     });
@@ -537,6 +537,7 @@ window.addEventListener("focus", maybeRefresh);
   wire("mopt-people",function(){location.href="index.html"+kq+"#people";});
   wire("mopt-vendors",function(){location.href="index.html"+kq+"#vendors";});
   var hr=document.getElementById("hdrRefresh"); if(hr) hr.addEventListener("click",function(){ if(typeof load==='function') load(); });
+  var syncEl=document.getElementById("sync"); if(syncEl){ syncEl.style.cursor="pointer"; syncEl.title="Tap to refresh"; syncEl.addEventListener("click",function(){ if(typeof load==='function') load(); }); }
 })();
 (function(){
   function save(v){try{localStorage.setItem('twt-theme',v);}catch(e){}}
