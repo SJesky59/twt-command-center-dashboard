@@ -434,11 +434,13 @@ function _rzUp(){if(!_rz)return;_rz=null;document.removeEventListener("mousemove
 function _sum(list,f){return list.reduce((a,d)=>a+(+f(d)||0),0);}
 function stageTotals(s){
  const list=deals.filter(d=>d.s===s); if(!list.length) return "";
- const n=list.length;
- const vol=_sum(list,d=>d.p), gci=_sum(list,d=>effTot(d)), fm=_sum(list,d=>effFmls(d)), rf=_sum(list,d=>d.ref);
- const priced=list.filter(d=>+d.p>0); const avgP=priced.length?vol/priced.length:0;
- const cl=list.filter(d=>d.t!=="Lease"&&+d.c>0); const avgC=cl.length?_sum(cl,d=>d.c)/cl.length:0;
- const tx=_sum(list,d=>(d.numTx!==""&&d.numTx!=null)?d.numTx:0);
+ const sales=list.filter(d=>d.t!=="Lease"); // Luke's rule: leases count ONLY toward Sales Volume + Total Comm; nothing else
+ const n=sales.length;
+ const vol=_sum(list,d=>d.p), gci=_sum(list,d=>effTot(d)); // include leases
+ const fm=_sum(sales,d=>effFmls(d)), rf=_sum(sales,d=>d.ref); // exclude leases
+ const priced=sales.filter(d=>+d.p>0); const avgP=priced.length?_sum(priced,d=>d.p)/priced.length:0; // exclude leases
+ const cl=sales.filter(d=>+d.c>0); const avgC=cl.length?_sum(cl,d=>d.c)/cl.length:0; // exclude leases
+ const tx=_sum(sales,d=>(d.numTx!==""&&d.numTx!=null)?d.numTx:0); // exclude leases (0 anyway)
  const tiles=[["Deals",n],["Sales Volume",money(vol)],["Total Comm",money(gci)],["Avg Price",money(avgP)],["Avg Comm %",avgC?avgC.toFixed(2)+"%":"—"],["FMLS Fees",money(fm)],["Referral",money(rf)],["Transactions",tx]];
  return `<div class="totrow">${tiles.map(t=>`<div class="tot-tile"><div class="tl">${t[0]}</div><div class="tv">${t[1]}</div></div>`).join("")}</div>`;
 }
