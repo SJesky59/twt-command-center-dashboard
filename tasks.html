@@ -469,9 +469,19 @@ function updateBar(){}
 var tt;
 function showToast(m,isErr){ var el=document.getElementById("toast"); el.textContent=m; el.className="toast show"+(isErr?" err":""); clearTimeout(tt); tt=setTimeout(function(){el.className="toast";},3200); }
 
-function completeOne(id){
+function completeOne(id, tries){
+  tries = tries || 0;
   return fetch(PROXY+"?k="+encodeURIComponent(KEY)+"&action=setcomplete&row="+encodeURIComponent(id)+"&val=1",{redirect:"follow"})
-    .then(function(r){return r.json();}).then(function(res){ return res && res.ok; }).catch(function(){ return false; });
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res && res.ok) return true;
+      if(tries<3) return new Promise(function(rs){setTimeout(rs,600*(tries+1));}).then(function(){return completeOne(id,tries+1);});
+      return false;
+    })
+    .catch(function(){
+      if(tries<3) return new Promise(function(rs){setTimeout(rs,600*(tries+1));}).then(function(){return completeOne(id,tries+1);});
+      return false;
+    });
 }
 function markSelectedDone(){
   var ids=Object.keys(sel); if(!ids.length||saving) return;
