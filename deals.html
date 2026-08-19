@@ -367,7 +367,7 @@ function uraw(v){return String(v==null?"":v).replace(/[^0-9.\-]/g,"");}
 function cfmt(v){var s=uraw(v);if(s===""||s==="-"||s===".")return"";var n=parseFloat(s);if(isNaN(n)||n===0)return"";return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmlsFee(t,p){if(t==="Lease"){if(p<=1499)return 15;if(p<=2499)return 25;if(p<=4999)return 50;if(p<=9999)return 100;if(p<=20000)return 150;return 200;}return Math.round(p*0.0012);}
 // Total Commission: auto = Price×Comm% for sales, blank for leases (type a flat amount). Overridable.
-function defTot(d){return d.t==="Lease"?"":Math.round((d.p||0)*(d.c||0)/100);}
+function defTot(d){return d.t==="Lease"?"":Math.round((d.p||0)*(d.c||0)/100*100)/100;}
 function effTot(d){return (d.totManual&&d.tot!==""&&d.tot!=null)?d.tot:defTot(d);}
 // FMLS Fee: auto = tiered lease / Price×0.12%. Overridable.
 function defFmls(d){return fmlsFee(d.t,(d.t==="Lease")?(d.p||d.lease||0):(d.p||0));}
@@ -688,7 +688,7 @@ function mRecalc(){
  document.getElementById("mPriceLbl").textContent=isLease?"Monthly Rent":"Sales Price";
  document.getElementById("mCommLbl").textContent=isLease?"Flat Commission ($)":"Commission %";
  document.getElementById("mComm").disabled=false;
- document.getElementById("mTot").textContent=money(isLease?c:Math.round(p*c/100));
+ document.getElementById("mTot").textContent=money(isLease?c:Math.round(p*c/100*100)/100);
  document.getElementById("mFmls").textContent=money(fmlsFee(t,p));
 }
 async function saveAdd(){
@@ -700,7 +700,7 @@ async function saveAdd(){
  const stage=document.getElementById("mStage").value;
  // build the doorway param set (names match editdeal / fieldToParam)
  const isLease=t==="Lease";
- const totVal=isLease?(c||0):Math.round(p*c/100); // lease: c field holds the flat commission
+ const totVal=isLease?(c||0):Math.round(p*c/100*100)/100; // lease: c field holds the flat commission
  const fmlsVal=fmlsFee(t,p);
  const params={action:"adddeal",address:addr,stage,dealtype:t,
    agent:document.getElementById("mAgent").value,
