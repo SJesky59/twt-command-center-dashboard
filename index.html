@@ -1165,9 +1165,9 @@ document.addEventListener("click",function(ev){
       .catch(function(){ if(sync) sync.textContent="save failed — change it again to retry"; });
   }
   function dsave(id,param,val){ var o={}; o[param]=val; dsaveMulti(id,o); }
-  function dcomm(id,val){ var s=cstate[id]; if(!s) return; s.pct=parseFloat(val)||0; s.totManual=false; s.tot=s.price?Math.round(s.price*s.pct/100):0; var tf=document.getElementById("ftot_"+id); if(tf){ tf.value=s.tot; tf.classList.remove("man"); } dsaveMulti(id,{commission:s.pct, totalcommission:s.tot}); }
+  function dcomm(id,val){ var s=cstate[id]; if(!s) return; s.pct=parseFloat(val)||0; s.totManual=false; s.tot=s.price?Math.round(s.price*s.pct/100*100)/100:0; var tf=document.getElementById("ftot_"+id); if(tf){ tf.value=s.tot; tf.classList.remove("man"); } dsaveMulti(id,{commission:s.pct, totalcommission:s.tot}); }
   function dtot(id,val){ var s=cstate[id]; if(!s) return; s.tot=parseFloat(val)||0; s.totManual=true; if(s.price>0){ s.pct=Math.round((s.tot/s.price*100)*100)/100; var cf=document.getElementById("fcomm_"+id); if(cf) cf.value=s.pct; } var tf=document.getElementById("ftot_"+id); if(tf) tf.classList.add("man"); dsaveMulti(id,{totalcommission:s.tot, commission:s.pct}); }
-  function dprice(id,val){ var s=cstate[id]; if(!s) return; s.price=parseFloat(val)||0; if(!s.totManual){ s.tot=Math.round(s.price*s.pct/100); var tf=document.getElementById("ftot_"+id); if(tf) tf.value=s.tot; } dsaveMulti(id,{price:s.price, totalcommission:s.tot}); }
+  function dprice(id,val){ var s=cstate[id]; if(!s) return; s.price=parseFloat(val)||0; if(!s.totManual){ s.tot=Math.round(s.price*s.pct/100*100)/100; var tf=document.getElementById("ftot_"+id); if(tf) tf.value=s.tot; } dsaveMulti(id,{price:s.price, totalcommission:s.tot}); }
   $("deals-list").addEventListener("click", function (ev) {
     var head = ev.target.closest ? ev.target.closest(".deal-row") : null;
     if (!head) return;
