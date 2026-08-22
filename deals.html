@@ -435,7 +435,7 @@ function _sum(list,f){return list.reduce((a,d)=>a+(+f(d)||0),0);}
 function stageTotals(s){
  const list=deals.filter(d=>d.s===s); if(!list.length) return "";
  const sales=list.filter(d=>d.t!=="Lease"); // Luke's rule: leases count ONLY toward Sales Volume + Total Comm; nothing else
- const n=sales.length;
+ const n=list.length; // all deals in stage (incl leases) -> 'Deals' tile
  const vol=_sum(list,d=>d.p), gci=_sum(list,d=>effTot(d)); // include leases
  const fm=_sum(sales,d=>effFmls(d)), rf=_sum(sales,d=>d.ref); // exclude leases
  const priced=sales.filter(d=>+d.p>0); const avgP=priced.length?_sum(priced,d=>d.p)/priced.length:0; // exclude leases
