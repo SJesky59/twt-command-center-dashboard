@@ -1066,11 +1066,20 @@ document.addEventListener("click",function(ev){
   }
   function renderDeals(d) {
     var rows = (d.deals || []).slice();
-    var open = rows.filter(function (r) { return r.values["Stage"] !== "Closed"; });
+    var HIDE = {"Closed":1,"Withdrawn":1,"Terminated":1};
+    var SRANK = {"Under Contract":0,"Active":1,"Coming Soon":2,"Potential":3};
+    var open = rows.filter(function (r) { return !HIDE[r.values["Stage"]]; });
     var closed = rows.filter(function (r) { return r.values["Stage"] === "Closed"; });
     open.sort(function (x, y) {
-      var a2 = pDate(x.values["Next Deadline"]) || new Date(9999, 0), b2 = pDate(y.values["Next Deadline"]) || new Date(9999, 0);
-      return a2 - b2;
+      var sx = x.values["Stage"], sy = y.values["Stage"];
+      var rx = (SRANK[sx] === undefined ? 4 : SRANK[sx]), ry = (SRANK[sy] === undefined ? 4 : SRANK[sy]);
+      if (rx !== ry) return rx - ry;
+      if (rx <= 1) {
+        var a2 = pDate(x.values["Next Deadline"]) || pDate(x.values["Closing Date"]) || new Date(9999, 0);
+        var b2 = pDate(y.values["Next Deadline"]) || pDate(y.values["Closing Date"]) || new Date(9999, 0);
+        return a2 - b2;
+      }
+      return String(x.values["Property Address"] || "").localeCompare(String(y.values["Property Address"] || ""));
     });
     var html = open.map(function (r) {
       var v = r.values;
