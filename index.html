@@ -241,6 +241,7 @@
     --mtxt:var(--text-primary); --mdim:var(--text-secondary); --mdim2:var(--text-muted);
     --mgreen:#1a7f37; --mblue:var(--text-accent); --mgold:var(--text-warning); --mamber:var(--text-warning); --mred:var(--text-danger);
     color:var(--mtxt);
+    max-width:1180px;
   }
   html[data-theme="dark"] #page-marketing { --mgreen:#3fb950; }
   #page-marketing .month { display:inline-block; background:var(--mpanel2); border:1px solid var(--mline);
@@ -308,7 +309,7 @@
   #page-marketing .what .nm { font-size:13px; color:var(--mtxt); }
   /* Year at a Glance */
   #page-marketing .yearwrap { overflow-x:auto; }
-  #page-marketing table.year { width:100%; max-width:1000px; margin:0 auto; border-collapse:collapse; font-size:14px; }
+  #page-marketing table.year { width:100%; margin:0; border-collapse:collapse; font-size:14px; }
   #page-marketing table.year th { font-size:13px; font-weight:600; color:var(--mdim); padding:13px 8px; text-align:center; }
   #page-marketing table.year th.blank { text-align:left; }
   #page-marketing table.year td { padding:13px 8px; text-align:center; }
@@ -1505,6 +1506,29 @@ document.addEventListener("click",function(ev){
   var MKT_GCOL = { metMailers: "var(--mgreen)", eNewsletters: "var(--mblue)", goldenLetters: "var(--mgold)" };
   var MKT_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
+  function mktCopy(text){
+    try { if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text); return true; } } catch(e){}
+    try {
+      var ta=document.createElement('textarea'); ta.value=text;
+      ta.style.position='fixed'; ta.style.top='-1000px'; document.body.appendChild(ta);
+      ta.focus(); ta.select(); var ok=document.execCommand('copy'); document.body.removeChild(ta); return ok;
+    } catch(e){ return false; }
+  }
+  function mktToast(){
+    var t=document.getElementById('mkt-toast');
+    if(!t){
+      t=document.createElement('div'); t.id='mkt-toast';
+      t.style.cssText='background:var(--mpanel2); color:var(--mtxt); border:1px solid var(--mline); border-radius:10px; padding:10px 14px; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; font-size:13px; box-shadow:0 6px 24px rgba(0,0,0,.25);';
+      var span=document.createElement('span'); span.textContent='Prompt copied';
+      var a=document.createElement('a'); a.href='https://claude.ai/new'; a.target='_blank'; a.rel='noopener'; a.textContent='Open Claude \u2197';
+      a.style.cssText='color:var(--mblue); font-weight:600; margin-left:8px; text-decoration:none;';
+      t.appendChild(span); t.appendChild(a);
+      document.body.appendChild(t);
+    }
+    t.style.display='block';
+    if(mktToast._tmr){ clearTimeout(mktToast._tmr); }
+    mktToast._tmr=setTimeout(function(){ if(t){ t.style.display='none'; } }, 6000);
+  }
   function mktQuickLaunch() {
     var host = $("mkt-ql"); if (!host) return;
     host.innerHTML = MKT_QUICK.map(function (q, i) {
@@ -1519,8 +1543,10 @@ document.addEventListener("click",function(ev){
         ev.preventDefault();
         var i = +el.getAttribute("data-qi");
         var promptText = (MKT_QUICK[i] && MKT_QUICK[i][1]) ? MKT_QUICK[i][1] : "";
-        try { if (promptText && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(promptText); } catch (e) {}
-        window.open("https://claude.ai/new", "_blank", "noopener");
+        if (promptText) { mktCopy(promptText); }
+        mktToast();
+        el.style.transform = "scale(0.96)";
+        setTimeout(function () { el.style.transform = ""; }, 150);
       });
     });
   }
