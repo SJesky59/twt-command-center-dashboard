@@ -235,6 +235,47 @@
   .stage-n { font-size:19px; font-weight:500; }
   .stage-l { font-size:10px; color:var(--text-secondary); }
   .empty { font-size:12px; color:var(--text-muted); padding:8px 4px; }
+  /* ---- Marketing tab (additive) ---- */
+  .mkt-card { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:16px; }
+  .mkt-ch { font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
+  .mkt-grid { display:grid; grid-template-columns:1fr 1.6fr; gap:16px; align-items:start; }
+  @media (max-width:820px){ .mkt-grid { grid-template-columns:1fr; } }
+  .mkt-left .mkt-card, .mkt-right .mkt-card { margin-bottom:16px; }
+  /* Quick Launch */
+  .mkt-ql { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+  .mkt-ql a { flex:1 1 160px; display:flex; align-items:center; gap:8px; justify-content:center; text-decoration:none;
+    font-size:13px; font-weight:600; color:var(--text-accent); background:var(--bg-accent);
+    border:0.5px solid var(--border); border-radius:var(--radius); padding:11px 12px; text-align:center;
+    -webkit-tap-highlight-color:transparent; transition:filter .15s; }
+  .mkt-ql a:hover { filter:brightness(0.97); }
+  .mkt-ql a .ti { font-size:15px; }
+  /* Gauges */
+  .mkt-gauges { display:flex; flex-wrap:wrap; gap:14px; }
+  .mkt-gauge { flex:1 1 120px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:4px 2px; }
+  .mkt-ring { position:relative; width:96px; height:96px; border-radius:50%; }
+  .mkt-ring .hole { position:absolute; inset:12px; border-radius:50%; background:var(--surface-2);
+    display:flex; align-items:center; justify-content:center; }
+  .mkt-ring .pctv { font-size:20px; font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+  .mkt-hold { font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase;
+    color:var(--text-warning); background:var(--bg-warning); border-radius:999px; padding:4px 10px; }
+  .mkt-g-lbl { font-size:13px; font-weight:600; color:var(--text-primary); }
+  .mkt-g-sub { font-size:11px; color:var(--text-muted); }
+  /* Deadlines */
+  .mkt-dls { display:flex; flex-direction:column; gap:8px; }
+  .mkt-dl { display:flex; align-items:center; gap:12px; background:var(--surface-1);
+    border:0.5px solid var(--border); border-left-width:3px; border-radius:8px; padding:9px 12px; }
+  .mkt-dl.red { border-left-color:var(--text-danger); }
+  .mkt-dl.amber { border-left-color:var(--text-warning); }
+  .mkt-dl.green { border-left-color:#12a06a; }
+  .mkt-dl .dl-date { font-size:12px; font-weight:600; color:var(--text-secondary); min-width:96px; font-variant-numeric:tabular-nums; }
+  .mkt-dl .dl-mid { display:flex; flex-direction:column; }
+  .mkt-dl .dl-cat { font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--text-muted); }
+  .mkt-dl .dl-name { font-size:13px; font-weight:600; color:var(--text-primary); }
+  /* Coming soon placeholders */
+  .mkt-soon-body { display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px; text-align:center; padding:26px 12px; }
+  .mkt-soon-t { font-size:14px; font-weight:600; color:var(--text-secondary); }
+  .mkt-soon-s { font-size:12px; color:var(--text-muted); }
   .vbar { margin-bottom:6px; }
   .vsearch { width:100%; font:inherit; font-size:13px; padding:9px 12px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); margin-bottom:8px; outline:none; }
   .vsearch:focus { border-color:var(--text-accent); }
@@ -358,7 +399,7 @@
     <span class="off" id="nav-people" style="cursor:pointer;"><i class="ti ti-users" style="font-size:15px;" aria-hidden="true"></i> People</span>
     <span class="off" id="nav-vendors" style="cursor:pointer;"><i class="ti ti-tools" style="font-size:15px;" aria-hidden="true"></i> Vendors</span>
     <span class="off"><i class="ti ti-mail" style="font-size:15px;" aria-hidden="true"></i> Templates</span>
-    <span class="off"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
+    <span class="off" id="nav-marketing" style="cursor:pointer;"><i class="ti ti-speakerphone" style="font-size:15px;" aria-hidden="true"></i> Marketing</span>
   </div>
 
   <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
@@ -458,6 +499,47 @@
       <div id="vendors-chips" class="vchips"></div>
     </div>
     <div id="vendors-list"><div class="empty">Loading&hellip;</div></div>
+  </div>
+  <div id="page-marketing" style="display:none;">
+    <div class="sec-h">
+      <i class="ti ti-speakerphone" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
+      <span class="t">Marketing</span>
+      <span id="mkt-sub" style="font-size:11px; color:var(--text-muted); margin-left:auto;">&nbsp;</span>
+    </div>
+
+    <div class="mkt-ql" id="mkt-ql"></div>
+
+    <div class="mkt-grid">
+      <div class="mkt-left">
+        <div class="mkt-card mkt-soon">
+          <div class="mkt-ch">This Month &mdash; 36 Touch</div>
+          <div class="mkt-soon-body">
+            <i class="ti ti-calendar-event" style="font-size:24px; color:var(--text-muted);" aria-hidden="true"></i>
+            <div class="mkt-soon-t">Coming soon</div>
+            <div class="mkt-soon-s">This month's 36-touch plan will show here.</div>
+          </div>
+        </div>
+      </div>
+      <div class="mkt-right">
+        <div class="mkt-card">
+          <div class="mkt-ch">This Month's Mailings</div>
+          <div class="mkt-gauges" id="mkt-gauges"><div class="empty">Loading&hellip;</div></div>
+        </div>
+        <div class="mkt-card">
+          <div class="mkt-ch">Deadlines</div>
+          <div class="mkt-dls" id="mkt-deadlines"><div class="empty">Loading&hellip;</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mkt-card mkt-soon mkt-year">
+      <div class="mkt-ch">Year at a Glance</div>
+      <div class="mkt-soon-body">
+        <i class="ti ti-layout-kanban" style="font-size:24px; color:var(--text-muted);" aria-hidden="true"></i>
+        <div class="mkt-soon-t">Coming soon</div>
+        <div class="mkt-soon-s">Full-year marketing overview will show here.</div>
+      </div>
+    </div>
   </div>
 </div>
 </div>
@@ -900,7 +982,7 @@ document.addEventListener("click",function(ev){
     }
   });
 
-  var PAGES = ["home", "deals", "people", "vendors"];
+  var PAGES = ["home", "deals", "people", "vendors", "marketing"];
   function showPage(p) {
     for (var i = 0; i < PAGES.length; i++) {
       $("page-" + PAGES[i]).style.display = PAGES[i] === p ? "" : "none";
@@ -1416,6 +1498,100 @@ function renderTrend(trend){
   num.innerHTML=last+"%"+ar;
   det.textContent = vals.length>1 ? ("from "+first+"% \u00b7 "+trend.length+" days") : "1 day logged \u00b7 fills over ~2 weeks";
 }
+  // ---- Marketing tab (additive; reuses PROXY + KEY exactly like every other action) ----
+  var MKT_QUICK = [
+    ["Golden Letters",    "run golden letters for ",     "ti-mail"],
+    ["Snippets",          "fill out a snippet for ",     "ti-checkbox"],
+    ["Went UC",           "run went UC for ",            "ti-building-community"],
+    ["Anniversary CMAs",  "run the anniversary CMAs",    "ti-calendar-event"],
+    ["Settlement Stmts",  "run the settlement statements","ti-layout-kanban"]
+  ];
+  function mktQuickLaunch() {
+    var host = $("mkt-ql"); if (!host) return;
+    host.innerHTML = MKT_QUICK.map(function (q) {
+      return '<a href="claude://cowork/new?q=' + encodeURIComponent(q[1]) + '">' +
+        '<i class="ti ' + q[2] + '" aria-hidden="true"></i>' + esc(q[0]) + '</a>';
+    }).join("");
+  }
+  function mktFmtDate(ms) {
+    var d = new Date(Number(ms));
+    if (isNaN(d.getTime())) return "";
+    var mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return mo[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+  }
+  function mktUrgency(ms) {
+    var t0 = new Date(); t0.setHours(0, 0, 0, 0);
+    var d0 = new Date(Number(ms)); d0.setHours(0, 0, 0, 0);
+    var days = Math.round((d0.getTime() - t0.getTime()) / 86400000);
+    if (days <= 0) return "red";     // due today or overdue
+    if (days <= 7) return "amber";   // within 7 days
+    return "green";
+  }
+  function mktRenderGauges(gauges) {
+    var host = $("mkt-gauges"); if (!host) return;
+    var order = ["metMailers", "eNewsletters", "goldenLetters"];
+    var cards = [];
+    for (var i = 0; i < order.length; i++) {
+      var g = gauges && gauges[order[i]];
+      if (!g) continue;
+      var total = Number(g.total) || 0, done = Number(g.done) || 0, pct = Number(g.pct) || 0;
+      var inner, ringBg;
+      if (total === 0) {                // On Hold instead of 0%
+        inner = '<span class="mkt-hold">On Hold</span>';
+        ringBg = 'var(--surface-1)';
+      } else {
+        inner = '<span class="pctv">' + pct + '%</span>';
+        ringBg = 'conic-gradient(var(--text-accent) ' + pct + '%, var(--surface-1) 0)';
+      }
+      cards.push(
+        '<div class="mkt-gauge">' +
+          '<div class="mkt-ring" style="background:' + ringBg + ';"><div class="hole">' + inner + '</div></div>' +
+          '<div class="mkt-g-lbl">' + esc(g.label || order[i]) + '</div>' +
+          '<div class="mkt-g-sub">' + done + ' of ' + total + '</div>' +
+        '</div>'
+      );
+    }
+    host.innerHTML = cards.length ? cards.join("") : '<div class="empty">No gauges.</div>';
+  }
+  function mktRenderDeadlines(list) {
+    var host = $("mkt-deadlines"); if (!host) return;
+    if (!list || !list.length) { host.innerHTML = '<div class="empty">No upcoming deadlines.</div>'; return; }
+    host.innerHTML = list.map(function (d) {
+      return '<div class="mkt-dl ' + mktUrgency(d.dueMs) + '">' +
+        '<div class="dl-date">' + esc(mktFmtDate(d.dueMs)) + '</div>' +
+        '<div class="dl-mid">' +
+          '<div class="dl-cat">' + esc(d.category || "") + '</div>' +
+          '<div class="dl-name">' + esc(d.name || "") + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+  }
+  var mktLoaded = false;
+  function loadMarketing() {
+    mktQuickLaunch();
+    if (!KEY) {
+      if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="empty">No key — open via Command Center doc.</div>';
+      if ($("mkt-deadlines")) $("mkt-deadlines").innerHTML = "";
+      return;
+    }
+    if ($("mkt-sub")) $("mkt-sub").textContent = mktLoaded ? "" : "loading…";
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=marketing", { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        mktLoaded = true; d = d || {};
+        mktRenderGauges(d.gauges || {});
+        mktRenderDeadlines(d.deadlines || []);
+        var mo = ["", "January","February","March","April","May","June","July","August","September","October","November","December"];
+        if ($("mkt-sub")) $("mkt-sub").textContent = d.month ? (mo[d.month] || "") : "";
+      })
+      .catch(function () {
+        if ($("mkt-sub")) $("mkt-sub").textContent = "";
+        if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="empty">Could not load marketing data.</div>';
+        if ($("mkt-deadlines")) $("mkt-deadlines").innerHTML = "";
+      });
+  }
+  var _navMkt = $("nav-marketing"); if (_navMkt) _navMkt.addEventListener("click", function () { loadMarketing(); });
+
 (function(){var V=[["The faithful love of the Lord never ends! His mercies never cease. Great is his faithfulness; his mercies begin afresh each morning.", "Lamentations 3:22-23"], ["Commit your actions to the Lord, and your plans will succeed.", "Proverbs 16:3"], ["This is my command\u2014be strong and courageous! Do not be afraid or discouraged. For the Lord your God is with you wherever you go.", "Joshua 1:9"], ["Don't worry about anything; instead, pray about everything. Tell God what you need, and thank him for all he has done.", "Philippians 4:6"], ["Work willingly at whatever you do, as though you were working for the Lord rather than for people.", "Colossians 3:23"], ["But those who trust in the Lord will find new strength. They will soar high on wings like eagles.", "Isaiah 40:31"], ["Come to me, all of you who are weary and carry heavy burdens, and I will give you rest.", "Matthew 11:28"], ["Trust in the Lord with all your heart; do not depend on your own understanding.", "Proverbs 3:5"], ["Be still, and know that I am God!", "Psalm 46:10"], ["Don't be afraid, for I am with you. Don't be discouraged, for I am your God. I will strengthen you and help you.", "Isaiah 41:10"]];var d=new Date();var doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);var v=V[doy%V.length];var t=document.getElementById("verse-txt"),r=document.getElementById("verse-ref");if(t){t.textContent="\u201c"+v[0]+"\u201d";r.textContent=v[1];}})();
 
 </script>
