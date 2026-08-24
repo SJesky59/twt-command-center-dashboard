@@ -244,8 +244,13 @@
     max-width:1180px;
   }
   html[data-theme="dark"] #page-marketing { --mgreen:#3fb950; }
-  #page-marketing .month { display:inline-block; background:var(--mpanel2); border:1px solid var(--mline);
-    border-radius:999px; padding:6px 15px; font-size:13px; font-weight:600; color:var(--mtxt); margin-bottom:16px; }
+  #page-marketing .month { display:inline-block; margin-bottom:16px; }
+  #page-marketing .monthsel{ background:var(--mpanel2); color:var(--mtxt); border:1px solid var(--mline);
+    border-radius:999px; padding:6px 30px 6px 14px; font-size:13px; font-weight:600;
+    -webkit-appearance:none; appearance:none; cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239aa7b4' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat; background-position:right 12px center; }
+  #page-marketing .monthsel:focus{ outline:none; border-color:var(--mblue); }
   #page-marketing .qlab { font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--mdim2); margin-bottom:10px; }
   #page-marketing .btnrow { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:18px; }
   #page-marketing .launch { background:var(--mpanel2); border:0.5px solid var(--mline);
@@ -550,7 +555,7 @@
     <div id="vendors-list"><div class="empty">Loading&hellip;</div></div>
   </div>
   <div id="page-marketing" style="display:none;">
-    <div class="month" id="mkt-month">&nbsp;</div>
+    <div class="month" id="mkt-monthbar"></div>
 
     <div class="qlab">Quick Launch - Run a Skill</div>
     <div class="btnrow" id="mkt-ql"></div>
@@ -1504,6 +1509,7 @@ document.addEventListener("click",function(ev){
   ];
   // gauge key -> donut fill color (v7 accent tokens; theme-aware)
   var MKT_GCOL = { metMailers: "var(--mgreen)", eNewsletters: "var(--mblue)", goldenLetters: "var(--mgold)" };
+  var MKT_MONTHS = [[6,"July 2026"],[7,"August 2026"],[8,"September 2026"],[9,"October 2026"],[10,"November 2026"],[11,"December 2026"]];
   var MKT_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function mktCopy(text){
@@ -1560,8 +1566,17 @@ document.addEventListener("click",function(ev){
     if (days <= 7) return "amber";   // within a week
     return "green";
   }
-  function mktRenderMonth(label) {
-    var el = $("mkt-month"); if (el) el.textContent = label || "";
+  function mktRenderMonth(monthIdx) {
+    var el = $("mkt-monthbar"); if (!el) return;
+    var cur = (monthIdx == null) ? null : Number(monthIdx);
+    var opts = "";
+    for (var i = 0; i < MKT_MONTHS.length; i++) {
+      var v = MKT_MONTHS[i][0], lbl = MKT_MONTHS[i][1];
+      opts += '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + lbl + '</option>';
+    }
+    el.innerHTML = '<select id="mkt-month" class="monthsel">' + opts + '</select>';
+    var sel = document.getElementById("mkt-month");
+    if (sel) sel.addEventListener("change", function () { loadMarketing(+sel.value); });
   }
   function mktRenderGauges(gauges) {
     var host = $("mkt-gauges"); if (!host) return;
@@ -1647,7 +1662,7 @@ document.addEventListener("click",function(ev){
     host.innerHTML = head + body;
   }
   var mktLoaded = false;
-  function loadMarketing() {
+  function loadMarketing(monthArg) {
     mktQuickLaunch();
     if (!KEY) {
       if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="mkt-empty">No key - open via Command Center doc.</div>';
@@ -1655,11 +1670,11 @@ document.addEventListener("click",function(ev){
       if ($("mkt-thismonth")) $("mkt-thismonth").innerHTML = "";
       return;
     }
-    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=marketing", { redirect: "follow" })
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=marketing" + (monthArg != null ? "&month=" + monthArg : ""), { redirect: "follow" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         mktLoaded = true; d = d || {};
-        mktRenderMonth(d.monthLabel || "");
+        mktRenderMonth(d.month != null ? d.month : (monthArg != null ? monthArg : null));
         mktRenderGauges(d.gauges || {});
         mktRenderThisMonth(d.thisMonth || []);
         mktRenderDeadlines(d.deadlines || []);
