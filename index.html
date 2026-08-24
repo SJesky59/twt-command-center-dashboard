@@ -235,47 +235,93 @@
   .stage-n { font-size:19px; font-weight:500; }
   .stage-l { font-size:10px; color:var(--text-secondary); }
   .empty { font-size:12px; color:var(--text-muted); padding:8px 4px; }
-  /* ---- Marketing tab (additive) ---- */
-  .mkt-card { background:var(--surface-2); border:0.5px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:16px; }
-  .mkt-ch { font-size:11px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px; }
-  .mkt-grid { display:grid; grid-template-columns:1fr 1.6fr; gap:16px; align-items:start; }
-  @media (max-width:820px){ .mkt-grid { grid-template-columns:1fr; } }
-  .mkt-left .mkt-card, .mkt-right .mkt-card { margin-bottom:16px; }
-  /* Quick Launch */
-  .mkt-ql { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
-  .mkt-ql a { flex:1 1 160px; display:flex; align-items:center; gap:8px; justify-content:center; text-decoration:none;
-    font-size:13px; font-weight:600; color:var(--text-accent); background:var(--bg-accent);
-    border:0.5px solid var(--border); border-radius:var(--radius); padding:11px 12px; text-align:center;
-    -webkit-tap-highlight-color:transparent; transition:filter .15s; }
-  .mkt-ql a:hover { filter:brightness(0.97); }
-  .mkt-ql a .ti { font-size:15px; }
+  /* ---- Marketing tab (v7 design; ALL rules scoped under #page-marketing so nothing leaks) ---- */
+  #page-marketing {
+    --mpanel:#161b22; --mpanel2:#1c232d; --mline:#283039;
+    --mtxt:#e6edf3; --mdim:#9aa7b4; --mdim2:#66727f;
+    --mgreen:#3fb950; --mblue:#4f9cf9; --mgold:#d4a13a; --mamber:#d29922; --mred:#f85149;
+    color:var(--mtxt);
+  }
+  #page-marketing .month { display:inline-block; background:var(--mpanel2); border:1px solid var(--mline);
+    border-radius:999px; padding:6px 15px; font-size:13px; font-weight:600; color:var(--mtxt); margin-bottom:16px; }
+  #page-marketing .qlab { font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--mdim2); margin-bottom:10px; }
+  #page-marketing .btnrow { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:18px; }
+  #page-marketing .launch { background:linear-gradient(180deg,#1c2530,#161b22); border:1px solid var(--mline);
+    border-radius:12px; padding:14px 10px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:7px;
+    text-decoration:none; color:var(--mtxt); transition:border-color .15s; }
+  #page-marketing .launch:hover { border-color:#3a4553; }
+  #page-marketing .launch .ic { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; }
+  #page-marketing .launch .lb { font-size:12.5px; font-weight:700; color:var(--mtxt); }
+  #page-marketing .launch .rn { font-size:10.5px; color:var(--mdim2); }
+  #page-marketing .i-gold { background:#241c07; color:#d4a13a; }
+  #page-marketing .i-blue { background:#0d2233; color:#4f9cf9; }
+  #page-marketing .i-green { background:#0f2417; color:#3fb950; }
+  #page-marketing .i-amber { background:#2a2107; color:#d29922; }
+  #page-marketing .i-red { background:#2a0f0f; color:#f85149; }
+  #page-marketing .row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; align-items:start; }
+  #page-marketing .rcol { display:flex; flex-direction:column; gap:16px; }
+  #page-marketing .card { background:var(--mpanel); border:1px solid var(--mline); border-radius:16px; padding:18px 20px; }
+  #page-marketing .ctitle { display:flex; align-items:center; gap:9px; font-size:11px; font-weight:700; letter-spacing:.8px;
+    text-transform:uppercase; color:var(--mdim); margin-bottom:14px; }
+  #page-marketing .ctitle .meta { margin-left:auto; font-size:11px; font-weight:600; letter-spacing:.2px; text-transform:none; color:var(--mdim2); }
+  /* This Month checklist */
+  #page-marketing .clist { list-style:none; display:flex; flex-direction:column; max-height:430px; overflow-y:auto; }
+  #page-marketing .clist li { display:flex; align-items:flex-start; gap:11px; padding:7px 3px; border-bottom:1px solid rgba(40,48,57,.55); }
+  #page-marketing .clist li:last-child { border-bottom:none; }
+  #page-marketing .box { flex:none; width:20px; height:20px; border-radius:6px; border:1.5px solid #39424e; margin-top:1px;
+    display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:#fff; }
+  #page-marketing .box.on { background:var(--mgreen); border-color:var(--mgreen); }
+  #page-marketing .citem { display:flex; flex-direction:column; gap:1px; }
+  #page-marketing .citem .cat { font-size:9px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--mdim2); }
+  #page-marketing .citem .nm { font-size:13px; color:var(--mtxt); }
+  #page-marketing .li-done .nm { text-decoration:line-through; color:var(--mdim2); }
   /* Gauges */
-  .mkt-gauges { display:flex; flex-wrap:wrap; gap:14px; }
-  .mkt-gauge { flex:1 1 120px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:4px 2px; }
-  .mkt-ring { position:relative; width:96px; height:96px; border-radius:50%; }
-  .mkt-ring .hole { position:absolute; inset:12px; border-radius:50%; background:var(--surface-2);
-    display:flex; align-items:center; justify-content:center; }
-  .mkt-ring .pctv { font-size:20px; font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
-  .mkt-hold { font-size:11px; font-weight:700; letter-spacing:.4px; text-transform:uppercase;
-    color:var(--text-warning); background:var(--bg-warning); border-radius:999px; padding:4px 10px; }
-  .mkt-g-lbl { font-size:13px; font-weight:600; color:var(--text-primary); }
-  .mkt-g-sub { font-size:11px; color:var(--text-muted); }
+  #page-marketing .luke { margin-left:auto; background:#241c07; color:#d4a13a; border:1px solid #4a3a12; border-radius:999px;
+    padding:3px 10px; font-size:10px; font-weight:700; letter-spacing:.2px; text-transform:none; }
+  #page-marketing .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  #page-marketing .gtile { background:var(--mpanel2); border:1px solid var(--mline); border-radius:13px;
+    padding:15px 8px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
+  #page-marketing .donut { position:relative; width:84px; height:84px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  #page-marketing .donut::before { content:""; position:absolute; inset:9px; border-radius:50%; background:var(--mpanel2); }
+  #page-marketing .donut .pv { position:relative; font-size:18px; font-weight:700; color:var(--mtxt); }
+  #page-marketing .hold { display:flex; align-items:center; justify-content:center; width:84px; height:84px; }
+  #page-marketing .hold span { background:#2a2107; color:var(--mamber); border:1px solid #4a3a12; border-radius:999px;
+    padding:5px 12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+  #page-marketing .gname { font-size:12.5px; font-weight:700; color:var(--mtxt); }
+  #page-marketing .gsub { font-size:11px; color:var(--mdim); }
   /* Deadlines */
-  .mkt-dls { display:flex; flex-direction:column; gap:8px; }
-  .mkt-dl { display:flex; align-items:center; gap:12px; background:var(--surface-1);
-    border:0.5px solid var(--border); border-left-width:3px; border-radius:8px; padding:9px 12px; }
-  .mkt-dl.red { border-left-color:var(--text-danger); }
-  .mkt-dl.amber { border-left-color:var(--text-warning); }
-  .mkt-dl.green { border-left-color:#12a06a; }
-  .mkt-dl .dl-date { font-size:12px; font-weight:600; color:var(--text-secondary); min-width:96px; font-variant-numeric:tabular-nums; }
-  .mkt-dl .dl-mid { display:flex; flex-direction:column; }
-  .mkt-dl .dl-cat { font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--text-muted); }
-  .mkt-dl .dl-name { font-size:13px; font-weight:600; color:var(--text-primary); }
-  /* Coming soon placeholders */
-  .mkt-soon-body { display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:6px; text-align:center; padding:26px 12px; }
-  .mkt-soon-t { font-size:14px; font-weight:600; color:var(--text-secondary); }
-  .mkt-soon-s { font-size:12px; color:var(--text-muted); }
+  #page-marketing .dl { list-style:none; display:flex; flex-direction:column; gap:9px; }
+  #page-marketing .dl li { display:flex; align-items:stretch; gap:13px; background:var(--mpanel2);
+    border:1px solid var(--mline); border-left-width:3px; border-radius:9px; padding:9px 13px; }
+  #page-marketing .dl li.u-red { border-left-color:var(--mred); }
+  #page-marketing .dl li.u-amber { border-left-color:var(--mamber); }
+  #page-marketing .dl li.u-green { border-left-color:var(--mgreen); }
+  #page-marketing .when { display:flex; flex-direction:column; justify-content:center; min-width:64px; }
+  #page-marketing .when .dt { font-size:13px; font-weight:700; color:var(--mtxt); }
+  #page-marketing .when .rel { font-size:10px; font-weight:600; }
+  #page-marketing .rel.u-red { color:var(--mred); }
+  #page-marketing .rel.u-amber { color:var(--mamber); }
+  #page-marketing .rel.u-green { color:var(--mdim); }
+  #page-marketing .what { display:flex; flex-direction:column; gap:1px; justify-content:center; }
+  #page-marketing .what .cat { font-size:9px; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--mdim2); }
+  #page-marketing .what .nm { font-size:13px; color:var(--mtxt); }
+  /* Year at a Glance */
+  #page-marketing .yearwrap { overflow-x:auto; }
+  #page-marketing table.year { width:100%; border-collapse:collapse; }
+  #page-marketing table.year th { font-size:11px; font-weight:600; color:var(--mdim); padding:6px 5px; text-align:center; }
+  #page-marketing table.year th.blank { text-align:left; }
+  #page-marketing table.year td { padding:8px 5px; text-align:center; }
+  #page-marketing table.year td.rowcat { text-align:left; width:170px; font-size:12px; color:var(--mtxt); white-space:nowrap; }
+  #page-marketing table.year .nowcol { background:#12262e; }
+  #page-marketing .dot { display:inline-block; width:14px; height:14px; border-radius:50%; background:#39424e; }
+  #page-marketing .dot.d-done { background:var(--mgreen); }
+  #page-marketing .dot.d-part { background:var(--mamber); }
+  #page-marketing .dot.d-miss { background:#39424e; }
+  #page-marketing .mkt-empty { font-size:12px; color:var(--mdim2); padding:6px 3px; }
+  @media (max-width:620px) {
+    #page-marketing .row { grid-template-columns:1fr; }
+    #page-marketing .btnrow { grid-template-columns:repeat(2,1fr); }
+  }
   .vbar { margin-bottom:6px; }
   .vsearch { width:100%; font:inherit; font-size:13px; padding:9px 12px; border:0.5px solid var(--border); border-radius:var(--radius); background:var(--surface-2); color:var(--text-primary); margin-bottom:8px; outline:none; }
   .vsearch:focus { border-color:var(--text-accent); }
@@ -501,44 +547,31 @@
     <div id="vendors-list"><div class="empty">Loading&hellip;</div></div>
   </div>
   <div id="page-marketing" style="display:none;">
-    <div class="sec-h">
-      <i class="ti ti-speakerphone" style="font-size:16px; color:var(--text-accent);" aria-hidden="true"></i>
-      <span class="t">Marketing</span>
-      <span id="mkt-sub" style="font-size:11px; color:var(--text-muted); margin-left:auto;">&nbsp;</span>
-    </div>
+    <div class="month" id="mkt-month">&nbsp;</div>
 
-    <div class="mkt-ql" id="mkt-ql"></div>
+    <div class="qlab">Quick Launch - Run a Skill</div>
+    <div class="btnrow" id="mkt-ql"></div>
 
-    <div class="mkt-grid">
-      <div class="mkt-left">
-        <div class="mkt-card mkt-soon">
-          <div class="mkt-ch">This Month &mdash; 36 Touch</div>
-          <div class="mkt-soon-body">
-            <i class="ti ti-calendar-event" style="font-size:24px; color:var(--text-muted);" aria-hidden="true"></i>
-            <div class="mkt-soon-t">Coming soon</div>
-            <div class="mkt-soon-s">This month's 36-touch plan will show here.</div>
-          </div>
-        </div>
+    <div class="row">
+      <div class="card">
+        <div class="ctitle">This Month - 36 Touch <span class="meta" id="mkt-tm-meta">&nbsp;</span></div>
+        <ul class="clist" id="mkt-thismonth"><li><span class="citem"><span class="nm" style="color:var(--mdim2)">Loading&hellip;</span></span></li></ul>
       </div>
-      <div class="mkt-right">
-        <div class="mkt-card">
-          <div class="mkt-ch">This Month's Mailings</div>
-          <div class="mkt-gauges" id="mkt-gauges"><div class="empty">Loading&hellip;</div></div>
+      <div class="rcol">
+        <div class="card">
+          <div class="ctitle">Luke's Trackers <span class="luke">the 3 he asked for</span></div>
+          <div class="g3" id="mkt-gauges"><div class="mkt-empty">Loading&hellip;</div></div>
         </div>
-        <div class="mkt-card">
-          <div class="mkt-ch">Deadlines</div>
-          <div class="mkt-dls" id="mkt-deadlines"><div class="empty">Loading&hellip;</div></div>
+        <div class="card">
+          <div class="ctitle">Deadlines</div>
+          <ul class="dl" id="mkt-deadlines"><li><span class="what"><span class="nm">Loading&hellip;</span></span></li></ul>
         </div>
       </div>
     </div>
 
-    <div class="mkt-card mkt-soon mkt-year">
-      <div class="mkt-ch">Year at a Glance</div>
-      <div class="mkt-soon-body">
-        <i class="ti ti-layout-kanban" style="font-size:24px; color:var(--text-muted);" aria-hidden="true"></i>
-        <div class="mkt-soon-t">Coming soon</div>
-        <div class="mkt-soon-s">Full-year marketing overview will show here.</div>
-      </div>
+    <div class="card">
+      <div class="ctitle">Year at a Glance <span class="meta">green done &middot; amber partial &middot; grey not yet</span></div>
+      <div class="yearwrap"><table class="year" id="mkt-year"></table></div>
     </div>
   </div>
 </div>
@@ -1457,96 +1490,148 @@ document.addEventListener("click",function(ev){
     });
   })();
 
-  // ---- Marketing tab (additive; reuses PROXY + KEY exactly like every other action) ----
+  // ---- Marketing tab (v7 design; reuses PROXY + KEY exactly like every other action) ----
+  // [label, prompt (deep-link q=), icon-bg class, emoji, caption]
   var MKT_QUICK = [
-    ["Golden Letters",    "run golden letters for ",     "ti-mail"],
-    ["Snippets",          "fill out a snippet for ",     "ti-checkbox"],
-    ["Went UC",           "run went UC for ",            "ti-building-community"],
-    ["Anniversary CMAs",  "run the anniversary CMAs",    "ti-calendar-event"],
-    ["Settlement Stmts",  "run the settlement statements","ti-layout-kanban"]
+    ["Golden Letters",    "run golden letters for ",      "i-gold",  "✉️", "needs subdivision"],
+    ["Snippets",          "fill out a snippet for ",      "i-blue",  "📋",  "pick + deal"],
+    ["Went UC",           "run went UC for ",             "i-green", "🏠",  "drop address"],
+    ["Anniversary CMAs",  "run the anniversary CMAs",     "i-amber", "📊",  "run now"],
+    ["Settlement Stmts",  "run the settlement statements","i-red",   "📑",  "run now"]
   ];
+  // gauge key -> donut fill color (must match v7 hexes exactly)
+  var MKT_GCOL = { metMailers: "#3fb950", eNewsletters: "#4f9cf9", goldenLetters: "#d4a13a" };
+  var MKT_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
   function mktQuickLaunch() {
     var host = $("mkt-ql"); if (!host) return;
     host.innerHTML = MKT_QUICK.map(function (q) {
-      return '<a href="claude://cowork/new?q=' + encodeURIComponent(q[1]) + '">' +
-        '<i class="ti ' + q[2] + '" aria-hidden="true"></i>' + esc(q[0]) + '</a>';
+      return '<a class="launch" href="claude://cowork/new?q=' + encodeURIComponent(q[1]) + '">' +
+        '<span class="ic ' + q[2] + '">' + q[3] + '</span>' +
+        '<span class="lb">' + esc(q[0]) + '</span>' +
+        '<span class="rn">' + esc(q[4]) + '</span>' +
+      '</a>';
     }).join("");
   }
-  function mktFmtDate(ms) {
-    var d = new Date(Number(ms));
-    if (isNaN(d.getTime())) return "";
-    var mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return mo[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
-  }
-  function mktUrgency(ms) {
+  function mktDayDelta(ms) {   // whole days from local midnight-today to local midnight-due
     var t0 = new Date(); t0.setHours(0, 0, 0, 0);
     var d0 = new Date(Number(ms)); d0.setHours(0, 0, 0, 0);
-    var days = Math.round((d0.getTime() - t0.getTime()) / 86400000);
+    return Math.round((d0.getTime() - t0.getTime()) / 86400000);
+  }
+  function mktUrgency(days) {
     if (days <= 0) return "red";     // due today or overdue
-    if (days <= 7) return "amber";   // within 7 days
+    if (days <= 7) return "amber";   // within a week
     return "green";
+  }
+  function mktRenderMonth(label) {
+    var el = $("mkt-month"); if (el) el.textContent = label || "";
   }
   function mktRenderGauges(gauges) {
     var host = $("mkt-gauges"); if (!host) return;
     var order = ["metMailers", "eNewsletters", "goldenLetters"];
-    var cards = [];
+    var out = [];
     for (var i = 0; i < order.length; i++) {
       var g = gauges && gauges[order[i]];
       if (!g) continue;
       var total = Number(g.total) || 0, done = Number(g.done) || 0, pct = Number(g.pct) || 0;
-      var inner, ringBg;
-      if (total === 0) {                // On Hold instead of 0%
-        inner = '<span class="mkt-hold">On Hold</span>';
-        ringBg = 'var(--surface-1)';
+      var col = MKT_GCOL[order[i]] || "#3fb950";
+      var face;
+      if (total === 0) {   // On Hold instead of a 0% donut
+        face = '<div class="hold"><span>On Hold</span></div>';
       } else {
-        inner = '<span class="pctv">' + pct + '%</span>';
-        ringBg = 'conic-gradient(var(--text-accent) ' + pct + '%, var(--surface-1) 0)';
+        face = '<div class="donut" style="background:conic-gradient(' + col + ' ' + pct + '%, #2a333f 0);">' +
+                 '<span class="pv">' + pct + '%</span>' +
+               '</div>';
       }
-      cards.push(
-        '<div class="mkt-gauge">' +
-          '<div class="mkt-ring" style="background:' + ringBg + ';"><div class="hole">' + inner + '</div></div>' +
-          '<div class="mkt-g-lbl">' + esc(g.label || order[i]) + '</div>' +
-          '<div class="mkt-g-sub">' + done + ' of ' + total + '</div>' +
+      out.push(
+        '<div class="gtile">' + face +
+          '<div class="gname">' + esc(g.label || order[i]) + '</div>' +
+          '<div class="gsub">' + done + ' of ' + total + '</div>' +
         '</div>'
       );
     }
-    host.innerHTML = cards.length ? cards.join("") : '<div class="empty">No gauges.</div>';
+    host.innerHTML = out.length ? out.join("") : '<div class="mkt-empty">No trackers.</div>';
+  }
+  function mktRenderThisMonth(list) {
+    var host = $("mkt-thismonth"); if (!host) return;
+    var meta = $("mkt-tm-meta");
+    list = list || [];
+    var done = 0;
+    for (var i = 0; i < list.length; i++) { if (list[i] && list[i].done) done++; }
+    if (meta) meta.textContent = done + " of " + list.length + " done";
+    if (!list.length) { host.innerHTML = '<li><span class="citem"><span class="nm" style="color:var(--mdim2)">Nothing scheduled this month.</span></span></li>'; return; }
+    host.innerHTML = list.map(function (it) {
+      var d = !!(it && it.done);
+      return '<li class="' + (d ? "li-done" : "") + '">' +
+        '<span class="box' + (d ? " on" : "") + '">' + (d ? "✓" : "") + '</span>' +
+        '<span class="citem">' +
+          '<span class="cat">' + esc(it.cat || "") + '</span>' +
+          '<span class="nm">' + esc(it.name || "") + '</span>' +
+        '</span>' +
+      '</li>';
+    }).join("");
   }
   function mktRenderDeadlines(list) {
     var host = $("mkt-deadlines"); if (!host) return;
-    if (!list || !list.length) { host.innerHTML = '<div class="empty">No upcoming deadlines.</div>'; return; }
+    if (!list || !list.length) { host.innerHTML = '<li><span class="what"><span class="nm">No upcoming deadlines.</span></span></li>'; return; }
     host.innerHTML = list.map(function (d) {
-      return '<div class="mkt-dl ' + mktUrgency(d.dueMs) + '">' +
-        '<div class="dl-date">' + esc(mktFmtDate(d.dueMs)) + '</div>' +
-        '<div class="dl-mid">' +
-          '<div class="dl-cat">' + esc(d.category || "") + '</div>' +
-          '<div class="dl-name">' + esc(d.name || "") + '</div>' +
-        '</div>' +
-      '</div>';
+      var days = mktDayDelta(d.dueMs);
+      var u = mktUrgency(days);
+      var dt = new Date(Number(d.dueMs));
+      var dateStr = isNaN(dt.getTime()) ? "" : (MKT_MON[dt.getMonth()] + " " + dt.getDate());
+      var rel = days < 0 ? "overdue" : (days === 0 ? "due today" : (days + (days === 1 ? " day" : " days")));
+      return '<li class="u-' + u + '">' +
+        '<span class="when"><span class="dt">' + esc(dateStr) + '</span>' +
+          '<span class="rel u-' + u + '">' + esc(rel) + '</span></span>' +
+        '<span class="what">' +
+          '<span class="cat">' + esc(d.category || "") + '</span>' +
+          '<span class="nm">' + esc(d.name || "") + '</span>' +
+        '</span>' +
+      '</li>';
     }).join("");
+  }
+  function mktRenderYear(year) {
+    var host = $("mkt-year"); if (!host) return;
+    year = year || {};
+    var months = year.months || [], cats = year.categories || [], cells = year.cells || {};
+    var now = (year.nowIndex == null) ? -1 : Number(year.nowIndex);
+    if (!months.length || !cats.length) { host.innerHTML = '<tr><td class="rowcat">No yearly data yet.</td></tr>'; return; }
+    var head = '<tr><th class="blank"></th>' + months.map(function (m, i) {
+      return '<th' + (i === now ? ' class="nowcol"' : '') + '>' + esc(m) + '</th>';
+    }).join("") + '</tr>';
+    var body = cats.map(function (cat) {
+      var arr = cells[cat] || [];
+      var tds = months.map(function (m, i) {
+        var st = arr[i], cls = st === "done" ? "d-done" : (st === "part" ? "d-part" : "d-miss");
+        return '<td' + (i === now ? ' class="nowcol"' : '') + '><span class="dot ' + cls + '"></span></td>';
+      }).join("");
+      return '<tr><td class="rowcat">' + esc(cat) + '</td>' + tds + '</tr>';
+    }).join("");
+    host.innerHTML = head + body;
   }
   var mktLoaded = false;
   function loadMarketing() {
     mktQuickLaunch();
     if (!KEY) {
-      if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="empty">No key — open via Command Center doc.</div>';
+      if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="mkt-empty">No key - open via Command Center doc.</div>';
       if ($("mkt-deadlines")) $("mkt-deadlines").innerHTML = "";
+      if ($("mkt-thismonth")) $("mkt-thismonth").innerHTML = "";
       return;
     }
-    if ($("mkt-sub")) $("mkt-sub").textContent = mktLoaded ? "" : "loading…";
     fetch(PROXY + "?k=" + encodeURIComponent(KEY) + "&action=marketing", { redirect: "follow" })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         mktLoaded = true; d = d || {};
+        mktRenderMonth(d.monthLabel || "");
         mktRenderGauges(d.gauges || {});
+        mktRenderThisMonth(d.thisMonth || []);
         mktRenderDeadlines(d.deadlines || []);
-        var mo = ["", "January","February","March","April","May","June","July","August","September","October","November","December"];
-        if ($("mkt-sub")) $("mkt-sub").textContent = d.month ? (mo[d.month] || "") : "";
+        mktRenderYear(d.year || {});
       })
       .catch(function () {
-        if ($("mkt-sub")) $("mkt-sub").textContent = "";
-        if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="empty">Could not load marketing data.</div>';
+        if ($("mkt-gauges")) $("mkt-gauges").innerHTML = '<div class="mkt-empty">Could not load marketing data.</div>';
         if ($("mkt-deadlines")) $("mkt-deadlines").innerHTML = "";
+        if ($("mkt-thismonth")) $("mkt-thismonth").innerHTML = "";
       });
   }
   var _navMkt = $("nav-marketing"); if (_navMkt) _navMkt.addEventListener("click", function () { loadMarketing(); });
