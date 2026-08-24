@@ -694,6 +694,7 @@
   var PROXY = "https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
   var KEY = new URLSearchParams(location.search).get("k") || "";
   var REFRESH_MS = 60000;
+  var DASH_CACHE_KEY = "twt-dash-cache-v1";
 
   var envParts = ["JS: executing"];
   try {
@@ -1379,12 +1380,22 @@ document.addEventListener("click",function(ev){
 
   function load() {
     if (!KEY) { setDiag("err", "data: no key \u2014 open via Command Center doc"); return; }
-    fetch(PROXY + "?k=" + encodeURIComponent(KEY), { redirect: "follow" })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
+    function renderDash(d) {
         if (d.error) { setDiag("err", "data: " + d.error); return; }
         render(d);
         setDiag("ok", "data: live \u00b7 " + d.deals.length + " deals \u00b7 " + d.tasks.length + " tasks \u00b7 updated " + new Date().toLocaleTimeString());
+    }
+    if (!load._painted) {
+      try {
+        var cached = localStorage.getItem(DASH_CACHE_KEY);
+        if (cached) { renderDash(JSON.parse(cached)); load._painted = true; setDiag("", "data: updating\u2026"); }
+      } catch (e) {}
+    }
+    fetch(PROXY + "?k=" + encodeURIComponent(KEY), { redirect: "follow" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        renderDash(d);
+        if (!d.error) { try { localStorage.setItem(DASH_CACHE_KEY, JSON.stringify(d)); } catch (e) {} }
       })
       .catch(function (e) { setDiag("err", "data: fetch failed \u2014 " + e); });
   }
