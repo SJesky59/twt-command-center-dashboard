@@ -1508,19 +1508,21 @@ document.addEventListener("click",function(ev){
   function mktQuickLaunch() {
     var host = $("mkt-ql"); if (!host) return;
     host.innerHTML = MKT_QUICK.map(function (q, i) {
-      return '<a class="launch" href="javascript:void(0)" role="button" data-qi="' + i + '" onclick="mktLaunch(this);return false;">' +
+      return '<a class="launch" href="javascript:void(0)" role="button" data-qi="' + i + '">' +
         '<span class="ic ' + q[2] + '">' + q[3] + '</span>' +
         '<span class="lb">' + esc(q[0]) + '</span>' +
         '<span class="rn">' + esc(q[4]) + '</span>' +
       '</a>';
     }).join("");
-  }
-  function mktLaunch(el) {
-    var i = +(el && el.getAttribute("data-qi"));
-    var q = MKT_QUICK[i];
-    var promptText = (q && q[1]) || "";
-    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(promptText); } catch (e) {}
-    window.open("https://claude.ai/new", "_blank", "noopener");
+    host.querySelectorAll(".launch").forEach(function (el) {
+      el.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        var i = +el.getAttribute("data-qi");
+        var promptText = (MKT_QUICK[i] && MKT_QUICK[i][1]) ? MKT_QUICK[i][1] : "";
+        try { if (promptText && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(promptText); } catch (e) {}
+        window.open("https://claude.ai/new", "_blank", "noopener");
+      });
+    });
   }
   function mktDayDelta(ms) {   // whole days from local midnight-today to local midnight-due
     var t0 = new Date(); t0.setHours(0, 0, 0, 0);
