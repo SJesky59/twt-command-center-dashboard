@@ -241,7 +241,6 @@
     --mtxt:var(--text-primary); --mdim:var(--text-secondary); --mdim2:var(--text-muted);
     --mgreen:#1a7f37; --mblue:var(--text-accent); --mgold:var(--text-warning); --mamber:var(--text-warning); --mred:var(--text-danger);
     color:var(--mtxt);
-    max-width:1180px;
   }
   html[data-theme="dark"] #page-marketing { --mgreen:#3fb950; }
   #page-marketing .month { display:inline-block; margin-bottom:16px; }
@@ -321,6 +320,7 @@
   #page-marketing table.year td.rowcat { text-align:left; width:170px; font-size:14px; font-weight:600; color:var(--mtxt); white-space:nowrap; }
   #page-marketing table.year .nowcol { background:rgba(130,130,140,0.10); }
   #page-marketing table.year th.nowcol { font-weight:800; color:var(--mtxt); }
+  #page-marketing table.year .yeartot{ border-left:2px solid var(--mline); }
   #page-marketing .dot { display:inline-block; width:16px; height:16px; border-radius:50%; background:var(--mline); }
   #page-marketing .dot.d-done { background:var(--mgreen); }
   #page-marketing .dot.d-part { background:var(--mamber); }
@@ -1525,8 +1525,8 @@ document.addEventListener("click",function(ev){
     if(!t){
       t=document.createElement('div'); t.id='mkt-toast';
       t.style.cssText='background:var(--mpanel2); color:var(--mtxt); border:1px solid var(--mline); border-radius:10px; padding:10px 14px; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; font-size:13px; box-shadow:0 6px 24px rgba(0,0,0,.25);';
-      var span=document.createElement('span'); span.textContent='Prompt copied';
-      var a=document.createElement('a'); a.href='https://claude.ai/new'; a.target='_blank'; a.rel='noopener'; a.textContent='Open Claude \u2197';
+      var span=document.createElement('span'); span.textContent='Prompt copied - open Claude and paste';
+      var a=document.createElement('a'); a.href='claude://'; a.target='_blank'; a.rel='noopener'; a.textContent='Open Claude \u2197';
       a.style.cssText='color:var(--mblue); font-weight:600; margin-left:8px; text-decoration:none;';
       t.appendChild(span); t.appendChild(a);
       document.body.appendChild(t);
@@ -1650,14 +1650,28 @@ document.addEventListener("click",function(ev){
     if (!months.length || !cats.length) { host.innerHTML = '<tr><td class="rowcat">No yearly data yet.</td></tr>'; return; }
     var head = '<tr><th class="blank"></th>' + months.map(function (m, i) {
       return '<th' + (i === now ? ' class="nowcol"' : '') + '>' + esc(m) + '</th>';
-    }).join("") + '</tr>';
+    }).join("") + '<th class="yeartot">Year</th></tr>';
+    var elapsed = now + 1;
     var body = cats.map(function (cat) {
       var arr = cells[cat] || [];
       var tds = months.map(function (m, i) {
         var st = arr[i], cls = st === "done" ? "d-done" : (st === "part" ? "d-part" : "d-miss");
         return '<td' + (i === now ? ' class="nowcol"' : '') + '><span class="dot ' + cls + '"></span></td>';
       }).join("");
-      return '<tr><td class="rowcat">' + esc(cat) + '</td>' + tds + '</tr>';
+      var totCls;
+      if (elapsed < 1) {
+        totCls = "d-miss";
+      } else {
+        var score = 0;
+        for (var j = 0; j < elapsed; j++) {
+          if (arr[j] === "done") { score += 1; }
+          else if (arr[j] === "part") { score += 0.5; }
+        }
+        var ratio = score / elapsed;
+        totCls = ratio >= 0.7 ? "d-done" : (ratio >= 0.34 ? "d-part" : "d-miss");
+      }
+      return '<tr><td class="rowcat">' + esc(cat) + '</td>' + tds +
+        '<td class="yeartot"><span class="dot ' + totCls + '"></span></td></tr>';
     }).join("");
     host.innerHTML = head + body;
   }
