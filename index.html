@@ -251,14 +251,14 @@
     border-radius:12px; padding:14px 10px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:7px;
     text-decoration:none; color:var(--mtxt); transition:border-color .15s; }
   #page-marketing .launch:hover { border-color:var(--mdim); }
-  #page-marketing .launch .ic { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; }
+  #page-marketing .launch .ic { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; background:transparent; }
   #page-marketing .launch .lb { font-size:12.5px; font-weight:700; color:var(--mtxt); }
   #page-marketing .launch .rn { font-size:10.5px; color:var(--mdim2); }
-  #page-marketing .i-gold { background:var(--bg-warning); color:var(--mgold); }
-  #page-marketing .i-blue { background:var(--bg-accent); color:var(--mblue); }
-  #page-marketing .i-green { background:var(--mpanel2); color:var(--mgreen); }
-  #page-marketing .i-amber { background:var(--bg-warning); color:var(--mamber); }
-  #page-marketing .i-red { background:var(--bg-danger); color:var(--mred); }
+  #page-marketing .i-gold { background:transparent; color:var(--mgold); }
+  #page-marketing .i-blue { background:transparent; color:var(--mblue); }
+  #page-marketing .i-green { background:transparent; color:var(--mgreen); }
+  #page-marketing .i-amber { background:transparent; color:var(--mamber); }
+  #page-marketing .i-red { background:transparent; color:var(--mred); }
   #page-marketing .row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; align-items:stretch; }
   #page-marketing .row > .card { display:flex; flex-direction:column; }
   #page-marketing .rcol { display:flex; flex-direction:column; gap:16px; }
@@ -267,7 +267,7 @@
     text-transform:uppercase; color:var(--mdim); margin-bottom:14px; }
   #page-marketing .ctitle .meta { margin-left:auto; font-size:11px; font-weight:600; letter-spacing:.2px; text-transform:none; color:var(--mdim2); }
   /* This Month checklist */
-  #page-marketing .clist { list-style:none; display:flex; flex-direction:column; flex:1 1 auto; max-height:none; overflow-y:auto; }
+  #page-marketing .clist { list-style:none; display:flex; flex-direction:column; flex:1 1 auto; min-height:0; max-height:480px; overflow-y:auto; }
   #page-marketing .clist li { display:flex; align-items:flex-start; gap:11px; padding:7px 3px; border-bottom:1px solid var(--mline); }
   #page-marketing .clist li:last-child { border-bottom:none; }
   #page-marketing .box { flex:none; width:20px; height:20px; border-radius:6px; border:1.5px solid var(--mline); margin-top:1px;
@@ -278,8 +278,6 @@
   #page-marketing .citem .nm { font-size:13px; color:var(--mtxt); }
   #page-marketing .li-done .nm { text-decoration:line-through; color:var(--mdim2); }
   /* Gauges */
-  #page-marketing .luke { margin-left:auto; background:var(--bg-warning); color:var(--mgold); border:1px solid var(--mgold); border-radius:999px;
-    padding:3px 10px; font-size:10px; font-weight:700; letter-spacing:.2px; text-transform:none; }
   #page-marketing .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
   #page-marketing .gtile { background:var(--mpanel2); border:1px solid var(--mline); border-radius:13px;
     padding:15px 8px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
@@ -292,9 +290,10 @@
   #page-marketing .gname { font-size:12.5px; font-weight:700; color:var(--mtxt); }
   #page-marketing .gsub { font-size:11px; color:var(--mdim); }
   /* Deadlines */
-  #page-marketing .dl { list-style:none; display:flex; flex-direction:column; gap:9px; }
-  #page-marketing .dl li { display:flex; align-items:stretch; gap:13px; background:var(--mpanel2);
-    border:1px solid var(--mline); border-left-width:3px; border-radius:9px; padding:9px 13px; }
+  #page-marketing .dl { list-style:none; display:flex; flex-direction:column; gap:0; margin:0; padding:0; }
+  #page-marketing .dl li { display:flex; align-items:center; gap:12px; background:none;
+    border-bottom:1px solid var(--mline); border-left:3px solid transparent; border-radius:2px; padding:10px 2px 10px 10px; }
+  #page-marketing .dl li:last-child { border-bottom:none; }
   #page-marketing .dl li.u-red { border-left-color:var(--mred); }
   #page-marketing .dl li.u-amber { border-left-color:var(--mamber); }
   #page-marketing .dl li.u-green { border-left-color:var(--mgreen); }
@@ -309,13 +308,14 @@
   #page-marketing .what .nm { font-size:13px; color:var(--mtxt); }
   /* Year at a Glance */
   #page-marketing .yearwrap { overflow-x:auto; }
-  #page-marketing table.year { width:100%; border-collapse:collapse; }
-  #page-marketing table.year th { font-size:11px; font-weight:600; color:var(--mdim); padding:6px 5px; text-align:center; }
+  #page-marketing table.year { width:100%; max-width:1000px; margin:0 auto; border-collapse:collapse; font-size:14px; }
+  #page-marketing table.year th { font-size:13px; font-weight:600; color:var(--mdim); padding:13px 8px; text-align:center; }
   #page-marketing table.year th.blank { text-align:left; }
-  #page-marketing table.year td { padding:8px 5px; text-align:center; }
-  #page-marketing table.year td.rowcat { text-align:left; width:170px; font-size:12px; color:var(--mtxt); white-space:nowrap; }
-  #page-marketing table.year .nowcol { background:var(--bg-accent); }
-  #page-marketing .dot { display:inline-block; width:14px; height:14px; border-radius:50%; background:var(--mline); }
+  #page-marketing table.year td { padding:13px 8px; text-align:center; }
+  #page-marketing table.year td.rowcat { text-align:left; width:170px; font-size:14px; font-weight:600; color:var(--mtxt); white-space:nowrap; }
+  #page-marketing table.year .nowcol { background:rgba(130,130,140,0.10); }
+  #page-marketing table.year th.nowcol { font-weight:800; color:var(--mtxt); }
+  #page-marketing .dot { display:inline-block; width:16px; height:16px; border-radius:50%; background:var(--mline); }
   #page-marketing .dot.d-done { background:var(--mgreen); }
   #page-marketing .dot.d-part { background:var(--mamber); }
   #page-marketing .dot.d-miss { background:var(--mline); }
@@ -561,7 +561,7 @@
       </div>
       <div class="rcol">
         <div class="card">
-          <div class="ctitle">Luke's Trackers <span class="luke">the 3 he asked for</span></div>
+          <div class="ctitle">Luke's Trackers</div>
           <div class="g3" id="mkt-gauges"><div class="mkt-empty">Loading&hellip;</div></div>
         </div>
         <div class="card">
@@ -1501,19 +1501,26 @@ document.addEventListener("click",function(ev){
     ["Anniversary CMAs",  "run the anniversary CMAs",     "i-amber", "📊",  "run now"],
     ["Settlement Stmts",  "run the settlement statements","i-red",   "📑",  "run now"]
   ];
-  // gauge key -> donut fill color (must match v7 hexes exactly)
-  var MKT_GCOL = { metMailers: "#3fb950", eNewsletters: "#4f9cf9", goldenLetters: "#d4a13a" };
+  // gauge key -> donut fill color (v7 accent tokens; theme-aware)
+  var MKT_GCOL = { metMailers: "var(--mgreen)", eNewsletters: "var(--mblue)", goldenLetters: "var(--mgold)" };
   var MKT_MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   function mktQuickLaunch() {
     var host = $("mkt-ql"); if (!host) return;
-    host.innerHTML = MKT_QUICK.map(function (q) {
-      return '<a class="launch" href="claude://cowork/new?q=' + encodeURIComponent(q[1]) + '">' +
+    host.innerHTML = MKT_QUICK.map(function (q, i) {
+      return '<a class="launch" href="javascript:void(0)" role="button" data-qi="' + i + '" onclick="mktLaunch(this);return false;">' +
         '<span class="ic ' + q[2] + '">' + q[3] + '</span>' +
         '<span class="lb">' + esc(q[0]) + '</span>' +
         '<span class="rn">' + esc(q[4]) + '</span>' +
       '</a>';
     }).join("");
+  }
+  function mktLaunch(el) {
+    var i = +(el && el.getAttribute("data-qi"));
+    var q = MKT_QUICK[i];
+    var promptText = (q && q[1]) || "";
+    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(promptText); } catch (e) {}
+    window.open("https://claude.ai/new", "_blank", "noopener");
   }
   function mktDayDelta(ms) {   // whole days from local midnight-today to local midnight-due
     var t0 = new Date(); t0.setHours(0, 0, 0, 0);
@@ -1536,12 +1543,12 @@ document.addEventListener("click",function(ev){
       var g = gauges && gauges[order[i]];
       if (!g) continue;
       var total = Number(g.total) || 0, done = Number(g.done) || 0, pct = Number(g.pct) || 0;
-      var col = MKT_GCOL[order[i]] || "#3fb950";
+      var col = MKT_GCOL[order[i]] || "var(--mgreen)";
       var face;
       if (total === 0) {   // On Hold instead of a 0% donut
         face = '<div class="hold"><span>On Hold</span></div>';
       } else {
-        face = '<div class="donut" style="background:conic-gradient(' + col + ' ' + pct + '%, #2a333f 0);">' +
+        face = '<div class="donut" style="background:conic-gradient(' + col + ' ' + pct + '%, var(--mline) 0);">' +
                  '<span class="pv">' + pct + '%</span>' +
                '</div>';
       }
