@@ -1623,7 +1623,7 @@ document.addEventListener("click",function(ev){
     for (var i = 0; i < list.length; i++) { if (list[i] && list[i].done) done++; }
     if (meta) meta.textContent = done + " of " + list.length + " done";
     if (!list.length) { host.innerHTML = '<li><span class="citem"><span class="nm" style="color:var(--mdim2)">Nothing scheduled this month.</span></span></li>'; return; }
-    host.innerHTML = list.map(function (it) {
+    host.innerHTML = list.slice().reverse().map(function (it) {
       var d = !!(it && it.done);
       return '<li class="' + (d ? "li-done" : "") + '">' +
         '<span class="box' + (d ? " on" : "") + '">' + (d ? "✓" : "") + '</span>' +
