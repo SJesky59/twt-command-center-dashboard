@@ -1765,6 +1765,8 @@ function renderTrend(trend){
   <div class="msep"></div>
   <div class="mopt" id="mopt-vendors"><span class="mi" style="background:#8a5cf015;color:#8a5cf0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><div class="lbl"><div class="a">Vendors</div><div class="s">Your service pros</div></div><span class="chev">&#8250;</span></div>
   <div class="msep"></div>
+  <div class="mopt" id="mopt-marketing"><span class="mi" style="background:#9d650815;color:#9d6508"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h3l4 4V7L7 11H4a1 1 0 0 0-1 0z"/><path d="M15.5 8.5a4 4 0 0 1 0 7"/><path d="M18 5a8 8 0 0 1 0 14"/></svg></span><div class="lbl"><div class="a">Marketing</div><div class="s">Trackers &amp; deadlines</div></div><span class="chev">&#8250;</span></div>
+  <div class="msep"></div>
   <div class="set-sec"><div class="set-h">Settings</div><div class="set-row-l">Appearance</div><div style="padding:0 4px;"><div class="seg-appear" id="segAppear"><button data-appear="auto">Auto</button><button data-appear="light">Light</button><button data-appear="dark">Dark</button></div></div></div>
 </div>
 <nav id="mtabbar">
@@ -1783,9 +1785,10 @@ function renderTrend(trend){
   function wire(id,fn){var el=document.getElementById(id); if(el) el.addEventListener('click',function(){more(false);fn();});}
   wire('mopt-people',function(){var n=document.getElementById('nav-people'); if(n) n.click();});
   wire('mopt-vendors',function(){var n=document.getElementById('nav-vendors'); if(n) n.click();});
+  wire('mopt-marketing',function(){var n=document.getElementById('nav-marketing'); if(n) n.click();});
   wire('mopt-refresh',function(){var b=document.getElementById('btn-syncnow'); if(b) b.click();});
   var _hh=(location.hash||"").replace('#','');
-  if(_hh){var _m={people:'nav-people',vendors:'nav-vendors',deals:'nav-deals'};var _t=_m[_hh];if(_t){var _e=document.getElementById(_t);if(_e)setTimeout(function(){_e.click();},80);}}
+  if(_hh){var _m={people:'nav-people',vendors:'nav-vendors',deals:'nav-deals',marketing:'nav-marketing'};var _t=_m[_hh];if(_t){var _e=document.getElementById(_t);if(_e)setTimeout(function(){_e.click();},80);}}
 })();</script>
 <script>(function(){
   function save(v){try{localStorage.setItem('twt-theme',v);}catch(e){}}
