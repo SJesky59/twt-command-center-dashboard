@@ -1776,7 +1776,7 @@ function renderTrend(trend){
   <a class="mtab" id="tab-more" href="#"><span class="ic">&#8943;</span><span class="lb">More</span></a>
 </nav>
 <script>(function(){
-  var k=new URLSearchParams(location.search).get("k")||"";
+  var k=new URLSearchParams(location.search).get("k")||(function(){try{return localStorage.getItem("twt_k")||"";}catch(e){return "";}})();
   document.querySelectorAll('#mtabbar .mtab[data-p]').forEach(function(a){a.href=a.getAttribute('data-p')+'?k='+encodeURIComponent(k);});
   function more(o){document.getElementById('msheet').classList.toggle('open',o);document.getElementById('mscrim').classList.toggle('open',o);}
   var tm=document.getElementById('tab-more'); if(tm) tm.addEventListener('click',function(e){e.preventDefault();more(true);});
