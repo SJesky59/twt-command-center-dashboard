@@ -692,7 +692,7 @@
 (function () {
   "use strict";
   var PROXY = "https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
-  var KEY = new URLSearchParams(location.search).get("k") || "";
+  var KEY=(function(){var u=new URLSearchParams(location.search).get("k");try{if(u){localStorage.setItem("twt_k",u);return u;}var s=localStorage.getItem("twt_k");if(s)return s;}catch(e){}return u||"";})();
   var REFRESH_MS = 60000;
   var DASH_CACHE_KEY = "twt-dash-cache-v1";
 
