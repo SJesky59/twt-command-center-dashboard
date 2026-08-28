@@ -216,7 +216,7 @@
 
 <script>
 var PROXY="https://script.google.com/macros/s/AKfycbzBRaVa6cwYB93xdKwj-nlibjrIqp4EHGgbHeH4bOhW64CqWAWCy6txHcbbKt5mkaPk/exec";
-var KEY=new URLSearchParams(location.search).get("k")||"";
+var KEY=(function(){var u=new URLSearchParams(location.search).get("k");try{if(u){localStorage.setItem("twt_k",u);return u;}var s=localStorage.getItem("twt_k");if(s)return s;}catch(e){}return u||"";})();
 var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 var DATA={tasks:[],dealsByAddr:{},nextUp:{}};
