@@ -549,8 +549,8 @@ window.addEventListener("focus", maybeRefresh);
   wire("mopt-people",function(){location.href="index.html"+kq+"#people";});
   wire("mopt-vendors",function(){location.href="index.html"+kq+"#vendors";});
   wire("mopt-marketing",function(){location.href="index.html"+kq+"#marketing";});
-  var hr=document.getElementById("hdrRefresh"); if(hr) hr.addEventListener("click",function(){ if(typeof load==='function') load(); });
-  var syncEl=document.getElementById("sync"); if(syncEl){ syncEl.style.cursor="pointer"; syncEl.title="Tap to refresh"; syncEl.addEventListener("click",function(){ if(typeof load==='function') load(); }); }
+  var hr=document.getElementById("hdrRefresh"); if(hr) hr.addEventListener("click",function(){ try{setSync("Refreshing…");}catch(e){} if(typeof load==='function') load(); });
+  var syncEl=document.getElementById("sync"); if(syncEl){ syncEl.style.cursor="pointer"; syncEl.title="Tap to refresh"; syncEl.addEventListener("click",function(){ try{setSync("Refreshing…");}catch(e){} if(typeof load==='function') load(); }); }
 })();
 (function(){
   function save(v){try{localStorage.setItem('twt-theme',v);}catch(e){}}
